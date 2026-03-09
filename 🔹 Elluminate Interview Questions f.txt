@@ -1,0 +1,365 @@
+🔹 Elluminate Interview Questions for CDM Professionals
+1️⃣ Basics of Elluminate (Foundational)
+
+Q1. What is Elluminate and how is it used in Clinical Data Management?
+Expected answer points:
+
+Elluminate is a data review and issue management tool
+
+Used to review data listings, exception reports, and metrics
+
+Enables cross-functional collaboration (CDM, Programming, Medical Review)
+
+Allows raising comments, tracking issues, and documenting decisions
+
+Q2. How does Elluminate differ from EDC systems like Veeva?
+Expected points:
+
+Veeva → data capture and query management
+
+Elluminate → centralized data review, analytics, and oversight
+
+Elluminate does not capture data; it reviews and monitors data
+
+2️⃣ Elluminate Reports & Listings
+
+Q3. What types of reports do you typically pull from Elluminate?
+Good answers include:
+
+Exception / edit check reports
+
+Data review listings
+
+Missing data reports
+
+Protocol deviation listings
+
+Metrics and data cleaning status reports
+
+Q4. How do you use Elluminate reports during manual data review?
+Answer should mention:
+
+Reviewing outliers, inconsistencies, missing data
+
+Identifying trends across sites/subjects
+
+Adding comments directly in Elluminate
+
+Escalating issues via queries in EDC if required
+
+3️⃣ Comments & Issue Management in Elluminate (IMPORTANT)
+
+Q5. How do you raise and manage comments in Elluminate?
+Strong answer:
+
+Review listings or dashboards
+
+Raise contextual comments directly on records
+
+Assign comments to appropriate function (CDM, DM Lead, Medical)
+
+Track resolution status (open, in progress, closed)
+
+Q6. What is the difference between an Elluminate comment and an EDC query?
+Expected answer:
+
+Elluminate comment → internal review and discussion
+
+EDC query → formal communication to site
+
+Elluminate helps decide whether a query is required
+
+4️⃣ Exception Reports & Edit Checks
+
+Q7. How do you review exception reports in Elluminate?
+Key points:
+
+Review failed checks and rule violations
+
+Validate against protocol, CRF, and completion guidelines
+
+Determine if issue is:
+
+Query-worthy
+
+Informational
+
+Expected per protocol
+
+Document rationale in Elluminate
+
+Q8. Can you give an example where you decided NOT to raise a query after reviewing Elluminate output?
+Good examples:
+
+Protocol-allowed deviations
+
+Visit window flexibility
+
+Expected lab outliers
+
+Rescue medication per protocol
+
+5️⃣ Custom Checks & Specifications (Senior-level)
+
+Q9. How do you contribute to custom edit check specifications?
+Expected points:
+
+Use protocol, CRF, CRF completion guidelines
+
+Define:
+
+Check logic
+
+Conditions
+
+Query text
+
+Severity
+
+Review outputs in Elluminate for accuracy
+
+Q10. How does Elluminate help validate custom checks?
+Strong answer:
+
+Review check firing frequency
+
+Identify false positives
+
+Provide feedback to programming
+
+Ensure checks are clinically and operationally relevant
+
+6️⃣ Integration with Veeva EDC
+
+Q11. How do you decide when to raise a query in Veeva based on Elluminate findings?
+Expected flow:
+
+Review issue in Elluminate
+
+Validate against protocol / guidelines
+
+Add Elluminate comment if clarification needed
+
+Raise EDC query only when site input is required
+
+Q12. What precautions do you take while raising queries based on Elluminate review?
+Good points:
+
+Avoid duplicate queries
+
+Ensure clarity and protocol reference
+
+Follow query writing standards
+
+Avoid unnecessary site burden
+
+7️⃣ Metrics, Quality & Inspection Readiness
+
+Q13. How does Elluminate support data quality and inspection readiness?
+Expected answer:
+
+Centralized documentation of data review
+
+Audit trail of comments and decisions
+
+Trend analysis across sites
+
+Demonstrates proactive data oversight
+
+Q14. How do you use Elluminate metrics to identify site-level issues?
+Good answers:
+
+High number of exceptions
+
+Repeated data patterns
+
+Delayed query resolution
+
+Protocol deviation trends
+
+8️⃣ Scenario-Based (Very Common)
+
+Q15. A check is firing frequently in Elluminate but seems clinically irrelevant. What will you do?
+Ideal answer:
+
+Review protocol and CRF guidelines
+
+Add comment in Elluminate
+
+Discuss with DM Lead / Programming
+
+Suggest refinement or suppression of check
+
+Q16. How do you document review decisions in Elluminate?
+Expected:
+
+Clear, concise comments
+
+Reference protocol section if needed
+
+Mark resolution status
+
+Maintain traceability
+
+🔥 One-liner for interviews (Very useful)
+
+“Elluminate acts as a centralized data review and issue management platform that supports proactive data cleaning, trend analysis, and inspection-ready documentation.”
+********************************************************************************************************************************************************
+🔹 What is MedDRA (MEDCDR)?
+
+MedDRA = Medical Dictionary for Regulatory Activities
+
+It is a standard medical dictionary used to code:
+
+Adverse Events (AE)
+
+Medical History (MH)
+
+Indications (IND)
+
+Concomitant Medications (sometimes)
+
+Why MedDRA is used
+
+✔ Consistent terminology
+✔ Regulatory compliant (FDA, EMA)
+✔ Easier analysis and reporting
+
+🔹 What is MEDCDR in Elluminate?
+
+MEDCDR = MedDRA Coder
+
+In Oracle Health Sciences Elluminate, MEDCDR is the coding component used to:
+
+👉 Code verbatim medical terms entered in eCRFs
+👉 Map them to standard MedDRA terms
+
+🔹 Example (Very Important)
+Verbatim entered by site:
+"Severe headache with nausea"
+
+MEDCDR codes it to:
+MedDRA Level	Term
+LLT	Headache
+PT	Headache
+HLT	Headaches
+HLGT	Nervous system disorders
+SOC	Nervous system disorders
+🔹 What is MEDCDR Merge in Elluminate?
+🔑 Simple definition
+
+MEDCDR Merge is the process of merging coded MedDRA data from MEDCDR back into the Elluminate clinical database.
+
+👉 Coding happens in MEDCDR
+👉 Data collection happens in Elluminate
+👉 Merge = sync coding results back
+
+🔹 Why is MEDCDR Merge needed?
+
+Because:
+
+Sites enter verbatim terms in Elluminate
+
+Coders code them in MEDCDR
+
+Elluminate must receive:
+
+LLT
+
+PT
+
+SOC
+
+MedDRA version
+
+So MEDCDR Merge updates the clinical database with the coded values.
+
+🔄 MEDCDR Merge – Step-by-Step Flow (Interview GOLD)
+1️⃣ Data entry in Elluminate
+
+Site enters:
+
+AE Term = "Stomach pain"
+
+2️⃣ Data sent to MEDCDR
+
+Verbatim term sent for coding
+
+Status = Not coded
+
+3️⃣ Coding in MEDCDR
+
+Coder assigns:
+
+LLT = Abdominal pain
+PT  = Abdominal pain
+SOC = Gastrointestinal disorders
+
+4️⃣ MEDCDR Merge back to Elluminate
+
+Coded values populated in:
+
+AELLT
+
+AEDECOD
+
+AESOC
+
+Coding status updated
+
+🔹 What gets merged during MEDCDR Merge?
+
+Typically:
+
+Coded term (LLT)
+
+Preferred Term (PT)
+
+SOC
+
+MedDRA version
+
+Coding status
+
+Dictionary ID
+
+🔹 Example Table (Before & After Merge)
+Before Merge (Elluminate)
+AE Verbatim	AEDECOD	AESOC
+Head pain	blank	blank
+After MEDCDR Merge
+AE Verbatim	AEDECOD	AESOC
+Head pain	Headache	Nervous system disorders
+🔹 Common Interview Questions & Answers
+Q1. What is MEDCDR?
+
+A: MEDCDR is the MedDRA coding module used within Elluminate to code medical terms.
+
+Q2. What is MEDCDR Merge?
+
+A: MEDCDR Merge is the process of integrating coded MedDRA data back into the Elluminate database.
+
+Q3. Why is MEDCDR Merge important?
+
+A: It ensures coded terms are available in the clinical database for analysis and regulatory submission.
+
+Q4. Which domains use MEDCDR?
+
+A: AE, MH, IND (sometimes CM depending on study).
+
+Q5. What happens if merge is not done?
+
+A: Elluminate will still show verbatim terms but coded fields remain blank.
+
+🔹 Real-Life Scenario (Explain Like a Professional)
+
+“After AE coding is completed in MEDCDR, we perform a MEDCDR merge to bring coded MedDRA terms back into Elluminate so that AEDECOD, AESOC, and related fields are populated for analysis.”
+
+⭐ One-Line Summary (Very Important)
+
+MEDCDR codes medical terms; MEDCDR Merge synchronizes those coded terms back into Elluminate.
+
+If you want next, I can explain:
+
+
+

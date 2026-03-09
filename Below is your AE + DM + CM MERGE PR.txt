@@ -1,0 +1,747 @@
+Below is your AE + DM + CM MERGE PROJECT (Pandas) — step-by-step, lemon language, exactly how it’s done in real studies.
+
+🧪 CLINICAL PANDAS PROJECT
+DM + AE + CM Merge & Analysis
+🎯 PROJECT OBJECTIVE
+
+You will learn to:
+
+Read multiple clinical datasets
+
+Merge them using USUBJID
+
+Apply clinical rules
+
+Create flags (Serious AE, Rescue Med)
+
+Generate subject-level summary
+
+📁 PROJECT STRUCTURE
+Clinical_Merge_Project/
+│
+├── data/
+│   ├── DM.csv
+│   ├── AE.csv
+│   └── CM.csv
+│
+├── output/
+│   ├── AE_DM_MERGED.xlsx
+│   └── SUBJECT_SUMMARY.xlsx
+│
+└── merge_project.py
+
+📄 STEP 1: MOCK INPUT DATA
+🔹 DM.csv (Demographics)
+USUBJID,AGE,SEX
+SUBJ001,45,M
+SUBJ002,60,F
+SUBJ003,70,M
+SUBJ004,30,F
+
+🔹 AE.csv (Adverse Events)
+USUBJID,AEDECOD,AESER
+SUBJ001,HEADACHE,N
+SUBJ002,NAUSEA,Y
+SUBJ002,DIZZINESS,N
+SUBJ003,HYPERTENSION,Y
+
+🔹 CM.csv (Concomitant Medications)
+USUBJID,MEDNAME,DOSE
+SUBJ001,Paracetamol,500
+SUBJ002,Ibuprofen,400
+SUBJ003,Diclofenac,50
+SUBJ004,Aspirin,300
+
+🧠 STEP 2: IMPORT & READ FILES
+import pandas as pd
+
+dm = pd.read_csv("data/DM.csv")
+ae = pd.read_csv("data/AE.csv")
+cm = pd.read_csv("data/CM.csv")
+
+🔗 STEP 3: MERGE AE WITH DM
+ae_dm = pd.merge(ae, dm, on="USUBJID", how="left")
+print(ae_dm)
+
+
+👉 Why LEFT JOIN?
+We keep all AEs even if DM is missing.
+
+🚩 STEP 4: FLAG SERIOUS AEs
+ae_dm["SERIOUS_AE_FLAG"] = ae_dm["AESER"].apply(
+    lambda x: "Y" if x == "Y" else "N"
+)
+
+🧠 STEP 5: FLAG RESCUE MEDICATIONS
+cm["MEDNAME"] = cm["MEDNAME"].str.upper()
+
+def rescue_med(med):
+    rescue_list = ["IBUPROFEN", "DICLOFENAC"]
+    return "Y" if med in rescue_list else "N"
+
+cm["RESCUE_FLAG"] = cm["MEDNAME"].apply(rescue_med)
+
+🔗 STEP 6: MERGE CM WITH DM
+cm_dm = pd.merge(cm, dm, on="USUBJID", how="left")
+
+📊 STEP 7: SUBJECT-LEVEL SUMMARY
+🔹 Count AEs per subject
+ae_count = ae.groupby("USUBJID").size().reset_index(name="AE_COUNT")
+
+🔹 Check if subject has any serious AE
+serious_flag = ae.groupby("USUBJID")["AESER"].apply(
+    lambda x: "Y" if "Y" in x.values else "N"
+).reset_index(name="ANY_SERIOUS_AE")
+
+🔹 Check rescue medication usage
+rescue_flag = cm.groupby("USUBJID")["RESCUE_FLAG"].apply(
+    lambda x: "Y" if "Y" in x.values else "N"
+).reset_index(name="USED_RESCUE_MED")
+
+🔹 Merge all summaries
+summary = dm.merge(ae_count, on="USUBJID", how="left") \
+            .merge(serious_flag, on="USUBJID", how="left") \
+            .merge(rescue_flag, on="USUBJID", how="left")
+
+summary = summary.fillna(0)
+
+📤 STEP 8: EXPORT RESULTS
+ae_dm.to_excel("output/AE_DM_MERGED.xlsx", index=False)
+summary.to_excel("output/SUBJECT_SUMMARY.xlsx", index=False)
+
+📌 FINAL OUTPUT (SUBJECT_SUMMARY)
+USUBJID	AGE	SEX	AE_COUNT	ANY_SERIOUS_AE	USED_RESCUE_MED
+SUBJ001	45	M	1	N	N
+SUBJ002	60	F	2	Y	Y
+SUBJ003	70	M	1	Y	Y
+SUBJ004	30	F	0	N	N
+🎤 INTERVIEW QUESTIONS FROM THIS PROJECT
+
+Q: Why merge AE with DM?
+A: To analyze adverse events by demographic characteristics.
+
+Q: Why use groupby?
+A: To create subject-level summaries.
+
+Q: Why USUBJID?
+A: It uniquely identifies subjects across domains.
+
+🔥 NEXT OPTIONS (Choose One)
+
+1️⃣ Add EX (Exposure) & dose change logic
+2️⃣ Convert this to SDTM-style datasets
+3️⃣ SQL version of this project
+4️⃣ Mock interview using THIS project
+
+👉 Reply with 1, 2, 3, or 4 — we continue 🚀
+
+1 to 4
+
+Perfect, Sarang 💪
+We’ll do ALL 4, in the right order, using the same project so everything connects like real clinical work.
+
+🚀 CONTINUATION: FULL CLINICAL PROJECT (1 → 4)
+✅ 1️⃣ ADD EX (Exposure) + DOSE CHANGE LOGIC
+📄 EX.csv (Exposure)
+USUBJID,EXDOSE,EXSTDTC
+SUBJ001,50,2024-09-01
+SUBJ001,75,2024-09-05
+SUBJ002,100,2024-09-01
+SUBJ003,100,2024-09-01
+SUBJ003,100,2024-09-10
+
+📥 Read EX
+ex = pd.read_csv("data/EX.csv")
+
+🚩 Dose Change Flag
+dose_change = ex.groupby("USUBJID")["EXDOSE"].nunique() \
+                .reset_index(name="DOSE_CHANGE_COUNT")
+
+dose_change["DOSE_CHANGED"] = dose_change["DOSE_CHANGE_COUNT"] \
+                              .apply(lambda x: "Y" if x > 1 else "N")
+
+
+👉 Clinical meaning:
+If subject received more than one dose level, dose was changed.
+
+🔗 Merge Dose Flag to Summary
+summary = summary.merge(
+    dose_change[["USUBJID", "DOSE_CHANGED"]],
+    on="USUBJID",
+    how="left"
+)
+
+summary["DOSE_CHANGED"] = summary["DOSE_CHANGED"].fillna("N")
+
+✅ 2️⃣ CONVERT TO SDTM-STYLE THINKING
+
+You are NOT creating full SDTM, but applying SDTM mindset.
+
+🔹 Domain Mapping
+Domain	Purpose
+DM	Subject-level
+AE	Adverse Events
+CM	Concomitant Medications
+EX	Exposure
+🔹 SDTM-like Rules Applied
+
+USUBJID used everywhere ✅
+
+Subject-level summary derived from events ✅
+
+Flags created (SERIOUS, RESCUE, DOSE CHANGE) ✅
+
+🧠 Interview Line (Important)
+
+“I applied SDTM principles by keeping domain separation and deriving subject-level flags from event-level data.”
+
+✅ 3️⃣ SQL VERSION OF SAME PROJECT (VERY IMPORTANT)
+
+Assume tables: DM, AE, CM, EX
+
+🔹 AE count per subject
+SELECT USUBJID, COUNT(*) AS AE_COUNT
+FROM AE
+GROUP BY USUBJID;
+
+🔹 Any Serious AE
+SELECT USUBJID,
+       CASE WHEN SUM(CASE WHEN AESER = 'Y' THEN 1 ELSE 0 END) > 0
+            THEN 'Y' ELSE 'N' END AS ANY_SERIOUS_AE
+FROM AE
+GROUP BY USUBJID;
+
+🔹 Rescue Medication Flag
+SELECT USUBJID,
+       CASE WHEN SUM(CASE 
+            WHEN UPPER(MEDNAME) IN ('IBUPROFEN','DICLOFENAC') 
+            THEN 1 ELSE 0 END) > 0
+       THEN 'Y' ELSE 'N' END AS USED_RESCUE_MED
+FROM CM
+GROUP BY USUBJID;
+
+🔹 Dose Change Flag
+SELECT USUBJID,
+       CASE WHEN COUNT(DISTINCT EXDOSE) > 1
+            THEN 'Y' ELSE 'N' END AS DOSE_CHANGED
+FROM EX
+GROUP BY USUBJID;
+
+
+👉 Interview Tip:
+
+“I can translate pandas logic directly into SQL for database validation.”
+
+✅ 4️⃣ MOCK INTERVIEW (BASED ON THIS PROJECT)
+❓ Q1: Why LEFT JOIN instead of INNER JOIN?
+
+Answer:
+To retain all AE/CM records even if demographic data is missing.
+
+❓ Q2: How did you identify dose change?
+
+Answer:
+By counting distinct dose values per subject in EX data.
+
+❓ Q3: How do you flag rescue medication?
+
+Answer:
+Using a predefined rescue medication list and checking subject-level usage.
+
+❓ Q4: Difference between event-level and subject-level data?
+
+Answer:
+Event-level contains multiple records per subject (AE, CM), while subject-level summarizes them (DM).
+
+❓ Q5: How would this help in FDA review?
+
+Answer:
+It helps quickly identify subjects with serious AEs, rescue medication use, and dose changes.
+
+🏁 FINAL OUTPUT (SUBJECT_SUMMARY)
+USUBJID	AGE	SEX	AE_COUNT	ANY_SERIOUS_AE	USED_RESCUE_MED	DOSE_CHANGED
+SUBJ001	45	M	1	N	N	Y
+SUBJ002	60	F	2	Y	Y	N
+SUBJ003	70	M	1	Y	Y	N
+SUBJ004	30	F	0	N	N	N
+🎯 YOU ARE NOW AT:
+
+✅ Strong Python basics
+✅ Pandas + SQL
+✅ Clinical domain logic
+✅ Interview-ready explanations
+
+🚀 NEXT (FINAL OPTIONS)
+
+If you want, next I can:
+1️⃣ Do full mock interview (live Q&A)
+2️⃣ Give assignment-style test (with answers)
+3️⃣ Move to ADaM-style derivations
+4️⃣ Help you build a resume project description
+
+👉 Tell me next step number and we go 🔥
+
+3
+
+Excellent choice, Sarang 🔥
+This is advanced + interview-gold level.
+
+I’ll teach ADaM-style derivations in lemon language, with clinical thinking, clear rules, and Python examples — not theory only.
+
+🧠 WHAT IS ADaM? (Very Simple)
+
+👉 ADaM = Analysis Data Model
+
+SDTM → raw, event-level
+
+ADaM → analysis-ready, subject-level
+
+💡 One subject = one row (mostly)
+💡 Used by statisticians & FDA reviewers
+
+🔄 SDTM vs ADaM (Must Know)
+SDTM	ADaM
+Many rows per subject	One row per subject
+AE, CM, EX events	Summary variables
+Collection focused	Analysis focused
+
+📌 Interview line:
+
+“ADaM datasets are derived from SDTM to support statistical analysis with traceability.”
+
+🎯 OUR GOAL: CREATE ADSL (Subject-Level ADaM)
+
+ADSL = one record per subject
+
+We will derive:
+
+Variable	Meaning
+TRTFL	Treated or not
+SAFFL	Safety population
+ANYSAE	Any serious AE
+ANYAE	Any AE
+RESCUEFL	Used rescue medication
+DOSECHG	Dose changed
+AGEGR1	Age group
+📥 INPUT DATA (Already Have)
+
+DM (Demographics)
+
+AE (Adverse Events)
+
+CM (Medications)
+
+EX (Exposure)
+
+🧱 STEP 1: START WITH DM (Base of ADSL)
+adsl = dm.copy()
+
+
+👉 DM is always the base for ADSL.
+
+🧪 STEP 2: TREATMENT FLAGS (Very Important)
+TRTFL – Subject received at least one dose
+trtfl = ex.groupby("USUBJID").size().reset_index(name="N_EX")
+trtfl["TRTFL"] = trtfl["N_EX"].apply(lambda x: "Y" if x > 0 else "N")
+
+SAFFL – Safety population
+
+📌 Usually:
+
+TRTFL = Y AND at least one AE
+
+aefl = ae.groupby("USUBJID").size().reset_index(name="N_AE")
+
+saffl = pd.merge(trtfl, aefl, on="USUBJID", how="left").fillna(0)
+saffl["SAFFL"] = saffl.apply(
+    lambda x: "Y" if x["N_EX"] > 0 and x["N_AE"] > 0 else "N",
+    axis=1
+)
+
+🚨 STEP 3: AE FLAGS (Core ADaM Logic)
+ANYAE – Any adverse event
+anyae = ae.groupby("USUBJID").size().reset_index(name="N_AE")
+anyae["ANYAE"] = "Y"
+
+ANYSAE – Any serious AE
+anysae = ae.groupby("USUBJID")["AESER"].apply(
+    lambda x: "Y" if "Y" in x.values else "N"
+).reset_index(name="ANYSAE")
+
+💊 STEP 4: RESCUE MEDICATION FLAG
+rescue = cm.groupby("USUBJID")["RESCUE_FLAG"].apply(
+    lambda x: "Y" if "Y" in x.values else "N"
+).reset_index(name="RESCUEFL")
+
+💉 STEP 5: DOSE CHANGE FLAG
+dosechg = ex.groupby("USUBJID")["EXDOSE"].nunique().reset_index()
+dosechg["DOSECHG"] = dosechg["EXDOSE"].apply(
+    lambda x: "Y" if x > 1 else "N"
+)
+dosechg = dosechg[["USUBJID", "DOSECHG"]]
+
+👵 STEP 6: AGE GROUP DERIVATION (Classic ADaM)
+def age_group(age):
+    if age < 18:
+        return "PED"
+    elif age < 65:
+        return "ADULT"
+    else:
+        return "ELDERLY"
+
+adsl["AGEGR1"] = adsl["AGE"].apply(age_group)
+
+🔗 STEP 7: MERGE EVERYTHING INTO ADSL
+adsl = adsl.merge(trtfl[["USUBJID","TRTFL"]], on="USUBJID", how="left") \
+           .merge(saffl[["USUBJID","SAFFL"]], on="USUBJID", how="left") \
+           .merge(anyae[["USUBJID","ANYAE"]], on="USUBJID", how="left") \
+           .merge(anysae, on="USUBJID", how="left") \
+           .merge(rescue, on="USUBJID", how="left") \
+           .merge(dosechg, on="USUBJID", how="left")
+
+🧹 STEP 8: CLEANUP (ADaM Standard)
+adsl = adsl.fillna({
+    "ANYAE": "N",
+    "ANYSAE": "N",
+    "RESCUEFL": "N",
+    "DOSECHG": "N",
+    "TRTFL": "N",
+    "SAFFL": "N"
+})
+
+📊 FINAL ADSL OUTPUT (Example)
+USUBJID	AGE	SEX	AGEGR1	TRTFL	SAFFL	ANYAE	ANYSAE	RESCUEFL	DOSECHG
+SUBJ001	45	M	ADULT	Y	Y	Y	N	N	Y
+SUBJ002	60	F	ADULT	Y	Y	Y	Y	Y	N
+SUBJ003	70	M	ELDERLY	Y	Y	Y	Y	Y	N
+SUBJ004	30	F	ADULT	N	N	N	N	N	N
+🎤 INTERVIEW QUESTIONS (VERY IMPORTANT)
+❓ Why ADSL is important?
+
+Answer:
+Because it provides a single analysis-ready record per subject for safety and efficacy analysis.
+
+❓ Difference between ANYAE and ANYSAE?
+
+Answer:
+ANYAE flags occurrence of any adverse event, while ANYSAE flags at least one serious adverse event.
+
+❓ Why DM is base for ADSL?
+
+Answer:
+Because it contains one unique record per subject.
+
+🏁 YOU ARE NOW:
+
+✅ Python + Pandas strong
+✅ SDTM logic clear
+✅ ADaM derivations done
+✅ Interview-ready at mid–senior level
+
+
+🟢 1️⃣ ADAE (AE-Level ADaM)
+🎯 Goal
+
+Keep one row per AE event per subject
+
+Add derived flags for analysis
+
+Add baseline info (age, sex, treatment)
+
+📥 STEP 1: Start from AE + DM + EX
+import pandas as pd
+
+# Read datasets
+dm = pd.read_csv("data/DM.csv")
+ae = pd.read_csv("data/AE.csv")
+ex = pd.read_csv("data/EX.csv")
+cm = pd.read_csv("data/CM.csv")
+
+🧱 STEP 2: Merge AE with DM
+adae = pd.merge(ae, dm, on="USUBJID", how="left")
+
+
+Now each AE has subject info.
+
+🚩 STEP 3: Add Flags
+3.1 TRTFL – Treated Subject
+trtfl = ex.groupby("USUBJID").size().reset_index(name="N_EX")
+trtfl["TRTFL"] = trtfl["N_EX"].apply(lambda x: "Y" if x > 0 else "N")
+
+adae = adae.merge(trtfl[["USUBJID","TRTFL"]], on="USUBJID", how="left")
+adae["TRTFL"] = adae["TRTFL"].fillna("N")
+
+3.2 SAEFL – Serious AE Flag
+adae["SAEFL"] = adae["AESER"].apply(lambda x: "Y" if x=="Y" else "N")
+
+3.3 Age Group
+def age_group(age):
+    if age < 18:
+        return "PED"
+    elif age < 65:
+        return "ADULT"
+    else:
+        return "ELDERLY"
+
+adae["AGEGR1"] = adae["AGE"].apply(age_group)
+
+📊 STEP 4: OPTIONAL DERIVED VARIABLES
+
+AESTDTC – Start date
+
+AEENDTC – End date
+
+AESEQ – Sequence number per subject
+
+adae = adae.sort_values(["USUBJID", "AEDECOD"])
+adae["AESEQ"] = adae.groupby("USUBJID").cumcount() + 1
+
+📤 STEP 5: EXPORT ADAE
+adae.to_excel("output/ADAE.xlsx", index=False)
+
+
+✅ Now you have AE-level ADaM, ready for analysis.
+
+🟡 2️⃣ ADCM (Medication-Level ADaM)
+🎯 Goal
+
+Keep one row per medication event per subject
+
+Add rescue medication flags, dose change info
+
+Add baseline info
+
+📥 STEP 1: Merge CM + DM + EX
+adcm = pd.merge(cm, dm, on="USUBJID", how="left")
+
+🚩 STEP 2: Add Flags
+2.1 Rescue Medication Flag
+def rescue_med(med):
+    rescue_list = ["IBUPROFEN", "DICLOFENAC"]
+    return "Y" if med.upper() in rescue_list else "N"
+
+adcm["RESCUEFL"] = adcm["MEDNAME"].apply(rescue_med)
+
+2.2 Dose Change Flag
+dosechg = ex.groupby("USUBJID")["EXDOSE"].nunique().reset_index()
+dosechg["DOSECHG"] = dosechg["EXDOSE"].apply(lambda x: "Y" if x>1 else "N")
+
+adcm = adcm.merge(dosechg[["USUBJID","DOSECHG"]], on="USUBJID", how="left")
+adcm["DOSECHG"] = adcm["DOSECHG"].fillna("N")
+
+2.3 Treatment Flag
+trtfl = ex.groupby("USUBJID").size().reset_index(name="N_EX")
+trtfl["TRTFL"] = trtfl["N_EX"].apply(lambda x: "Y" if x>0 else "N")
+
+adcm = adcm.merge(trtfl[["USUBJID","TRTFL"]], on="USUBJID", how="left")
+adcm["TRTFL"] = adcm["TRTFL"].fillna("N")
+
+2.4 Age Group
+adcm["AGEGR1"] = adcm["AGE"].apply(age_group)
+
+📊 STEP 3: Sequence Number per subject
+adcm = adcm.sort_values(["USUBJID", "MEDNAME"])
+adcm["CMSEQ"] = adcm.groupby("USUBJID").cumcount() + 1
+
+📤 STEP 4: EXPORT ADCM
+adcm.to_excel("output/ADCM.xlsx", index=False)
+
+
+✅ Now you have Medication-level ADaM, ready for analysis.
+
+🏁 SUMMARY
+Dataset	Rows	Columns	Key Purpose
+ADSL	1 row per subject	Subject-level flags	Safety / analysis base
+ADAE	1 row per AE event	SAE, TRTFL, AGEGR1, AESEQ	AE analysis
+ADCM	1 row per CM event	RESCUEFL, DOSECHG, AGEGR1	Medication analysis
+🎤 INTERVIEW QUESTIONS
+
+Q1: Difference between ADAE & ADCM?
+
+ADAE = event-level for adverse events, ADCM = event-level for medication.
+
+Q2: Why sequence numbers (AESEQ / CMSEQ)?
+
+To preserve chronological order and uniqueness per subject.
+
+Q3: Why add TRTFL & AGEGR1?
+
+TRTFL = identify treated subjects, AGEGR1 = group subjects for analysis.
+
+Q4: How dose changes are derived?
+
+By counting distinct EXDOSE values per subject.
+
+🟢 FULL ADaM DERIVATION WORKFLOW
+
+We will create three datasets:
+
+ADSL – Subject-level dataset
+
+ADAE – AE-level dataset
+
+ADCM – Medication-level dataset
+
+All derived from DM, AE, CM, EX.
+
+📁 1️⃣ MOCK INPUT DATA
+DM.csv
+USUBJID,AGE,SEX
+SUBJ001,45,M
+SUBJ002,60,F
+SUBJ003,70,M
+SUBJ004,30,F
+
+AE.csv
+USUBJID,AEDECOD,AESER
+SUBJ001,HEADACHE,N
+SUBJ002,NAUSEA,Y
+SUBJ002,DIZZINESS,N
+SUBJ003,HYPERTENSION,Y
+
+CM.csv
+USUBJID,MEDNAME,DOSE
+SUBJ001,Paracetamol,500
+SUBJ002,Ibuprofen,400
+SUBJ003,Diclofenac,50
+SUBJ004,Aspirin,300
+
+EX.csv
+USUBJID,EXDOSE,EXSTDTC
+SUBJ001,50,2024-09-01
+SUBJ001,75,2024-09-05
+SUBJ002,100,2024-09-01
+SUBJ003,100,2024-09-01
+SUBJ003,100,2024-09-10
+
+🧩 2️⃣ IMPORT LIBRARIES & READ FILES
+import pandas as pd
+
+dm = pd.read_csv("data/DM.csv")
+ae = pd.read_csv("data/AE.csv")
+cm = pd.read_csv("data/CM.csv")
+ex = pd.read_csv("data/EX.csv")
+
+🟢 3️⃣ DERIVE ADSL (SUBJECT-LEVEL)
+Step 1: Base dataset
+adsl = dm.copy()
+
+Step 2: Age group
+def age_group(age):
+    if age < 18:
+        return "PED"
+    elif age < 65:
+        return "ADULT"
+    else:
+        return "ELDERLY"
+
+adsl["AGEGR1"] = adsl["AGE"].apply(age_group)
+
+Step 3: Treatment flag (TRTFL)
+trtfl = ex.groupby("USUBJID").size().reset_index(name="N_EX")
+trtfl["TRTFL"] = trtfl["N_EX"].apply(lambda x: "Y" if x>0 else "N")
+adsl = adsl.merge(trtfl[["USUBJID","TRTFL"]], on="USUBJID", how="left")
+adsl["TRTFL"] = adsl["TRTFL"].fillna("N")
+
+Step 4: Safety population (SAFFL)
+aefl = ae.groupby("USUBJID").size().reset_index(name="N_AE")
+saffl = pd.merge(trtfl, aefl, on="USUBJID", how="left").fillna(0)
+saffl["SAFFL"] = saffl.apply(lambda x: "Y" if x["N_EX"]>0 and x["N_AE"]>0 else "N", axis=1)
+adsl = adsl.merge(saffl[["USUBJID","SAFFL"]], on="USUBJID", how="left")
+
+Step 5: AE flags
+anyae = ae.groupby("USUBJID").size().reset_index(name="N_AE")
+anyae["ANYAE"] = "Y"
+anysae = ae.groupby("USUBJID")["AESER"].apply(lambda x: "Y" if "Y" in x.values else "N").reset_index(name="ANYSAE")
+adsl = adsl.merge(anyae[["USUBJID","ANYAE"]], on="USUBJID", how="left")
+adsl = adsl.merge(anysae, on="USUBJID", how="left")
+
+Step 6: Rescue medication flag
+cm["MEDNAME"] = cm["MEDNAME"].str.upper()
+def rescue_med(med): return "Y" if med in ["IBUPROFEN","DICLOFENAC"] else "N"
+cm["RESCUE_FLAG"] = cm["MEDNAME"].apply(rescue_med)
+rescue_flag = cm.groupby("USUBJID")["RESCUE_FLAG"].apply(lambda x: "Y" if "Y" in x.values else "N").reset_index(name="RESCUEFL")
+adsl = adsl.merge(rescue_flag, on="USUBJID", how="left")
+
+Step 7: Dose change flag
+dosechg = ex.groupby("USUBJID")["EXDOSE"].nunique().reset_index()
+dosechg["DOSECHG"] = dosechg["EXDOSE"].apply(lambda x: "Y" if x>1 else "N")
+dosechg = dosechg[["USUBJID","DOSECHG"]]
+adsl = adsl.merge(dosechg, on="USUBJID", how="left")
+
+Step 8: Fill missing flags
+adsl.fillna({"ANYAE":"N","ANYSAE":"N","RESCUEFL":"N","DOSECHG":"N","TRTFL":"N","SAFFL":"N"}, inplace=True)
+
+
+✅ ADSL ready – 1 row per subject
+
+🟡 4️⃣ DERIVE ADAE (AE-LEVEL)
+Step 1: Merge AE with DM
+adae = pd.merge(ae, dm, on="USUBJID", how="left")
+
+Step 2: Add SAE flag
+adae["SAEFL"] = adae["AESER"].apply(lambda x: "Y" if x=="Y" else "N")
+
+Step 3: Add TRTFL
+adae = adae.merge(trtfl[["USUBJID","TRTFL"]], on="USUBJID", how="left")
+adae["TRTFL"] = adae["TRTFL"].fillna("N")
+
+Step 4: Age group
+adae["AGEGR1"] = adae["AGE"].apply(age_group)
+
+Step 5: AESEQ – sequence number per subject
+adae = adae.sort_values(["USUBJID","AEDECOD"])
+adae["AESEQ"] = adae.groupby("USUBJID").cumcount()+1
+
+
+✅ ADAE ready – 1 row per AE
+
+🔵 5️⃣ DERIVE ADCM (MEDICATION-LEVEL)
+Step 1: Merge CM with DM
+adcm = pd.merge(cm, dm, on="USUBJID", how="left")
+
+Step 2: Rescue medication flag
+adcm["RESCUEFL"] = adcm["MEDNAME"].apply(rescue_med)
+
+Step 3: Dose change flag
+adcm = adcm.merge(dosechg, on="USUBJID", how="left")
+adcm["DOSECHG"] = adcm["DOSECHG"].fillna("N")
+
+Step 4: TRTFL
+adcm = adcm.merge(trtfl[["USUBJID","TRTFL"]], on="USUBJID", how="left")
+adcm["TRTFL"] = adcm["TRTFL"].fillna("N")
+
+Step 5: Age group
+adcm["AGEGR1"] = adcm["AGE"].apply(age_group)
+
+Step 6: CMSEQ – sequence per subject
+adcm = adcm.sort_values(["USUBJID","MEDNAME"])
+adcm["CMSEQ"] = adcm.groupby("USUBJID").cumcount()+1
+
+
+✅ ADCM ready – 1 row per medication
+
+📤 6️⃣ EXPORT ALL DATASETS
+adsl.to_excel("output/ADSL.xlsx", index=False)
+adae.to_excel("output/ADAE.xlsx", index=False)
+adcm.to_excel("output/ADCM.xlsx", index=False)
+
+🏁 FINAL OUTPUT OVERVIEW
+Dataset	Rows	Columns	Purpose
+ADSL	1 row per subject	Age, Sex, TRTFL, SAFFL, ANYAE, ANYSAE, RESCUEFL, DOSECHG, AGEGR1	Subject-level summary
+ADAE	1 row per AE	AEDECOD, AESER, SAEFL, TRTFL, AGEGR1, AESEQ	Event-level AE analysis
+ADCM	1 row per CM	MEDNAME, DOSE, RESCUEFL, DOSECHG, TRTFL, AGEGR1, CMSEQ	Event-level medication analysis
+🎤 INTERVIEW QUESTIONS (ADSL + ADAE + ADCM)
+
+Why start ADSL from DM?
+
+Difference between ADAE and ADSL?
+
+Why do we need sequence numbers (AESEQ / CMSEQ)?
+
+How do you flag serious AE or rescue medication?
+
+Why fill missing flags with “N”?
+
+How do these ADaM datasets help statisticians?
+

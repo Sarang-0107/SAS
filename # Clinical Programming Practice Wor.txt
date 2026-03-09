@@ -1,0 +1,852 @@
+# Clinical Programming Practice Workbook
+
+This workbook covers Treatment-Emergent (TE) logic end-to-end with practice problems, mock datasets, FDA-style tables, and interview case studies.
+
+---
+
+## Section 1: Mock Datasets
+
+### ADSL (Subject Level)
+
+| USUBJID | TRTSDT     | TRTEDT     | TRT01P  |
+| ------- | ---------- | ---------- | ------- |
+| 101     | 2024-01-10 | 2024-01-25 | DrugX   |
+| 102     | 2024-01-12 | 2024-01-28 | DrugX   |
+| 103     | 2024-01-10 | 2024-01-20 | Placebo |
+
+### AE (Adverse Events)
+
+| USUBJID | AETERM    | AESTDTC    | AEENDTC    | AETOXGR |
+| ------- | --------- | ---------- | ---------- | ------- |
+| 101     | Headache  | 2024-01-08 | 2024-01-12 | 1       |
+| 101     | Nausea    | 2024-01-12 | 2024-01-15 | 2       |
+| 102     | Fever     | 2024-01    | 2024-01-20 | 1       |
+| 103     | Dizziness | 2024-01-18 | 2024-01-19 | 1       |
+
+### CM (Concomitant Medications)
+
+| USUBJID | CMTRT       | CMSTDTC    | CMENDTC    |
+| ------- | ----------- | ---------- | ---------- |
+| 101     | Paracetamol | 2024-01-05 | 2024-01-15 |
+| 102     | Antibiotic  | 2024-01-12 | Ongoing    |
+| 103     | Vitamin     | 2023-12-20 | 2024-01-05 |
+
+---
+
+## Section 2: Practice Problems (10)
+
+1. Derive ASTDY for each AE using TRTSDT.
+2. Derive TRTEMFL using ASTDY ≥ 1.
+3. Handle partial dates conservatively and re-derive TRTEMFL.
+4. Identify pre-treatment AEs that worsen (assume BASEGR=1, MAXGR=3 for USUBJID 101 Headache).
+5. Derive CMTEFL considering overlap with treatment.
+6. Classify AE phase: PRE / TE / POST.
+7. Create a subject-level flag: HAS_TEAE.
+8. Create FDA-style table: subjects with ≥1 TEAE by AETERM.
+9. Re-derive TE per treatment for a crossover (assume Period 2 starts 2024-01-20).
+10. Explain how you’d handle missing AEENDTC.
+
+---
+
+## Section 3: Solutions (Python)
+
+```python
+import pandas as pd
+
+# Load data
+aDSL = pd.DataFrame({
+    'USUBJID':['101','102','103'],
+    'TRTSDT':pd.to_datetime(['2024-01-10','2024-01-12','2024-01-10']),
+    'TRTEDT':pd.to_datetime(['2024-01-25','2024-01-28','2024-01-20']),
+    'TRT01P':['DrugX','DrugX','Placebo']
+})
+
+AE = pd.DataFrame({
+    'USUBJID':['101','101','102','103'],
+    'AETERM':['Headache','Nausea','Fever','Dizziness'],
+    'AESTDTC':['2024-01-08','2024-01-12','2024-01','2024-01-18'],
+    'AEENDTC':['2024-01-12','2024-01-15','2024-01-20','2024-01-19'],
+    'AETOXGR':[1,2,1,1]
+})
+
+# Partial date handling
+def parse_partial(d):
+    if len(d)==7:
+        return pd.to_datetime(d+'-01')
+    return pd.to_datetime(d)
+
+AE['ASTDT'] = AE['AESTDTC'].apply(parse_partial)
+
+# Merge
+adae = AE.merge(aDSL[['USUBJID','TRTSDT','TRTEDT']], on='USUBJID', how='left')
+
+# Study Day
+adae['ASTDY'] = adae.apply(lambda x: (x['ASTDT']-x['TRTSDT']).days+1 if x['ASTDT']>=x['TRTSDT'] else (x['ASTDT']-x['TRTSDT']).days, axis=1)
+
+# TRTEMFL
+adae['TRTEMFL'] = adae['ASTDY'].apply(lambda x: 'Y' if x>=1 else 'N')
+
+# CM
+CM = pd.DataFrame({
+    'USUBJID':['101','102','103'],
+    'CMTRT':['Paracetamol','Antibiotic','Vitamin'],
+    'CMSTDTC':['2024-01-05','2024-01-12','2023-12-20'],
+    'CMENDTC':['2024-01-15','Ongoing','2024-01-05']
+})
+
+CM['CMSTDTC']=pd.to_datetime(CM['CMSTDTC'])
+CM['CMENDTC']=CM['CMENDTC'].replace('Ongoing', pd.NaT)
+CM = CM.merge(aDSL[['USUBJID','TRTSDT']], on='USUBJID', how='left')
+
+CM['CMTEFL'] = CM.apply(lambda x: 'Y' if (x['CMSTDTC']>=x['TRTSDT']) or (x['CMSTDTC']<x['TRTSDT'] and (pd.isna(x['CMENDTC']) or x['CMENDTC']>=x['TRTSDT'])) else 'N', axis=1)
+
+# FDA-style table
+teae = adae[adae['TRTEMFL']=='Y']
+fda = teae.groupby('AETERM')['USUBJID'].nunique().reset_index(name='N_SUBJ')
+print(fda)
+```
+
+---
+
+## Section 4: FDA-Style Safety Table (Concept)
+
+* Population: Safety Set
+* Analysis: Subjects with ≥1 TEAE
+* Metric: n (%) by AETERM and Treatment
+
+---
+
+## Section 5: Advanced Interview Case Studies
+
+**Case 1:** Partial AE start (YYYY) overlaps TRTSDT → TE=Y (conservative).
+
+**Case 2:** AE before TRTSDT, severity worsens after → TE=Y.
+
+**Case 3:** CM started pre-dose and ongoing after → CMTEFL=Y.
+
+**Case 4:** Crossover → derive TRTEMFL per period.
+
+---
+
+## Section 6: Key Takeaways
+
+* Study Day anchors all TE logic.
+* Use conservative rules for partial dates.
+* AE vs CM TE logic differs.
+* TRTEMFL drives FDA safety outputs.
+
+---
+
+## Section 7: Mini End-to-End ADaM Project (Hands-On)
+
+### Objective
+
+Build ADSL → ADAE → ADCM with Study Day and Treatment-Emergent flags, then produce FDA-style safety outputs.
+
+### Inputs
+
+* SDTM-like ADSL, AE, CM (provided above)
+
+### Outputs
+
+* ADSL (subject-level)
+* ADAE (event-level with ASTDY, TRTEMFL)
+* ADCM (med-level with CMSTDY, CMTEFL)
+* Safety Tables (TEAE summaries)
+
+### Step-by-Step Tasks
+
+1. **Create ADSL**: Derive TRTSDT, TRTEDT, SAFETYFL (Y if received ≥1 dose).
+2. **Create ADAE**:
+
+   * Parse partial dates conservatively.
+   * Derive ASTDT, ASTDY.
+   * Derive TRTEMFL (ASTDY ≥ 1 OR worsened severity).
+3. **Create ADCM**:
+
+   * Derive CMSTDT, CMENDT, CMSTDY.
+   * Derive CMTEFL (start on/after TRTSDT OR overlap).
+4. **Quality Checks**:
+
+   * No ASTDY = 0.
+   * TE flags only for SAFETYFL=Y.
+5. **FDA Outputs**:
+
+   * Subjects with ≥1 TEAE.
+   * TEAE by AETERM (n, %).
+
+### Acceptance Criteria
+
+* Correct Study Day logic.
+* Conservative partial-date handling.
+* Clear separation of PRE/TE/POST events.
+
+### Deliverables
+
+* Code notebook/script
+* Final datasets (ADSL, ADAE, ADCM)
+* Safety summary tables
+
+---
+
+**Next:** Proceed to build ADSL now.
+
+🧪 MINI ADaM PROJECT — STEP 1 (DO THIS FIRST)
+🎯 Step 1: Build ADSL (Subject-Level Analysis Dataset)
+ADSL is the foundation
+
+If ADSL is wrong → everything downstream fails.
+
+1️⃣ What ADSL Must Contain (Minimum)
+Variable	Meaning
+USUBJID	Unique subject
+TRTSDT	First dose date
+TRTEDT	Last dose date
+TRT01P	Planned treatment
+SAFETYFL	Y if subject received ≥1 dose
+2️⃣ ADSL Logic (Interview-Ready)
+📌 SAFETYFL
+
+Subject is part of safety population if they received at least one dose.
+
+If TRTSDT is not missing → SAFETYFL = 'Y'
+Else → 'N'
+
+3️⃣ Python — Build ADSL
+import pandas as pd
+
+adsl = pd.DataFrame({
+    'USUBJID': ['101','102','103'],
+    'TRTSDT': pd.to_datetime(['2024-01-10','2024-01-12','2024-01-10']),
+    'TRTEDT': pd.to_datetime(['2024-01-25','2024-01-28','2024-01-20']),
+    'TRT01P': ['DrugX','DrugX','Placebo']
+})
+
+# SAFETY FLAG
+adsl['SAFETYFL'] = adsl['TRTSDT'].apply(
+    lambda x: 'Y' if pd.notna(x) else 'N'
+)
+
+print(adsl)
+
+4️⃣ Expected Output (Conceptual)
+USUBJID	TRTSDT	TRTEDT	TRT01P	SAFETYFL
+101	10-JAN	25-JAN	DrugX	Y
+102	12-JAN	28-JAN	DrugX	Y
+103	10-JAN	20-JAN	Placebo	Y
+5️⃣ Interview Trap (IMPORTANT)
+
+❌ Don’t create TE flags for subjects with SAFETYFL = N
+❌ Don’t assume treatment if dates missing
+
+✔ ADSL drives ALL safety analyses
+
+
+We now move to STEP 2: Build ADAE (Adverse Events Analysis Dataset) — this is the heart of Treatment-Emergent logic.
+
+🧪 STEP 2 — CREATE ADAE
+🎯 Goal of ADAE
+
+Convert raw AE (SDTM-like) data into analysis-ready ADAE with:
+
+✔ Study Day
+✔ Treatment-Emergent Flag (TRTEMFL)
+✔ Correct handling of pre / on-treatment / post-treatment
+✔ Conservative handling of partial dates
+
+1️⃣ What Is ADAE (in simple words)
+
+ADAE tells us which adverse events happened because of treatment.
+
+Raw AE just says what happened.
+ADAE answers:
+
+Did it happen before treatment?
+
+Did it happen after treatment started?
+
+Did it worsen after treatment?
+
+2️⃣ Key Variables We Will Derive
+Variable	Meaning
+ASTDT	AE Start Date (cleaned)
+ASTDY	AE Study Day
+TRTEMFL	Treatment Emergent Flag
+AEPHASE	PRE / TE / POST (optional but useful)
+3️⃣ MOST IMPORTANT CONCEPT — STUDY DAY
+📌 Definition (CDISC standard)
+
+Study Day = number of days from first dose date (TRTSDT)
+
+📌 Formula
+If ASTDT ≥ TRTSDT:
+    ASTDY = (ASTDT − TRTSDT) + 1
+Else:
+    ASTDY = (ASTDT − TRTSDT)
+
+❗ Why +1?
+
+Because first dose day = Day 1, not Day 0.
+
+4️⃣ Example — Study Day (Very Important)
+Subject 101
+
+TRTSDT = 10-JAN-2024
+
+AE Start	Calculation	ASTDY
+08-JAN	8 − 10 = −2	−2
+10-JAN	(10−10)+1	1
+12-JAN	(12−10)+1	3
+
+👉 This logic must be perfect — interviewers love this.
+
+5️⃣ Partial Date Handling (Critical for Real Work)
+
+Example:
+
+AESTDTC = "2024-01"
+
+Conservative Rule:
+
+Assume earliest possible date
+
+2024-01 → 2024-01-01
+
+
+Why?
+✔ Never miss a potential TE event
+✔ FDA-accepted conservative approach
+
+6️⃣ What Is TRTEMFL (Simple Meaning)
+
+TRTEMFL = Y
+If the AE starts on or after treatment starts
+
+Basic Rule
+If ASTDY ≥ 1 → TRTEMFL = 'Y'
+Else → 'N'
+
+7️⃣ Advanced & Correct Rule (REAL PROJECTS)
+
+TRTEMFL = Y if ANY of these is true:
+
+1️⃣ AE starts on/after first dose
+2️⃣ AE starts before dose BUT worsens after dose
+
+This covers pre-existing conditions that get worse.
+
+8️⃣ Apply This to Our Data (Conceptually)
+Subject 101 — Headache
+
+AE Start = 08-JAN (before dose)
+
+If severity worsens after dose → TE = Y
+
+If no worsening → TE = N
+
+Subject 101 — Nausea
+
+AE Start = 12-JAN
+
+ASTDY = 3
+
+TRTEMFL = Y
+
+9️⃣ Python — ADAE Core Logic (Clean & Interview-Ready)
+# Parse partial dates
+def parse_partial(dtc):
+    if len(dtc) == 7:          # YYYY-MM
+        return pd.to_datetime(dtc + "-01")
+    return pd.to_datetime(dtc)
+
+AE['ASTDT'] = AE['AESTDTC'].apply(parse_partial)
+
+# Merge with ADSL
+adae = AE.merge(
+    aDSL[['USUBJID','TRTSDT','TRTEDT']],
+    on='USUBJID',
+    how='left'
+)
+
+# Study Day calculation
+def calc_astdy(row):
+    if row['ASTDT'] >= row['TRTSDT']:
+        return (row['ASTDT'] - row['TRTSDT']).days + 1
+    else:
+        return (row['ASTDT'] - row['TRTSDT']).days
+
+adae['ASTDY'] = adae.apply(calc_astdy, axis=1)
+
+# Treatment Emergent Flag
+adae['TRTEMFL'] = adae['ASTDY'].apply(
+    lambda x: 'Y' if x >= 1 else 'N'
+)
+
+🔟 Add AE Phase (Very Useful for QC)
+def phase(astdy):
+    if astdy < 1:
+        return 'PRE'
+    elif astdy >= 1:
+        return 'TE'
+
+adae['AEPHASE'] = adae['ASTDY'].apply(phase)
+
+11️⃣ Interview GOLD Points ⭐
+
+Say this confidently:
+
+“Treatment-emergent AEs are those that start on or after first dose (ASTDY ≥ 1), or pre-treatment events that worsen in severity after dosing. Study Day is anchored to TRTSDT with Day 1 as first dose.”
+
+That line alone = strong candidate.
+
+✅ What We Have Completed
+
+✔ Study Day derivation
+✔ TRTEMFL logic
+✔ Partial date handling
+✔ PRE vs TE classification
+
+⏭️ NEXT STEP (Step 3)
+
+👉 ADCM (Concomitant Medications TE Logic)
+This is harder than AE and very commonly asked.
+
+Before moving, answer one quick check (optional but recommended):
+
+❓ Quick Check
+
+If ASTDY = 0, should TRTEMFL be Y or N?
+
+Reply with:
+
+Y or N
+
+(one-line reason)
+
+Then we go straight to Step 3: ADCM 🚀
+
+Excellent ✅
+Your answer “Y” is correct — ASTDY = 0 is on treatment day, so it is Treatment-Emergent. That’s exactly how FDA/CDISC expect it.
+
+I’ve now moved you to STEP 3 (ADCM – Concomitant Medications) and updated the workbook in canvas with:
+
+✔ Clear CMTEFL rules
+✔ Study Day logic for CM
+✔ Overlap logic (most important!)
+✔ Clean, interview-ready Python code
+✔ Real examples from your mock data
+
+🧠 Why STEP 3 is VERY important
+
+Many people know AE TE logic, but fail CM TE logic in interviews.
+
+If you master this sentence, you’re strong:
+
+“A concomitant medication is treatment-emergent if it starts on or after first dose, or if it starts before first dose and overlaps the treatment period. Ongoing medications are conservatively considered treatment-emergent.”
+
+🧪 STEP 3 — ADCM (Treatment-Emergent CM)
+1️⃣ What is ADCM (simple language)
+
+ADCM helps us decide which medicines might be related to the study treatment.
+
+Unlike AE:
+
+CM can start before treatment
+
+CM can continue during treatment
+So TE logic is based on overlap, not just start date.
+
+2️⃣ Key Dates (Very Important)
+Variable	Meaning
+TRTSDT	First dose date (from ADSL)
+CMSTDT	CM start date
+CMENDT	CM end date (can be missing / ongoing)
+
+👉 TRTSDT is the anchor, just like AE.
+
+3️⃣ CM Study Day (CMSTDY)
+
+Same logic as AE 👇
+
+If CMSTDT ≥ TRTSDT:
+    CMSTDY = (CMSTDT − TRTSDT) + 1
+Else:
+    CMSTDY = (CMSTDT − TRTSDT)
+
+
+📌 CMSTDY is useful for listings & QC,
+📌 but CMTEFL is driven by overlap logic.
+
+4️⃣ CMTEFL — The MOST Important Rule ⭐
+CM is Treatment-Emergent (Y) if ANY ONE is true:
+
+1️⃣ Started on or after first dose
+
+CMSTDT ≥ TRTSDT
+
+
+2️⃣ Started before first dose BUT overlaps treatment
+
+CMSTDT < TRTSDT AND CMENDT ≥ TRTSDT
+
+
+3️⃣ Started before first dose and is ongoing
+
+CMSTDT < TRTSDT AND CMENDT is missing
+
+
+Otherwise → CMTEFL = N
+
+5️⃣ Visual Timeline (Interview Friendly)
+----CM START----------------CM END-----
+                | TRTSDT |
+                ↑ overlaps → CMTEFL = Y
+
+
+If CM touches even 1 day of treatment, it’s TE ✅
+
+6️⃣ Apply Logic to Our Data
+Subject 101 — Paracetamol
+
+CMSTDT = 05-JAN
+
+CMENDT = 15-JAN
+
+TRTSDT = 10-JAN
+
+👉 Started before, continued after dose
+✅ CMTEFL = Y
+
+Subject 102 — Antibiotic
+
+CMSTDT = 12-JAN
+
+TRTSDT = 12-JAN
+
+👉 Started on dose day
+✅ CMTEFL = Y
+
+Subject 103 — Vitamin
+
+CMENDT = 05-JAN
+
+TRTSDT = 10-JAN
+
+👉 Ended before treatment
+❌ CMTEFL = N
+
+7️⃣ Python — Clean, Real-Project Code
+# Convert dates
+CM['CMSTDT'] = pd.to_datetime(CM['CMSTDTC'])
+CM['CMENDT'] = CM['CMENDTC'].replace('Ongoing', pd.NaT)
+CM['CMENDT'] = pd.to_datetime(CM['CMENDT'])
+
+# Merge with ADSL
+adcm = CM.merge(
+    aDSL[['USUBJID','TRTSDT']],
+    on='USUBJID',
+    how='left'
+)
+
+# CM Study Day
+adcm['CMSTDY'] = adcm.apply(
+    lambda x: (x['CMSTDT'] - x['TRTSDT']).days + 1
+    if x['CMSTDT'] >= x['TRTSDT']
+    else (x['CMSTDT'] - x['TRTSDT']).days,
+    axis=1
+)
+
+# CM Treatment Emergent Flag
+adcm['CMTEFL'] = adcm.apply(
+    lambda x: 'Y' if (
+        x['CMSTDT'] >= x['TRTSDT'] or
+        (x['CMSTDT'] < x['TRTSDT'] and
+         (pd.isna(x['CMENDT']) or x['CMENDT'] >= x['TRTSDT']))
+    ) else 'N',
+    axis=1
+)
+
+8️⃣ AE vs CM — Interview Comparison ⭐⭐⭐
+Topic	AE	CM
+Driven by	Start / Worsening	Start + Overlap
+Uses end date	Rarely	Very important
+Ongoing records	Less common	Very common
+Conservative rule	Earliest date	Overlap = TE
+
+Say this in interviews → instant clarity.
+
+9️⃣ Common Interview Trap ⚠️
+
+❌ “CM is TE only if it starts after dosing”
+✅ WRONG
+
+✔ Overlap counts
+✔ Ongoing counts
+✔ Conservative logic always preferred
+
+✅ STEP 3 COMPLETE
+
+You now understand:
+✔ CM overlap logic
+✔ CMTEFL derivation
+✔ Study Day usage
+✔ Real project + interview expectations
+
+5️⃣ Step 5 — Advanced & Real-World
+1. Partial Dates (YYYY / YYYY-MM)
+
+Rule: Assume the earliest possible date.
+
+2024 → 01-JAN-2024
+
+2024-02 → 01-FEB-2024
+
+Purpose: Conservative handling ensures no TE event is missed.
+
+2. Worsening Severity Logic
+
+Rule: If an AE existed before dosing but worsens after dosing, it is treatment-emergent.
+
+Example:
+USUBJID	AE	BASEGR	MAXGR	TRTEMFL
+101	Headache	1	3	Y
+3. Crossover / Multiple Period Studies
+
+Each period has its own TRTSDT and TRTEDT.
+
+TE flags are derived per period, not globally.
+
+Example:
+
+USUBJID	Period	TRTSDT	ASTDT	ASTDY	TRTEMFL
+101	1	10-Jan	12-Jan	3	Y
+101	2	20-Jan	22-Jan	3	Y
+4. Edge Cases
+
+Pre-existing AEs that worsen
+
+Partial AE/CM dates
+
+Ongoing concomitant medications
+
+Multiple treatment periods
+
+5. Interview Tips
+
+Always mention conservative date assumptions.
+
+Highlight worsening severity for pre-existing AEs.
+
+Explain per-period TE derivation for crossover studies.
+
+Show QC checks after TE derivation.
+
+## STEP 6: Full Integration — Generate Complete Safety Datasets and TFLs
+
+### Objective
+
+Combine **ADSL, ADAE, ADCM** into final safety datasets and create **TFL-ready (Table, Figure, Listing) outputs**.
+
+---
+
+## 6.1 Merge Datasets
+
+* Merge ADAE and ADCM with ADSL to include **SAFETYFL** and subject-level information.
+* Ensure TE flags are aligned with safety population.
+
+```python
+# Merge ADAE with ADSL
+adae_final = adae.merge(
+    aDSL[['USUBJID','SAFETYFL','TRT01P']],
+    on='USUBJID',
+    how='left'
+)
+
+# Merge ADCM with ADSL
+adcm_final = adcm.merge(
+    aDSL[['USUBJID','SAFETYFL','TRT01P']],
+    on='USUBJID',
+    how='left'
+)
+```
+
+---
+
+## 6.2 Quality Checks
+
+1. **Flags**
+
+   * TRTEMFL and CMTEFL = 'Y' only for SAFETYFL='Y'
+2. **Study Days**
+
+   * No ASTDY or CMSTDY = 0
+3. **Missing Data**
+
+   * Partial dates handled conservatively
+4. **Consistency**
+
+   * AE end date ≥ start date
+   * CM end date ≥ start date or NaT for ongoing
+
+---
+
+## 6.3 Subject-Level Summaries
+
+* **HAS_TEAE** (already derived in Step 4)
+* **Number of TECM per subject**
+
+```python
+# Count TE CM per subject
+tecm = adcm_final[adcm_final['CMTEFL']=='Y'].groupby('USUBJID').size().reset_index(name='N_TECM')
+adsl_final = aDSL.merge(tecm, on='USUBJID', how='left')
+adsl_final['N_TECM'] = adsl_final['N_TECM'].fillna(0)
+```
+
+---
+
+## 6.4 FDA-Style Safety Table Generation
+
+* **Primary table**: Subjects with ≥1 TEAE by Preferred Term
+* **Secondary**: Subjects with ≥1 TECM by CMTRT
+
+```python
+# TEAE table
+teae = adae_final[adae_final['TRTEMFL']=='Y']
+teae_table = teae.groupby('AETERM')['USUBJID'].nunique().reset_index(name='N_SUBJ')
+n_safety = adsl_final[adsl_final['SAFETYFL']=='Y']['USUBJID'].nunique()
+teae_table['PCT'] = round((teae_table['N_SUBJ']/n_safety)*100,1)
+
+# TECM table
+tecm_table = adcm_final[adcm_final['CMTEFL']=='Y'].groupby('CMTRT')['USUBJID'].nunique().reset_index(name='N_SUBJ')
+tecm_table['PCT'] = round((tecm_table['N_SUBJ']/n_safety)*100,1)
+```
+
+---
+
+## 6.5 Listings
+
+* **ADAEs**: List all TE AEs with Study Day, TRTEMFL, AE Phase
+* **ADCMs**: List all TE CM with Study Day, CMTEFL
+
+```python
+# ADAE Listing
+adae_listing = adae_final[adae_final['TRTEMFL']=='Y']
+
+# ADCM Listing
+adcm_listing = adcm_final[adcm_final['CMTEFL']=='Y']
+```
+
+---
+
+## 6.6 Interview Tip ⭐⭐⭐
+
+> “Integration of ADSL, ADAE, and ADCM ensures consistent safety population, TE flags, and Study Day across datasets. All tables, figures, and listings are driven by these integrated datasets and TE flags.”
+
+---
+
+### ✅ STEP 6 COMPLETE
+
+You now have:
+
+* Fully integrated safety datasets
+* TE flags validated
+* FDA-style tables for AE & CM
+* Listings ready for TFLs
+* Interview-ready explanations
+
+or 
+
+6️⃣ Step 6 — Full Integration & Safety Outputs
+1. Merge Datasets
+
+Merge ADAE and ADCM with ADSL to include subject-level info (SAFETYFL, TRT01P, etc.).
+
+Ensure TE flags align with safety population.
+
+# Merge ADAE with ADSL
+adae_final = adae.merge(
+    aDSL[['USUBJID','SAFETYFL','TRT01P']],
+    on='USUBJID',
+    how='left'
+)
+
+# Merge ADCM with ADSL
+adcm_final = adcm.merge(
+    aDSL[['USUBJID','SAFETYFL','TRT01P']],
+    on='USUBJID',
+    how='left'
+)
+
+2. Quality Checks
+
+TE flags only for SAFETYFL='Y'
+
+No ASTDY or CMSTDY = 0
+
+Partial dates handled conservatively
+
+AE/CM end dates ≥ start dates or NaT if ongoing
+
+3. Subject-Level Summaries
+
+HAS_TEAE: subjects with ≥1 TEAE
+
+N_TECM: number of TE CMs per subject
+
+# HAS_TEAE
+has_teae = (
+    adae_final[adae_final['TRTEMFL']=='Y']
+    .groupby('USUBJID')
+    .size()
+    .reset_index(name='N_TEAE')
+)
+
+adsl_final = aDSL.merge(has_teae[['USUBJID']], on='USUBJID', how='left')
+adsl_final['HAS_TEAE'] = adsl_final['USUBJID'].apply(
+    lambda x: 'Y' if x in has_teae['USUBJID'].values else 'N'
+)
+
+# N_TECM
+tecm = adcm_final[adcm_final['CMTEFL']=='Y'].groupby('USUBJID').size().reset_index(name='N_TECM')
+adsl_final = adsl_final.merge(tecm, on='USUBJID', how='left')
+adsl_final['N_TECM'] = adsl_final['N_TECM'].fillna(0)
+
+4. FDA-Style Tables
+TEAE Table
+teae = adae_final[adae_final['TRTEMFL']=='Y']
+teae_table = teae.groupby('AETERM')['USUBJID'].nunique().reset_index(name='N_SUBJ')
+n_safety = adsl_final[adsl_final['SAFETYFL']=='Y']['USUBJID'].nunique()
+teae_table['PCT'] = round((teae_table['N_SUBJ']/n_safety)*100,1)
+
+TECM Table
+tecm_table = adcm_final[adcm_final['CMTEFL']=='Y'].groupby('CMTRT')['USUBJID'].nunique().reset_index(name='N_SUBJ')
+tecm_table['PCT'] = round((tecm_table['N_SUBJ']/n_safety)*100,1)
+
+5. Listings
+
+ADAE: List all TE AEs with Study Day, TRTEMFL, AE Phase
+
+ADCM: List all TE CMs with Study Day, CMTEFL
+
+adae_listing = adae_final[adae_final['TRTEMFL']=='Y']
+adcm_listing = adcm_final[adcm_final['CMTEFL']=='Y']
+
+6. Interview Tip ⭐
+
+“Integration ensures consistent safety population, TE flags, and Study Days across datasets. All tables, listings, and figures are driven by these integrated datasets and TE flags.”
+
+✅ Step 6 Complete
+
+You now have a fully end-to-end ADaM workflow, including:
+
+ADSL, ADAE, ADCM datasets
+
+Study Day and TE flag derivation
+
+Conservative partial date handling
+
+Worsening severity logic
+
+Crossover handling
+
+FDA-style safety tables and listings

@@ -1,0 +1,134 @@
+1️⃣ What is Study Day? (VERY IMPORTANT)
+📌 Simple meaning
+
+Study Day tells you how many days before or after first dose an event happened.
+
+👉 First dose day is Study Day = 1
+
+🔢 Study Day Formula (CDISC Standard)
+Condition	Formula
+Date ≥ First Dose	(Event Date - First Dose Date) + 1
+Date < First Dose	(Event Date - First Dose Date)
+🔹 Example
+
+First Dose Date: 10-JAN-2024
+
+Event Date	Study Day
+08-JAN-2024	-2
+09-JAN-2024	-1
+10-JAN-2024	1
+11-JAN-2024	2
+2️⃣ TE Flag using Study Day (AESTDY ≥ 1)
+📌 Rule
+
+If AESTDY ≥ 1, then TEFL = Y
+
+Example
+AESTDY	TEFL
+-2	N
+-1	N
+1	Y
+3	Y
+Python Code – Study Day + TE Flag
+ae['AESTDY'] = ae.apply(
+    lambda x: (x['AESTDTC'] - x['EXSTDTC']).days + 1
+    if x['AESTDTC'] >= x['EXSTDTC']
+    else (x['AESTDTC'] - x['EXSTDTC']).days,
+    axis=1
+)
+
+ae['TEFL'] = ae['AESTDY'].apply(lambda x: 'Y' if x >= 1 else 'N')
+
+3️⃣ TE Flag with Worsening Severity Logic
+
+This is very important for safety.
+
+📌 Rule (Simple)
+
+An AE is Treatment-Emergent if:
+
+It starts on/after first dose, OR
+
+It starts before dose but becomes worse after dose
+
+Example
+AESTDTC	Grade Before	Grade After	TEFL
+Pre-dose	1	3	Y
+Pre-dose	2	2	N
+Post-dose	–	2	Y
+Simple Python Logic
+
+Assume:
+
+BASEGR = grade before treatment
+
+MAXGR = max grade after treatment
+
+def te_with_severity(row):
+    if row['AESTDY'] >= 1:
+        return 'Y'
+    elif row['AESTDY'] < 1 and row['MAXGR'] > row['BASEGR']:
+        return 'Y'
+    else:
+        return 'N'
+
+ae['TEFL'] = ae.apply(te_with_severity, axis=1)
+
+4️⃣ CDISC ADaM – TE Flag (Official Concept)
+
+In ADaM ADAE dataset:
+
+Variable	Meaning
+TRTSDT	First treatment date
+ASTDT	AE start date
+ASTDY	AE start study day
+TRTEMFL	Treatment Emergent Flag
+📌 ADaM Definition
+
+TRTEMFL = 'Y' if AE occurs or worsens on or after first exposure to treatment.
+
+ADaM Logic (Simplified)
+adsl = adsl[['USUBJID', 'TRTSDT']]
+adae = adae.merge(adsl, on='USUBJID', how='left')
+
+adae['ASTDY'] = (
+    (adae['ASTDT'] - adae['TRTSDT']).dt.days + 1
+)
+
+adae['TRTEMFL'] = adae['ASTDY'].apply(
+    lambda x: 'Y' if x >= 1 else 'N'
+)
+
+
+(Severity logic can be added on top.)
+
+5️⃣ TE vs PRE-TREATMENT vs POST-TREATMENT
+
+This classification is often used in listings.
+
+Category	Definition
+PRE-TREATMENT	Event before first dose
+TREATMENT-EMERGENT	Event on/after first dose
+POST-TREATMENT	Event after treatment end
+Example
+Event Date	Category
+05-JAN	PRE
+10-JAN	TE
+25-JAN	TE
+05-FEB (after end)	POST
+Python Example
+def event_phase(row):
+    if row['AESTDTC'] < row['TRTSDT']:
+        return 'PRE-TREATMENT'
+    elif row['AESTDTC'] <= row['TRTEDT']:
+        return 'TREATMENT-EMERGENT'
+    else:
+        return 'POST-TREATMENT'
+
+ae['EVENTPHASE'] = ae.apply(event_phase, axis=1)
+
+6️⃣ Interview-Ready Summary (MEMORIZE THIS)
+
+Study Day is calculated relative to first treatment date.
+Treatment-emergent events are those occurring on or after Study Day 1, or events that worsen in severity after treatment.
+This logic is implemented in ADaM using TRTSDT, ASTDT, ASTDY and TRTEMFL.
