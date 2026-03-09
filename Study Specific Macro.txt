@@ -1,0 +1,124 @@
+%macro studyday1(ds1=,var1=,var2=);
+ 
+	%crt_ds(ds=YR,
+
+			varlst = CPEVENT RNDDAT );
+ 
+Data YR1(drop=RECORDPOSITION DATAPAGENAME);Length Subjid $200.;
+
+set yr_spec;
+
+Subjid= PATIENT;
+
+if upcase(CPEVENT)="BASELINE/ RANDOMIZATION";
+
+RNDDAT1=input(compress(RNDDAT, " "),date9.); format RNDDAT1 date9.;
+
+run;
+
+	proc sort data=YR1; by subjid;run;
+
+	proc sort data=&ds1.; by subjid;run;
+ 
+	data &ds1.;
+
+      merge &ds1.(in=a) YR1(in=b);
+
+      by subjid ;
+
+      if a ;
+
+        START1 =&VAR1  - RNDDAT1;
+
+        if START1 >= 0 then START1=START1 + 1; else START1 =START1;
+
+		END1 =&VAR2  - RNDDAT1;
+
+        if END1 >= 0 then END1=END1 + 1; else END1 =END1;
+
+	run;
+ 
+%mend studyday1;
+ 
+%macro concat_vars(var1=,var2=);
+&var1._u=strip(ifc(~missing(&var1.),strip(&var1.),'')||ifc(~missing(&var2.),' ('||strip(&var2.)||')',''));
+
+%mend concat_vars;
+ 
+ 
+%macro sort_famh(data_in=, data_out=, sort_vars=, filter_vars=);
+ 
+   proc sort data=&data_in out=&data_out;
+
+      by &sort_vars;
+
+      where FATESTCD in (&filter_vars);
+
+   run;
+ 
+%mend sort_famh;
+ 
+/*------------ Study specific macros ------------------*/
+
+%macro face_date_copy(dsn=);
+
+	data &dsn.;
+
+		set &dsn.;
+
+		if strip(fatestcd) in ("SYMSTDTC", "SYMENDTC") then  FAORRES=FARESDAT_RAW;
+
+	run;
+
+%mend face_date_copy;
+
+/*****************FOR TRANPOSE DATA**************/
+%macro dt_conv(dtvar=);
+    date_num = INPUT(strip(&dtvar.),?? yymmdd10.); /* convert to numeric date value */
+    new_&dtvar. = cats(PUT(date_num,?? date9.)); /* convert to DDMMMYYYY format */
+	LENGTH  new_&dtvar. $ 200;
+	drop date_num;
+%mend dt_conv;
+ 
+/*********For Sort Data************/;
+%macro Sort(Data=,by=,out=);
+proc sort data=&data. out=&out.;
+by &by.;
+run;
+%mend Sort;
+%Sort(Data=analysis.adsl, by=subjid, out=s);
+ 
+ 
+******************************Concat*************************;
+%macro concat_vars(var1=,var2=);
+&var1._u=strip(ifc(~missing(&var1.),strip(&var1.),'')||ifc(~missing(&var2.),' ('||strip(&var2.)||')',''));
+%mend concat_vars;
+ 
+or
+ 
+%macro concat_vars(var1=, var2=);
+&var1._u = strip(ifc(~missing(&var1.), strip(&var1.), '') || ifc(~missing(&var2.), ' (' || strip(&var2.) || ')', ''));
+%mend concat_vars;
+ 
+Explanation of the Macro:-
+Macro Definition (%macro concat_vars(var1=, var2=);):
+ 
+Defines the macro named concat_vars with two parameters: var1 and var2.
+Variable Assignment:
+ 
+&var1._u creates a new variable by appending _u to the name of var1.
+The strip function removes leading and trailing spaces from the variables.
+The ifc function is a conditional function that checks if the variable is missing:
+ifc(~missing(&var1.), strip(&var1.), '') returns var1 if it is not missing, otherwise it returns an empty string.
+ifc(~missing(&var2.), ' (' || strip(&var2.) || ')', '') returns var2 enclosed in parentheses if it is not missing, otherwise it returns an empty string.
+ 
+********Numeric to Char conversion *************************;
+ 
+%macro char(_char, var, format);
+    data A;
+        set SASDATA.EG;
+&_char = put(&var, &format);
+    run;
+%mend char;
+%char(EGDAT_Char, EGDAT, date9.);
+ 

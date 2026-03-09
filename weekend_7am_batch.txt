@@ -1,0 +1,6310 @@
+/* Clinical SAS */
+/* Dt:31/07/2021*/
+
+SDTM : Standard data tabulation model
+		or
+	study data tabulation model
+
+ADaM : Anlaysis data model
+
+TLF: Tables/Listings figures
+-------------------------------------------------------------
+Medical comapnies
+|
+R&D -------> Medicines/drugs/vaccine
+|
+|
+pre clinical trails (Animals)
+|
+|
+Clinical trails(humans)
+|
+|
+Phase1:healthy ppl 30 to 80
+	- Safety of ppl
+
+Phase2:Pt 100 to 500
+	- Efficacy drug
+
+Phase3: pt 1000 to 5000
+	- Saftey and efficacy
+
+Phase4: pt 10000 to 50000
+	- Saftey and efficacy
+	- Post marketing studies  -- cost, income, benefits etc....
+
+----------------------------------------------------------------------------
+
+Medical companies------> get approval  ---> FDA(food drugA administration)		
+						DCGI
+						EMA	
+
+
+
+Medical companies---> REPORTS  ---> FDA
+
+
+A B C D ---> REPORTA
+		REPORT 	B
+			REPORT C
+				REPORT D     ---> FDA 
+
+
+
+SEX  ---- MALE
+		M
+			1,2
+				male
+
+2-8years
+
+
+CDISC ORG is formed in 1997
+
+CDISC  - Clinical data interchange std consortium
+
+--> set some global standards/ guidelines
+--> speed up the drug dev process
+
+SDTM IG  3.2 
+ADaM IG 1.1
+
+-------------------------------------------------------------
+/*Clinical trails*/
+
+Purpose:  to check saftety and eiffcacy of drug
+
+
+Sponsor------> get approval  ---> FDA
+
+Subjects(pt)
+
+investigators(doctors)
+
+
+Sponsor will provide protocol
+
+---> how many subjects are involved, from where, from which places
+---> hospital(site)
+--> lab, lab equipment
+---> subject
+---> end points
+--> Eligibity (Inclusion /exclusion)
+
+
+** STUDY****
+
+protocol  ----> subjects ---------------------------------------->  Investigators
+		(recruits based on Inclusion /exclusion) 		(recruits based on trt)
+
+CRF (case report form)  - paper CRF
+			- eCRF
+
+CDM(data entry, data managers)
+
+data entry ---> refer eCRF ---> prepare raw datasets
+
+data managers ---> validate data enter by data entry persons
+
+
+CDM team  -------> SAS team, Bio statistician (SAP) work together
+		   ----> these ppl do analysis
+		   ---> SAP  - statistical analysis plan( prepared based on protocol)
+			
+			----> 	Bio statistician team informed to SAS what are reports they are required	
+		SAS team
+		-- SDTM IG 3.2
+		-- ADAM IG 1.1
+		-- TLF
+
+
+--Medical writing ( they will write synopsis for the reports)
+		---> summary report, side effects, any deviation etc....
+
+--> statistician  ---> they will prepare CSR ( clinical study report)
+
+
+CSR -------------> send to  --------> FDA (CSR,eCRF, CDM rawdatasets, SAS reports,)
+
+--------------------------------------------------------------------------------------------
+
+Definations:
+
+study design:
+
+Parallel study design: In a clinical trail subject will be exposed to only one trt,
+	and the same trt will be continued untill the trt end phase.
+
+eg:
+
+101 ----> druga ----> end of trt
+102   ----> Placebo ----> end of trt
+
+
+SUBJID ARM
+-----------
+101   Druga
+102   Placebo
+
+cross over study design: the subject will be exposed to multiple trt
+
+eg : Druga
+     Drugb
+     Palcebo
+
+
+101  ------> Druga --(washout period/rest period)---------> Drugb -----(WP)---------> Placebo
+
+102  -------> Placebo-----(WP)------>Druga---------(WP)-----------> drugb
+
+SUBJID ARM
+-------------------
+101   Druga-Drugb-Placebo
+102   placebo-Druga-Drugb
+
+------------------------------------------------------------------
+
+site:  the hospital where the clinical trails will happend
+
+Multicenter study:  clinical trails will be conducted  in diffrent places/cities in same country
+
+Multinational study: Clinical trails wll be conducted in diff countries
+
+
+Blinding or Masking: Hiding trt to diffrent group
+
+3 Blindings
+
+single Blinding 
+
+Double Blinding 
+
+Triple Blinding 
+
+
+single Blinding :
+
+PT=No			  IV(Investigator)=yes                      Principal INV/Bio stat=yes
+
+
+Double Blinding:
+
+PT=No			  IV(Investigator)=no                      Principal INV/Bio stat=yes
+
+
+Triple Blinding :
+PT=No			  IV(Investigator)=no                      Principal INV/Bio stat=no
+
+
+********** Sponsor have record in triple blinding**********************
+
+Open- label/Unblinding:
+
+PT=yes			  IV(Investigator)=yes                      Principal INV/Bio stat=yes
+
+-------------------------------------------------------------------------------
+
+ICF (inform consent form)  --> it is a legal docuement signed by subject (date we will capture)
+
+
+SCR(Screening)  ----> before giving drug we will do screening based on Inclusion/exclusion criteria
+
+Radamization:Bio stat will do this randamiztion
+-- they will generate code .. it is called randamiztion code
+
+--> based on this only subject will be exposed to drug
+
+
+study drug
+
+100 subjects
+
+50m 50f
+
+
+50helathy 50pat
+
+A-B-C
+B -A-C
+C-A-B
+
+
+Treatment  ----> subject exposed to trt
+
+Followup   ---> after trt followup with subject
+
+
+ICF SIGNED  ------>  SCR-------->  Randamiztion ---->  TRT -----> followup
+
+Element: it is nothing but clinical trail phase
+
+Epoch : a group of elements will called as epoch
+
+***************************************************************************
+SDTM:
+
+Workflow:
+
+				Study
+				 |
+
+			Review Documents(protocol,CRF,RAWDATASETS,SOP)
+				|
+				|
+			a- CRF(Annotaed CRF)
+				|
+			-------------------> validated by TL
+				|
+				|
+			SDTM Mapping specification ((DDT) - data derived table)
+				|
+				|
+			 Programming plan
+				|
+				|
+			Programming 
+				|
+				|
+			SDTM OUTPUT(results)
+				|
+				|
+			XPT files( convert SAS datasets to XPT files)
+				|
+				|
+			   (Pinnacle 21)
+				|
+				|
+			create define.xml & validation notes
+				|
+
+			   submit study
+
+						
+a- CRF(Annotaed CRF):
+source documents: Blank CRF, protocol, CRF guidlines, SDTM IG 3.2, rawdatasets
+
+SDTM Mapping specification :
+source documents: a-CRF, protocol, SDTM IG 3.2, rawdatasets
+
+Programming :
+
+required: SDTM-Spec, a-CRF,protocol, SDTM IG 3.2, rawdatasets,SAS tool
+
+----------------------------------------------------------------------------------
+Phase - 2 clincial trail
+
+study:
+testing data
+
+Monday- prodcution data
+submission ---> " Transfer"
+
+monday -  prodcution data
+submission ---> " Transfer"
+
+
+monday -  prodcution data
+submission ---> " Transfer"
+
+---------------------------------------------------------------------
+SDTM :
+
+- Special Purpose domains
+	- DM (Demographics)
+	- CO (Comments)
+	- SE (subject elements)
+	- SV (subject visits)
+
+- Interventions
+	- Ex(Exposure)
+	- EC(Exposure as collected)
+	- CM (Concomitant medication)
+	- SU(substance use)
+
+- Events
+	- AE (Adverse event)
+	- MH(medical history)
+	- DS(Disposition)
+	- DV(protocol deviation)
+	- CE(clinical events)
+
+- Findings
+	- LB
+	- VS
+	- EG
+	- PE
+	- IE
+	- DD
+	- DA
+
+
+- Trail design models
+	- TA
+	- TE
+	- TV
+	- TI
+	- TS
+
+- RELREC DOMAINS
+
+- SUPP DOMIANS
+
+---------------------------------------------------------------------------------
+SDTM Guidelines:
+
+1.  As per SDTM Guidelines domain name should contain 2 letters
+
+2. Every domain should have proper label -(40char) - prop case
+	and in domain for each variable have proper label
+
+3.  Variable names should not contains more than 8 char
+		USUBJID
+		AGE
+		LBORRES
+		LBORRESU
+
+4. order should be as per SDTM IG 3.2
+
+5. All SDTM date variables are char datatypes
+
+	date value:  YYYY-DD-MM
+			2021-01-08
+	
+	IS8601da.   : 2021-01-08
+	IS8601dt.   : 2021-01-08T10:30:20
+------------------------------------------------------------------------------
+core:
+
+1. Required(REQ): Variables must be included in domain.
+			These values cant be null
+
+
+		eg :  SUBJID  SEX RACE AGE
+		        101   M   ASAIN 30
+		        102	F     ASAIN  25
+
+
+
+2. Expected(Exp) : variables must be included in domain.
+			values can be missing or not missing
+
+		eg :RFSTDTC
+		    RFENDTC
+		    RFXSTDTC
+		    RFXENDTC
+
+
+3. Permissible(perm) : values can be null or not null
+
+	it depends on a sponsor to include or drop this variabel in a domain
+	
+		eg:    INVNAM
+			INVID
+
+-----------------------------------------------------------------------------------
+Role: Every variable has a one role as per CDISC guidelines
+
+        1. Identifier variables
+	2. timing variables
+	3. topic variabels
+	4. Rule variabels
+	
+	Qualifiers  :  record qualifier,
+			result qualifier
+			grouping qualifier
+			synonym qualifier
+			variable qualifier
+
+
+
+ 1. Identifier variables : variables which gives the identification information
+	* mostly all identifier variabels are required(REQ)
+			
+		eg :  STUDYID :  study name
+			DOMAIN  : name of domain
+			USUBJID 
+
+
+2. timing variables : 
+
+
+	start date: AESTDTC( adverse event start date & time in char)
+	end date:AEENDTC
+	collecttion date: DMDTC LBDTC
+	mesurmenent   : VSDTC
+
+3. topic variabels: one domain contains only one topic variables
+		- this topic variables will focus the entire meaning of domain
+
+
+DOMAIN  :  Domain is a collection of observation from diffrence raw datasets
+		and it should have topic variable
+
+
+
+special purpose:
+
+	DM    --> SUBJID
+	CO   --> COVAL
+        	SE   --> ETCD
+	SV   --> VISITNUM
+
+Intervention  : ALL Treatment related domains
+	(XXTRT)
+
+EX  --  EXTRT
+CM  -- CMTRT
+SU  - SUTRT
+EC  - ECTRT
+
+
+Events  : all domins from event cat
+	AE  MH DS DV CE 
+	(XXTERM)
+
+AE -         AETERM
+MH -         MHTERM
+DS -	DSTERM
+DV -	DVTERM
+CE -	CETERM
+
+Findings : (XXTESTCD)
+	LB  -  LBTESTCD  (Lab test code)
+	VS  - VSTESTCD
+	PE  - PETESTCD
+         EG  - EGTESTCD
+	- IE  - IETESTCD
+	- DD - DDTESTCD
+	- DA - DATESTCD
+	- QS - QSTESTCD
+
+trail design domains:
+
+	TA   -- ARMCD
+	TS  - TAPARMCD
+	TE  - ETCD
+	TI  - IETESTCD
+	TV  - VISITNUM	
+----------------------------------------------------------
+4. Rule variabels  : Variabels which gives information about start rule & end rule
+
+		TE  : TESTRL  : start rule
+			TEENRL  : end rule
+		TV:  TVSTRL
+			TVENRL
+
+------------------------------------------------
+
+
+        Qualifiers  :  record qualifier,
+			result qualifier
+			grouping qualifier
+			synonym qualifier
+			variable qualifier
+
+
+
+record qualifier: recording or getting information or measurments from subject
+	
+		eg : SEX, AGE , BIRTHDTC, ETHINIC
+
+
+result qualifier:  variables contains any results
+
+		
+	- LB
+
+		LBORRES  - original results
+
+		LBSTRESC  - std results in char
+		LBSTRESN  - std results in num
+
+	- VS 
+		VSORRES
+		VSSTRESC
+		VSSTRESN
+
+grouping qualifier:  
+
+		LBCAT  - CAT - category
+		LBSCAT  - SCAT  - sub category
+
+
+		LBTEST	- LBCAT
+	   	XYZ	- hematology
+		MNO	- hematology
+		ABC	- hematology
+
+
+synonym qualifier:  similar measning varaibles
+
+
+	AETERM		                AEDECOD
+	
+	FEVER  ---------->medical dic --> Pyroxia
+	headace ---------->medical dic -->headace
+
+		eg :AEDECOD
+		    MHDECOD
+
+
+variable qualifier : variables which contains units
+
+		AGEU  : years
+		CMDOSEU: mg ml
+		LBORRESU : 
+		
+-----------------------------------------------------------------------
+CDISC Notes:
+	- guidelines for variables
+	- how to populate variables
+	- how to derive and meaning of the variables
+
+---------------------------------------------------------------
+/*Dt: 07/08/2021*//
+
+- Special Purpose domains
+	- DM (Demographics)
+
+
+
+Gender
+dob
+age
+country
+ethnic
+race
+
+---> when subject is signed ICF
+ --> when subject TRT started
+--> TRT ended
+--> death information
+--->  about planned trt and actutal trt 
+
+
+structure: One record per subject
+
+101
+102
+103
+104
+
+Topic variable:SUBJID
+
+Identifier variable:  STUDYID DOMAIN USUBJID
+
+variable name  - variable labels
+--------------------------------------------------------
+STUDYID  - study identifier
+DOMAIN  - Domain abbrevation
+USUBJID  - unique subject identifier
+SUBJID  - subject indetifier for the study
+INVID  - investigator indentifier
+INVNAM  - investigator name
+RFICDTC   - reference informed consent date & Time char
+RFPENDTC  - Refence end participation date & time char
+RFSTDTC  - Subject reference start date/time
+RFENDTC  - Subject reference end date/time
+RFXSTDTC  - date/time of first  study treatment
+RFXENDTC  - date/time of last study tratment
+ARM  - Description of planned arm
+ARMCD  - Planned arm code
+ACTARM  - Description of actual arm
+ACTARMCD - actual arm code
+DTHDTC - date/time of death
+DTHFL  - subject death flag
+BRTHDTC - date/time of birth
+SITEID  - study site identifer
+sEX - sex
+AGE - Age
+AGEU - age units
+RACE - race
+COUNTRY - country
+ETHNIC  - ethnicity
+DMDTC - date/time of collection
+DMDY - study day of collection
+--------------------------------------------------------------------------
+STUDYID  - study identifier
+			- Name of study as per protocol
+
+			- will be given by sponsor
+
+		eg: CT1AM  CT2AM "ACP-103-020"
+
+DOMAIN  - Domain abbrevation
+		eg:   DM 
+
+USUBJID  - unique subject identifier
+		- which is combination of STUDYID||SITEID||SUBJID
+
+		STUDYID  - name of study
+		SITEID  -  site no
+
+SUBJID  - subject identifier for the study
+
+		eg :    101
+			102
+			103
+
+		- topic variable
+
+SITEID  - study site identifier
+
+--------------------------------------------------------------------------------------
+Task1:
+
+dm1:
+
+PT  Gender 
+
+101 Male
+102 M
+103 Female
+104 MALE
+105 f
+
+studyname - GSK101A2
+site no  : G101
+SEX  -  M OR F
+Domain  - DM 
+
+Required o/p :DM
+
+STUDYID  DOMAIN	USUBJID              SUBJID       SEX
+
+GSK101A2  DM    GSK101A2-G101-101    101           M
+GSK101A2  DM    GSK101A2-G101-102    102           M
+GSK101A2  DM    GSK101A2-G101-103    103           F
+GSK101A2  DM    GSK101A2-G101-104    104           M
+GSK101A2  DM    GSK101A2-G101-105    105           F
+
+*****************************************************************
+INVID  - investigator indentifier
+		- doctor id
+
+		eg :  1452358
+		
+INVNAM  - investigator name
+		- doctor or nurse or clinical research associate
+		eg : Dr. john smith
+
+
+RFICDTC   - reference informed consent date & Time char
+		--> when subject is signed the informed consent form(ICF)
+			--> char data type
+		--> IS8601DA.  eg : YYYY-MM-DD
+		--> IS8601DT.   eg : YYYY-MM-DDTHH:MM:SS
+
+-------------------------------------------------------------------------------
+task2:
+   
+	DM :
+
+		PT  gender
+		---------------------
+		101 Male
+		102 Female
+
+	ICF :
+		PT TERM            DT          TIME
+		----------------------------------------
+		101 ICF SIGNED 	   12MAR2017   12:10:34
+		102 ICF SIGNED     13MAR2017   10:23:34
+
+
+output: DM1:
+
+	SUBJID  SEX  RFICDTC
+	101      M   2017-03-12T12:10:34
+	102      F   2017-03-13T10:23:34		
+		
+------------------------------------------------------------------
+RFSTDTC  - Subject reference start date/time in char
+
+		- Treatment start date & time 
+
+RFENDTC  - Subject reference end date/time
+	- study completed date / trt end date
+
+			
+note: if both trt end date & study completed date availble 
+	we need to take the study completed date as RFENDTC
+
+	
+	ICF SIGNED  ---> SCR---> RUNIN----> TRT  ----> FL
+
+
+
+* subject who failed in SCR we called them as "SCR failures" , for them RFSTDTC/RFENDTC -  'Null'
+
+* after SCR, in RUNIN if some ppl will drop we called them as "UNAssigned subjects" , for them RFSTDTC/RFENDTC -  'Null'
+----------------------------------------------------------------------------
+
+task:
+
+dm:
+	pt   gender
+----------------------------
+	101 Male
+	102 Female
+	103 Male
+	104 Male
+
+trt :
+	pt     trt         stdt
+------------------------------------------
+        101	da	2017-02-12
+	101	da	2017-02-15
+	101	da	2017-03-02
+	102	db	2017-02-13
+	102	db	2017-03-04
+	103	da	2017-02-20
+	104	db	2017-02-13
+	104	db	2017-02-20
+	104	db	2017-03-10
+
+output:
+
+SUBJID SEX	 RFSTDTC 	RFENDTC
+---------------------------------------
+101	M	2017-02-12	2017-03-02
+102	F	2017-02-13	2017-03-04
+103	M	2017-02-20	2017-02-20
+104	M	2017-02-13	2017-03-10
+
+hint: use first. & last.
+-----------------------------------------------------------------------------------
+RFXSTDTC  - date/time of first  study treatment
+			- study trt start date & time in char
+
+
+	- oncology study 
+	- DRUGX	
+
+	-  vomtings/ headace
+	- support trt before exposed to study drug	
+
+	vomting tablets/ headace tablets	
+
+SUBJID     RFXSTDTC       RFSTDTC
+----------------------------------------------------
+	vomting tablets   DRUGX	
+101     2017-01-10	2017-01-11
+--------------------------------------------------------
+
+RFXENDTC  - date/time of last study tratment
+
+		-- always study trt end date
+
+*******************************************************************
+RFPENDTC  - Refence end participation date & time char
+			- when subject lastly participated in study
+
+
+		- study completed
+			or
+		- follow up date
+			or
+		- death date
+			or
+		- discontinued date
+
+-------------------------------------------------------------------------------------
+DTHDTC : death date
+	--> any subject death date
+
+	--> char format
+
+
+note:  DM  -----> DTHDTC
+
+	AE  ---> AEOUT= DEATH  ---> AEENDTC  --> DEATH DATE
+
+	DS  ----> DSTERM = DEATH  ---> DSSTDTC ---> death date
+
+
+DTHFL  : death flag
+		Y/N
+
+-------------------------------------------------
+task:
+dm:
+	pt   gender
+----------------------------
+	101 Male
+	102 Female
+	103 Male
+	104 Female
+	105 Male
+
+ds  :
+
+PT	TERM 	           STDT
+--------------------------------
+101	Study completed	2017-02-12
+102	DEATH		2017-01-20
+103	Study completed	2017-02-20
+104	Death		2017-01-12
+105	Study completed	2017-02-26
+
+
+
+output:
+SUBJID	DTHDTC		DTHFL
+--------------------------------
+101
+102	2017-01-20	Y
+103
+104	2017-01-12	Y
+105
+-------------------------------------------------------------------
+BRTHDTC  - birth date 
+		- char format
+
+
+
+AGE   - age
+		
+		AGE  =  RFICDTC - DOB /365.25
+
+
+AGEU  :  Age units
+		eg : YEARS
+
+---------------------------------------------------------------
+----------------------------------------------
+task:
+
+dm:  
+pt	DOB		ICDTC
+101 	12MAR1980	2018-02-12
+102	20AUG1997	2018-02-20
+103	21MAR1998	2018-02-13
+
+output:
+
+SUBJID BRTHDTC 		RFICDTC		AGE AGEU
+101	1980-03-12	2018-02-12	38  Years	
+102
+103
+-------------------------------------------------------------------
+
+RACE - Race
+
+	eg :   ASAIN
+		WHITE
+		BLACK
+		AMERICA INDIAN
+		NATIVE HAWLIAN
+		OTHER
+
+note:if anything "OTHER"   realted the RACE we will be passed to SUPP domain
+
+SUPPDM :
+	
+	105     BRAZILAIN
+	109     ITALIAN 
+
+	
+
+COUNTRY - country
+		-- name of country
+		-- three letter
+			eg : USA IND
+
+
+
+ETHNIC  - ethnicity of particular country
+
+		eg :   RACE    ETHINIC
+		--------------------------------
+			ASAIN    NOT HISPANIC/LATINC AMERICAN
+			WHITE    HISPANIC	
+
+--------------------------------------------------------------------
+DMDTC - Demographic date/time of collection
+	- at which date these demographic information collected from subject
+
+
+* usually it will be collected in screening visit
+
+* we have to populate screening start date for this 
+		
+		eg :   visit    start_date
+			------------------------
+			sceening  2017-10-18
+
+* in CRF we can see date " date of screening"  
+
+-------------------------------------------------------------------------------
+
+DMDY - study day of collection
+		- numeric variables
+
+	* it is collected based on DMDTC  & RFSTDTC
+
+Note : Demographic date is before TRT date.
+
+Note: DMDY values is negative or positive value(i.e 1 max case). it will be never be zero
+
+
+SCR -------------RUNIN------------TRT ---------FL
+
+
+DMDY= DMDTC-RFSTDTC+1
+	(when DMDTC >= RFSTDTC)
+--> when DMDTC  ON AFTER TRT(RFSTDTC)
+
+DMDY= DMDTC-RFSTDTC
+	(when DMDTC < RFSTDTC)
+
+--> WHEN DMDTC BEFORE TRT(RFSTDTC) 
+
+sub    DMDTC         RFSTDTC      DMDY
+
+101   2019-02-10    2019-02-20    -10
+102   2019-02-12    2019-02-20	  -8
+103   2019-02-20    2019-02-20	  1	
+
+
+	2019-02-10 < 2019-02-20
+
+	 DMDTC < RFSTDTC
+
+DMDY = (2019-02-10) -   (2019-02-20)
+     = -10
+
+	2019-02-12< 2019-02-20	
+	
+	DMDTC < RFSTDTC
+
+DMDY= DMDTC-RFSTDTC
+    =	(2019-02-12) - (2019-02-20)
+    = -8	
+
+
+	2019-02-20 = 2019-02-20	
+
+	when DMDTC >= RFSTDTC
+
+DMDY= DMDTC-RFSTDTC+1
+    =	(2019-02-20) - (2019-02-20)+1
+    = 1
+
+-----------------------------------------------------------------------------
+task :
+
+PT 	DMDTC	       RFSTDTC
+-----------------------------------
+101	2016-03-21	2016-03-28
+102	2016-03-20	2016-03-25
+103	2016-03-24	2016-03-24
+104	2016-03-21	2016-03-26
+
+output:
+--------------------------------------------------------------
+SUBJID DMDTC RFSTDTC DMDY
+
+---------------------------------------------------------	
+FORMULA:
+
+XXDY  ----- STUDY DAY
+
+XXSTDY   - study start day
+
+XXENDY    - study end day
+---------------------------------------------------
+
+FORMULA :
+
+
+XXDY   = XXDTC  -RFSTDTC + 1
+	(WHEN XXDTC >= RFSTDTC)
+
+-> when XXDTC  is  on or after RFSTDTC
+
+
+XXDY  = XXDTC - RFSTDTC
+	(WHEN XXDTC < RFSTDTC)
+
+	- when 	XXDTC  before RFSTDTC
+
+************************************************************************
+
+XXSTDY   - stduy start day
+
+XXENDY    - study end day
+
+formula:XXSTDY  -- study start day
+
+	XXSTDY  = XXSTDTC - RFSTDTC + 1
+		(When XXSTDTC  >= RFSTDTC )
+
+	--->WHEN XXSTDTC IS  ON OR AFTER trt START DATE 
+
+	XXSTDY = XXSTDTC - RFSTDTC
+		(when XXSTDTC < RFSTDTC )
+
+	--> WHEN XXSTDTC BEFORE trt start date
+*******************************************************************
+
+formula:XXENDY  -- study end day
+
+	XXENDY  = XXENDTC - RFSTDTC + 1
+		(When XXENDTC  >= RFSTDTC )
+
+	--->WHEN XXENDTC IS  ON OR AFTER trt START DATE 
+
+	XXENDY = XXENDTC - RFSTDTC
+		(when XXENDTC < RFSTDTC )
+
+	--> WHEN XXENDTC BEFORE trt start date
+			
+***********************************************************	
+ARM : Planned TRT name	
+	--> it is populated from radamization sheet
+	
+	eg :101 DRUGA
+	    102 DRUGB  	
+
+ARMCD: Arm code
+	Planned TRT short name	
+	eg :101 DA
+	    102 DB
+	
+
+-----------------------------------
+ACTARM :  Actual trt given
+
+	eg : 
+		101 DRUGA
+		102 DRUGA 
+
+ACTARMCD :   Actual trt given code
+	eg :
+		101  DA
+		102  DA
+------------------------------------------------
+				"CONTROLLED TERMINOLOGIES"
+
+--------> "screen failures"
+
+ARM:Screen Failure
+ARMCD:SCRNFAIL
+
+ACTARM:Screen Failure
+ACTARMCD:SCRNFAIL
+
+
+----> "Unassigned subjects"
+
+ARM:Not Assigned
+ARMCD:NOTASSGN
+
+ACTARM:Not Assigned
+ACTARMCD:NOTASSGN
+---------------------------------------------------------------
+Parallel study
+101  ---> DRUGA  --> END OF TRT
+
+PT    ARM ARMCD     ACTARM  ACTARMCD
+-----------------------------------
+101  DRUGA  DA         DRUGA   DA
+------------------------------------
+
+Cross over study
+
+101  ---> DRUGA  ---------DRUGB
+
+PT    ARM             ARMCD     ACTARM         ACTARMCD
+-------------------------------------------------------
+101   DRUGA-DRUGB     DA-DB      DRUGA-DRUGB     DA-DB
+--------------------------------------------------------
+********************************************************************************************
+/*Task1*/
+
+data dm_out2(drop=gender rename=(pt=SUBJID));
+infile datalines;
+input pt gender$;
+STUDYID = 'GSK101A2';
+SITENO = 'G101';
+DOMAIN='DM';
+if gender ='Male' then SEX ='M';
+else SEX='F';
+if gender ='MALE' then SEX='M';
+if gender ='M' then SEX='M';
+if gender='f' then SEX='F';
+datalines;
+101 Male
+102 M
+103 Female
+104 MALE
+105 f
+;
+run;
+data Dm(drop=SITENO);
+retain STUDYID  DOMAIN	USUBJID SUBJID  SEX ;
+set dm_out2;
+USUBJID=STUDYID||"-"||SITENO||"-"||strip(SUBJID);
+RUN;
+
+
+-----------------------------------------------------------
+/*task 2*/
+data DM_2(drop=gender rename=(PT=SUBJID));
+infile datalines;
+input PT gender$;
+if gender='Male' then SEX= "M";
+if gender = 'Female' then SEX="F";
+datalines;
+101 Male
+102 Female
+;
+run;
+data ICF;
+infile datalines;
+input PT TERM$ 4-14 DT TIME;
+informat DT date9. TIME time9.; 
+format DT date9. TIME time9.; 
+datalines;
+101 ICF SIGNED 12MAR2017 12:10:34
+102 ICF SIGNED 13MAR2017 10:23:34
+;
+RUN;
+data output_2(drop=TERM DT TIME PT);
+merge DM_2 ICF;
+RFICDTC=put(DT,yymmdd10.)||"T"||put(TIME,time9.);
+run;
+
+---------------------------------------------------------------------
+/*task3*/
+data dm_ref(drop=gender rename=(pt=SUBJID));
+infile datalines;
+input pt gender$;
+if gender='Male' Then SEX='M';
+if gender='Female' then SEX='F';
+datalines;
+101 Male
+102 Female
+103 Male
+104 Male
+;
+run;
+data trt;
+infile datalines;
+input pt trt$ stdt;
+informat stdt yymmdd10.;
+format stdt yymmdd10.;
+datalines;
+101 da 2017-02-12
+101 da 2017-02-15
+101 da 2017-03-02
+102 db 2017-02-13
+102 db 2017-03-04
+103 da 2017-02-20
+104 db 2017-02-13
+104 db 2017-02-20
+104 db 2017-03-10
+;
+run;
+
+data output(rename=(stdt=RFSTDTC));
+set trt;
+by pt;
+if https://url.uk.m.mimecastprotect.com/s/G1PsC868VCPWALPBh1hmSynGcG?domain=first.pt then output;
+run;
+
+data output1(rename=(stdt=RFENDTC));
+set trt;
+by pt;
+if https://url.uk.m.mimecastprotect.com/s/mM0CC9Q6WCNA69NrT3iGSq02NS?domain=last.pt then output;
+run;
+
+data output_merge(drop=pt trt);
+merge dm_ref output output1;
+run;
+
+/*task4*/
+data dm_new(drop=gender rename=(pt=SUBJID));
+infile datalines;
+input pt gender$;
+if gender='Male' Then SEX='M';
+if gender='Female' then SEX='F';
+datalines;
+101 Male
+102 Female
+103 Male
+104 Female
+105 Male
+;
+run;
+data ds;
+infile datalines;
+input PT TERM$4-19  STDT;
+informat stdt yymmdd10.;
+format stdt yymmdd10.;
+datalines;
+101 Study completed 2017-02-12
+102 DEATH           2017-01-20
+103 Study completed 2017-02-20
+104 DEATH           2017-01-12
+105 Study completed 2017-02-26
+;
+run;
+data output_ds(drop=TERM STDT rename=(PT=SUBJID));
+set ds;
+if TERM ='DEATH' then DTHFL='Y';
+if TERM ='DEATH' then DTHDTC=STDT;
+format DTHDTC IS8601DA. ;
+run;
+
+/*task5*/
+
+data dm5(rename=(pt=SUBJID DOB=BRTHDTC ICDTC=RFICDTC));
+infile datalines;
+input pt DOB ICDTC;
+informat DOB date9. ICDTC yymmdd10.;
+format DOB yymmdd10. ICDTC yymmdd10.;
+AGE=(ICDTC-DOB)/365.25;
+AGE= round(AGE,1.);
+AGEU= "YEARS";
+datalines;
+101 12MAR1980 2018-02-12
+102 20AUG1997 2018-02-20
+103 21MAR1998 2018-02-13
+;
+run;
+
+
+----------------------------------------------------------------
+
+libname reddy "C:\Users\SUDARSHAN\Desktop\project1\Raw_data" ;
+
+options nofmterr;
+
+-------------------------------------------------------------------------
+data dm1;
+set DM;
+STUDYID= "ACP-103-020";
+DOMAIN="DM" ;
+RUN;
+---------------------------------------------------
+
+SV : subject visit 
+
+Planned visit  + Unplanned visit(Unschduled visits)
+
+str: one record per subject per visit
+
+Topic variable:  VISITNUM
+
+identifier variables :  STUDYID DOMAIN USUBJID
+
+ variables  - lables
+---------------------------------------------------
+STUDYID : 
+DOMIAN  : SV
+USUBJID  :  STUDYID||SUBJID||SITEID
+
+
+VISIT : VISITNAME
+VISITNUM: VISIT number
+VISITDY : Planned study day of visit
+
+SVSTDTC: Start date/time of visit
+SVENDTC: End day/time of visit
+
+SVSTDY  : study day of start day
+SVENDY   : study day of end day
+
+SVUPDEC: Description of an unplanned visit
+---------------------------------------------------------------------------------------
+
+VISIT : VISITNAME
+
+		-- name of visit
+		
+			eg :   SCREEN
+				DAY1
+				WEEK1
+				WEEK3
+				UNSCHDULED1
+				UNSCHDULED2
+				WEEK8
+				WEEK 12
+
+
+VISITNUM  :  visit number
+			- topic variables
+
+				VISIT            VISITNUM      VISIDY
+		eg :           SCREEN			1      -10
+				DAY1			2        1
+				WEEK1			3        7
+				WEEK3			4        14
+				UNSCHDULED1		4.1
+				UNSCHDULED2		4.2
+				WEEK8			5	  56	
+				WEEK 12			6	  84
+
+
+
+VISITDY : Planned study day of visit
+		- visit day depends on protocol
+
+		
+
+
+	SUBJID	VISIT      VISITNUM		       VISITDY		SVSTDTC	   SVENDTC           RFSTDTC
+---------------------------------------------------------------------------------------------------------------
+	101	SCREEN         1			-7		2016-01-14    2016-01-20     2016-01-21 
+        101     DAY1           2			1		2016-01-21    2016-01-21     2016-01-21 
+	101	WEEK1          3                          7		2016-01-28    2016-01-28     2016-01-21 
+	101	WEEK4          	4		          29		2016-02-22    2016-02-22     2016-01-21 
+	101	unschduled1     4.1	                  30	        2016-02-24    2016-02-24     2016-01-21 
+	101	unschduled2 	4.2			  35	        2016-02-29     2016-02-29    2016-01-21 
+	101	WEEK8		5	                  56            2016-04-02    2016-04-02     2016-01-21 
+	101	FOLLOWUP        6			   71           2016-04-28    2016-04-28     2016-01-21 
+-----------------------------------------------------------------------------------------------
+
+SVSTDTC: Start date/time of visit
+		--> subject visit start date
+
+
+SVENDTC: End day/time of visit
+		--> subject  visit end date
+--------------------------------------------------------
+
+SVSTDY  : study day of start day
+		derive based SVSTDTC & RFSTDTC
+	
+
+formula:SVSTDY  -- study start day
+
+	SVSTDY  = SVSTDTC - RFSTDTC + 1
+		(When SVSTDTC  >= RFSTDTC )
+
+	--->WHEN SVSTDTC IS  ON OR AFTER trt START DATE 
+
+	SVSTDY = SVSTDTC - RFSTDTC
+		(when SVSTDTC < RFSTDTC )
+
+	--> WHEN SVSTDTC BEFORE trt start date
+*******************************************************************
+
+SVENDY   : study day of end day
+		derived based on SVENDTC & RFSTDTC
+
+formula:SVENDY  -- study end day
+
+	SVENDY  = SVENDTC - RFSTDTC + 1
+		(When SVENDTC  >= RFSTDTC )
+
+	--->WHEN SVENDTC IS  ON OR AFTER trt START DATE 
+
+	SVENDY = SVENDTC - RFSTDTC
+		(when SVENDTC < RFSTDTC )
+
+	--> WHEN SVENDTC BEFORE trt start date
+			
+***********************************************************	
+
+SVUPDEC: Description of an unplanned visit
+		-Description  like what happened to the subject during an unplanned visit
+		eg : due to Advesre event
+-----------------------------------------------------------------------
+
+SE:  Subject Elements Domain
+
+
+Elements:  SCR RUNIN TRT FOLLOWUP
+
+--> this domain captures the actual elements of subject and their start date & end date
+
+
+str:  One record per subejct per elemenent
+
+topic variable:  ETCD
+
+Identifier:  STUDYID DOMAIN  USUBJID  SESEQ
+
+----------------------------------------------------------------
+variables   - lables
+----------------------------------------------
+STUDYID  :
+DOMAIN   :  SE
+USUBJID   : 
+
+SESEQ:  sequence number
+ELEMENT: Descriptio  of element
+ETCD  : Element code
+
+TAETORD  : Planned order of element within arm
+
+SESTDTC    :SE start date& time in char
+SEENDTC     : SE end date& time in char
+
+SESTDY : SE study start day
+SEENDY  : SE study end day
+
+EPOCH  :  epoch
+SEUPDES  :description of unpllanned elements
+----------------------------------------------------------------------
+
+SESEQ:  sequence number
+
+USUBJID ELEMENT    SESEQ
+101    SCR	   1	
+101    RUNIN	   2	
+101    TRT	   3
+101    FL	   4
+102   SCR	   1
+102   RUNIN	   2
+102   TRT	    3	
+102   FL	    4	
+103   SCR	    1
+
+
+	sort USUBJID ETCD SESTDTC
+
+
+	by USUBJID ETCD SESTDTC
+	if first.USUBJID=1 then SESEQ=1;
+	else SESEQ+1 ;
+	run;
+
+ELEMENT: Description  of element
+
+ETCD  : Element code
+		- short name of element
+		- 8 char
+		- topic variables
+
+	ELEMENT  -- ETCD
+	------------------------
+	SCREENING    SCR
+	RUNDAMIZTION   RUNIN
+	TREATMENT      TRT
+
+---------------------------------------
+
+TAETORD  : Planned order of element within arm
+
+	- based on TA(trail arm)  we ill create these variabels TAETORD
+TAETORD
+1
+2
+3
+4
+
+---> NUMBER that gives the planned order of element within in subejct's ARM
+
+	sort USUBJID SESTDTC
+
+
+	by USUBJID ETCD SESTDTC
+	if first.USUBJID=1 then TAETORD=1;
+	else TAETORD+1 ;
+	run;
+
+
+SESTDTC    :SE start date& time in char
+
+SEENDTC     : SE end date& time in char
+
+
+
+---------------------------------------------------------------
+example :
+
+PT	ELEMENT	 SESTDTC	SEENDTC
+
+101	SCR	 2016-02-12	2016-02-20
+101	RUNIN	 2016-02-20	2016-02-24
+101	TRT	 2016-02-24	2016-06-01
+101	FOLLOWUP 2016-06-01	2016-06-01
+------------------------------------------------------------------
+SESTDY : SE study start day
+	derive based on SESTDTC & RFSTDTC
+
+	SESTDY =  SESTDTC - RFSTDTC + 1
+		(WHEN SESTDTC >= RFSTDTC)
+
+	SESTDY = SESTDTC - RFSTDTC
+		(WHEN SESTDTC < RFSTDTC) 
+		
+SEENDY  : SE study end day
+		derive based on SEENDTC & RFSTDTC
+
+	
+	SEENDY =  SEENDTC - RFSTDTC + 1
+		(WHEN SEENDTC >= RFSTDTC)
+
+	SEENDY = SEENDTC - RFSTDTC
+		(WHEN SEENDTC < RFSTDTC)	
+----------------------------------------
+
+EPOCH  :  epoch
+		- group of elements
+
+SEUPDES  :description of unplanned elements
+		-- reason of unplanned elements 
+
+---------------------------------------------------------
+CO : comments
+
+- this domain captures any comment collected from the investigator on the CRF page
+
+* In general comment is note or remark or feedback
+
+
+str: one record per comment per subject
+
+topic variable: COVAL
+
+identifier variables:  STUDYID DOMAIN   USUBJID  COSEQ
+
+variables  - labels
+------------------------
+STUDYID:
+DOMAIN: CO
+USUBJID  :
+COSEQ : sequence number
+
+RDOMAIN : Related domain
+
+IDVAR  - Identifying variabels
+IDVARVAL   - Identifying variables values
+
+COREF -  Comment reference
+COVAL  - comment
+
+COEVL  - EValuator
+CODTC  -  date/time of comment
+----------------------------------------------------------------
+
+RDOMAIN : Related domain
+
+		- realtion domain, 
+		- we have to capture domain name , that particular comment is related to.
+
+		eg : AE
+		    CM
+		    LB
+		   VS	
+
+COVAL  - comment
+		- topic variables
+		- 200 char
+
+COVAL1  -- NEXT 200 CHAR
+COVAL2 -- NEXT 200 CHAR
+COVAL3  - REAMAINIG CHAR
+
+
+COREF -  Comment reference
+
+		eg :   PAGE20
+			PAGE14
+			VISIT3
+			VISIT4
+		
+eg:  
+
+101 --- AE --- CRF PAGE 14 --- COMMENT 500 CHAR
+
+
+USUBJID  DOMAIN   RDOMAIN     COVAL         COVAL1           COVAL2            COREF
+
+101       CO       AE     FIRST 200 CHAR    NEXT 200 CHAR    REMAINING CHAR      PAGE 14
+
+
+IDVAR  - Identifying variabels
+
+
+IDVARVAL   - Identifying variables values
+
+
+		eg :   IDVAR    IDVARVAL   
+		    ----------------------------------	
+		101	AESEQ     2
+		101    CMSEQ     3
+
+
+
+note:  IDVAR  & IDVARVAL are null if comments are collected on separed CRF page
+
+COEVL  - EValuator
+		- name of comment evalutor
+
+CODTC  -  date/time of comment
+		- comment collection date
+
+------------------------------------------------------------------
+
+task1 :
+
+input:			
+
+pt    comment	    
+
+--------------------------------
+101	Z		
+101	E  	
+101	D		
+101	F		
+101	DSD		
+102	TG			
+102	NJD		
+102	JKJM		
+103	A		
+104	HH	
+104	BH	 	
+
+------------------------------------------
+
+output : 
+
+SUBJID COVAL	     COSEQ
+--------------------------------
+101	Z		1
+101	E  		2
+101	D		3
+101	F		4
+101	DSD		5
+102	TG		1	
+102	NJD		2
+102	JKJM		3
+103	A		1
+104	HH		1
+104	BH	 	2
+
+---------------------------------------------
+
+Task2:take commment charcter 500
+
+CO :
+	PT   Comment
+	----------------------------
+	101   DFT AJHDU KDI EJFHaaaaaaaaaaEU aaaaaaJHUHC  HSDHSC JHU JHCUJH JHSCJHJ JHCHD
+	102   BCJH JFI JEaaaaaNJ EFIENV  IEHINED IEINEC INCIEF CHEI ICJIE KJCIJEF
+
+OUTPUT:
+
+   SUBJID COVAL COVAL1 COVAL2
+--------------------------------------
+
+
+
+
+
+-------------------------------------------------------------------------------
+Task:
+----------------------------------------------------------------------------------
+PT Comment	CO_MOD	CO_SRNO	VISITNUM
+	
+101	X	VITALS	2	3
+101	Y	DRUG	4	
+101	Z	VITALS	3	6
+101	A	AE	6	
+101	BB	AE	8
+101	SSS	DRUG	2
+101	QWW	BIOCHE	8	4
+101	SSS	WEIGHT	3	6
+101	DD	BIOCHEM	3	5	
+--------------------------------------------
+OUTPUT:
+
+SUBJID	DOMAIN	RDOMAIN	IDVAR         IDVARVAL	COSEQ	COVAL	
+101	CO	VS	VISITNUM	3	1	X
+101	CO	EX	EXSEQ		4	2	Y
+101     CO      VS      VISITNUM        6       3        Z
+101     CO       AE      AESEQ          6       4        A
+101     CO       AE      AESEQ          8       5        BB
+-----------------------------------------------------
+- Events
+	- AE (Adverse event)
+	- MH(medical history)
+	- DS(Disposition)
+	- DV(protocol deviation)
+	- CE(clinical events)
+----------------------------------------------------
+
+AE (Adverse event) :  side effects
+
+
+str: one record per adverse event per subject
+
+Topic variable: AETERM
+
+Identifier variable: STUYDID DOMAIN USUBJID AESEQ
+
+variable- lables
+-------------------------------------------
+---------------------------------------------------------------------------------------
+STUDYID
+DOMAIN  : AE
+USUBJID
+AESEQ  - Sequence number
+
+AESPID  : sponsor defined identifer
+AETERM   -  Reported term for adverse event
+AEDECOD  - Dictionry derived code
+AEBODYS  - Body sytem  (or) organ class
+AESEV  - severity/intensity
+AEOUT  - outcome of Adverse event
+AEREL - causuality
+AESER  - serious event
+AECONTRT  - concomnitant or additional trt given
+AEMODIFY - modifier reported term
+
+AEPRESP  -- pre speified adverse event
+AELOC  - location of event
+AEACN  - action taken with study treament
+AEACNOTH - other action taken
+
+AELLT - Lowest level term
+AELLTCD -   Lowest level term code
+AEHLT -  High level term
+AEHLTCD - High level term code
+AESOCCD  - primary system organ class code
+AEPTCD   - Preffered term code
+
+AESDTH - Results in death
+AESHOSP  - Requires or prolonged hospitalization
+AESLIFE  - Is life threatening
+AESCAN  -  Involves cancer
+AESDISAB - Persist or signif disability
+AESCONG  - congential anomaly ot birth defect
+
+AETOXGRD - standard toxicity grade
+AESTDTC   - AE start date& time in char
+AEENDTC  - AE end date& time in char
+AESTDY    - AE study start day
+AEENDY    - AE study end day
+
+AEENRTPT  - ENd relative to reference time point
+AEENTPT  - end reference time point
+AEENRF  - ENd relative to reference period
+
+AEDUR  - Duration of AE
+
+**********************************************************************
+AETERM   -  Reported term for adverse event
+			- topic variable
+
+			eg :headace
+			    skin rushes
+			    Backpain
+			    fever
+
+AEDECOD  - Dictionry derived code
+
+refer MedDRA : Medical dictionary
+version 22.1 
+
+
+AELLT - Lowest level term
+AELLTCD -   Lowest level term code
+AEHLT -  High level term
+AEHLTCD - High level term code
+AESOCCD  - primary system organ class code
+AEPTCD   - Preffered term code
+
+AEOUT  - out come of adverse event
+		"CONTROLLED TERMINOLOGY"
+		
+		RECOVERED/RESOLVED
+		NOT RECOVERED/NOT RESOLVED
+		DEATH
+		CONTINUING
+
+
+AESEV  - severity
+
+		- intensity
+
+		Mild
+		Moderate
+		Sever
+
+AEREL  - causality
+
+		"CONTROLLED TERMINOLOGY"
+
+	AE realtionship
+
+		AE   VS studydrug
+		
+	-AE is from study drug or not
+
+		- REALTED 
+		- NOT RELATED
+		- POSSIBLE REALTED
+		- UNLIKELY REALTED
+
+AELOC  - location of event
+
+		eg : ARM , LEG, NECK, HEAD
+		
+AERELNST : Not Related to study drug
+
+	- realtionship with  non-study trt
+
+		eg : more likly related to Aspirin use
+
+
+AECONTRT  - concomnitant or additional trt given
+		Y/N
+
+
+		CM - trt name 
+		
+
+AESER  - serious event
+		Y/N
+
+seriousness variables will come picture:
+
+AESDTH - Results in death
+			Y/N
+
+AESHOSP  - Requires or prolonged hospitalization
+			Y/N
+
+AESLIFE  - Is life threatening
+			Y/N
+
+AESCAN  -  Involves cancer
+		Y/N
+
+AESDISAB - Persist or signif disability
+		Y/N
+
+AESCONG  - congential anomaly ot birth defect
+			Y/N
+
+----------------------------------------------
+
+AEACN  : Action taken
+
+
+	-Action taken with Study Drug
+
+		- Dose reduction
+		- Dose reduction(temp, Pem)
+		- Discontinued(temp/perm)
+
+
+AEACNOTH  : other action taken
+
+		eg : Hospotialized
+
+
+AEBODSYS  : which body system or organ class is effected
+
+		eg : Nervous sytem
+			respiratory system
+
+
+
+AETOXGRD : standard toxicity grade
+
+		grade1 grade2 grade3 grade4 grade5
+
+grade5- death
+4- server
+3- moderate
+2- mild
+1- very less
+
+		eg: 1 2 3 4 5
+
+Note:  CTCAEV 3.0 version
+
+AEPRESP - pre - specified AE
+	---> Expectedness
+		Y/N
+
+AESTDTC   - AE start date& time in char
+AEENDTC  - AE end date& time in char
+
+
+AESTDY    - AE study start day
+
+	derive based AESTDTC & RFSTDTC
+
+	AESTDY = AESTDTC - RFSTDTC +1
+		(when AESTDTC  >= RFSTDTC   )
+
+	AESTDY = AESTDTC - RFSTDTC 
+		(when AESTDTC  < RFSTDTC   )	
+
+AEENDY    - AE study end day
+
+
+	
+	derive based AEENDTC & RFSTDTC
+
+	AEENDY = AEENDTC - RFSTDTC +1
+		(when AEENDTC  >= RFSTDTC   )
+
+	AEENDY = AEENDTC - RFSTDTC 
+		(when AEENDTC  < RFSTDTC   )	
+
+AEDUR:  duration of AE
+
+	note: we wont derive , we will capture from CRF
+
+
+AEENRTPT  - ENd relative to reference time point
+
+BEFORE
+AFTER
+ONGOING
+U
+COINCIDENT
+
+BEFORE:  AE Before TRT
+	If AESTDTC < RFSTDTC  then AEENRTPT  = "BEFORE" ;
+
+
+AFTER : AE after TRT
+	If AESTDTC > RFSTDTC  then AEENRTPT  = "AFTER" ;
+
+
+ONGOING : AESTDTC but we dont know AEENDTC should missing
+
+	if AESTDTC  ne " " and AEENDTC eq " "  then AEENRTPT  = "ONGOING";
+
+
+COINCIDENT  : AE same of trt start date
+
+U  : Unknown
+	- if we wont have AE values
+
+-----------------------------------------------------
+AEENRF  - ENd relative to reference period
+
+  		- we will capture ongoing values or missing
+
+
+
+AEENTPT  - end reference time point
+
+		last visit date of subject
+
+		SV.SVENDTC  ----> last.USUBJID
+
+
+	eg :     USUBJID    VISIT   SVSTDTC   SVSENDTC
+		-------------------------------------
+		101
+		101
+		101
+		101
+		101		5               2017-02-20	
+
+---------------------------------------------------------------------
+
+- MH(medical history) : 
+
+- subject  is having any previous or past medical history before TRT, we are going to capture in MH domain
+
+- this domain captures the past MH of subject which is illness or diseases or surgery or any accidental information.
+
+
+str: one record per medical history event per subject
+
+topic variable:  MHTERM
+		-HEADACE
+		- ASTHAMA
+		- ACCIDENT
+		- BROKEN LEG
+
+
+variable  - labels
+-----------------------------------------------
+STUDYID
+DOMAIN  : MH
+USUBJID 
+
+MHSEQ : seq number
+
+MHTERM   : reaported term for the medical history
+		- topic variabels
+		eg :  -HEADACE
+		- ASTHAMA
+		- ACCIDENT
+		- BROKEN LEG
+
+
+MHDECOD : Dictionary derived code
+		--> using MEDDRA  dic  version 22.1
+
+
+MHBODSYS  - body system or organ class
+		
+		eg :  respiratory system
+			nervous system
+			
+
+MHCAT  : category of medical history
+
+		eg : GENERAL	
+			CARDIAC
+
+MHSCAT  : sub category of medical history
+
+MHSTDTC  :  start date& time of medical history event
+
+MHENDTC  :  end date& time of medical history event
+
+MHDTC  :  date & time of history collection
+
+		-- when the MH details collected from the subject
+
+
+MHDY  - study day if history collection
+
+		derive based on MHDTC & RFSTDTC	
+
+
+		MHDY  = MHDTC - RFSTDTC +1 
+			(When  MHDTC >= RFSTDTC)
+
+		MHDY =  MHDTC - RFSTDTC 
+			(When  MHDTC < RFSTDTC)
+
+MHDUR : duration
+
+	note:  we wont derive, we have to captue from CRF
+
+
+MHPRESP  : medical history event pre - specified
+
+		Y/N
+
+	SUBJECT    TERM        MHPRESP  MHOCCUR 
+
+	101	  ASTHAMA           Y     Y
+
+	101       BACKPAIN          N     Y
+
+	101       SKIN RUSHES       Y     N 
+		
+
+MHOCCUR : medical history occrenace
+		Y/N
+
+
+MHSTAT  : completion status
+
+		eg : "NOT DONE"
+
+
+MHREASND  : reason for medical history not done 
+
+		eg : subejct refused to provide
+
+
+
+MHENRTPT : End realtive to reference time point
+
+BEFORE
+AFTER
+COINCIDENT
+ONGOING
+U
+
+BEFORE:  MH Before TRT
+	If MHSTDTC < RFSTDTC  then MHENRTPT  = "BEFORE" ;
+
+
+AFTER : MH after TRT
+	If MHSTDTC > RFSTDTC  then MHENRTPT  = "AFTER" ;
+
+
+ONGOING : MHSTDTC but we dont know MHENDTC should missing
+
+	if MHSTDTC  ne " " and MHENDTC eq " "  then MHENRTPT  = "ONGOING";
+
+
+COINCIDENT  : MH same of trt start date
+
+U  : Unknown
+	- if we wont have MH values
+
+-----------------------------------------------------
+MHENRF  - ENd relative to reference period
+
+  		- we will capture ongoing values or missing
+
+
+MHENTPT  - end reference time point
+
+		last visit date of subject
+
+		SV.SVENDTC  ----> last.USUBJID
+
+
+	eg :     USUBJID    VISIT   SVSTDTC   SVSENDTC
+		-------------------------------------
+		101
+		101
+		101
+		101
+		101		5               2017-02-20	
+
+---------------------------------------------------------------------
+- CE(clinical events)
+
+
+- this domain captures the clinical events that would not be classfied as Adverse event(AE)
+
+	eg : VOMIT	
+		HEADACE
+		DIARRHEA
+
+topic variable:  CETERM
+
+variable  - labels
+---------------------------
+STUDYID
+DOMAIN  : CE
+USUBJID
+
+
+CESEQ  : seq number
+
+CETERM  : reported term if a clinical event
+		- topic variables
+		eg : VOMIT	
+		HEADACE
+		DIARRHEA
+
+CEDECOD  : dictioanary derived term
+			- as per MEDDRA dic
+
+
+	
+CECAT  : category of clincial event
+CESCAT  : sub category of clincial event
+
+CEPRESP  : clinical pre specified
+		Y/N
+
+CEOCCUR  : Occurance of event
+		Y/N
+
+	SUBEJCT   TERM       CEPRESP    CEOCCUR  
+	101        FEVER       Y          N
+	102        FEVER       Y          Y
+
+CESTAT  : completion status
+
+		eg:  " Not done"
+
+CEREASND  : reason clinical event not collected
+
+		eg : subject refused
+	            subject left hosiptal early
+
+
+CEBODSYS  : Body system or organ class
+
+
+CESEV   : severity
+		- intensity
+
+		mild
+		moderate
+		severe
+
+CESTDTC  : clinical event start date& time in char
+
+CEENDTC  : clinical event end date& time in char
+
+CEDTC  : date of collection
+
+CEDY  : study day of collection
+
+		derive based on CEDTC & RFSTDTC
+
+
+
+CEDUR:  duration of CE
+
+	note: we wont derive , we will capture from CRF
+
+CEENRTPT  - ENd relative to reference time point
+
+BEFORE
+AFTER
+ONGOING
+U
+COINCIDENT
+
+BEFORE:  CE Before TRT
+	If CESTDTC < RFSTDTC  then CEENRTPT  = "BEFORE" ;
+
+
+AFTER : CE after TRT
+	If CESTDTC > RFSTDTC  then CEENRTPT  = "AFTER" ;
+
+
+ONGOING : CESTDTC but we dont know CEENDTC should missing
+
+	if CESTDTC  ne " " and CEENDTC eq " "  then CEENRTPT  = "ONGOING";
+
+
+COINCIDENT  : CE same of trt start date
+
+U  : Unknown
+	- if we wont have CE values
+
+-----------------------------------------------------
+CEENRF  - ENd relative to reference period
+
+  		- we will capture ongoing values or missing
+
+
+
+CEENTPT  - end reference time point
+
+		last visit date of subject
+
+		SV.SVENDTC  ----> last.USUBJID
+
+
+	eg :     USUBJID    VISIT   SVSTDTC   SVSENDTC
+		-------------------------------------
+		101
+		101
+		101
+		101
+		101		5               2017-02-20	
+
+---------------------------------------------------------------------
+- DS(Disposition):
+
+- status of subject
+
+- IN CRF " End of study form" we will collect these
+
+* this domian  captures the status of subject which includes the whether subject completed study or not completed study.
+
+
+** this domian also captures follwing term********
+
+
+- informed consent obtained
+- randamization
+- treatment
+- advese event
+- screen failure
+- stduy completed
+- blind status change
+
+
+- Protocol milestones
+	- informed consent obtained
+	- randamization
+
+- Disposition event
+
+	- treatment
+	- advese event
+	- screen failure
+	- stduy completed
+	- death
+
+- other event
+	- blind status change
+
+	dobule blinded  ----> open label
+
+
+
+Topic variable:  DSTERM
+
+variable- labels
+-------------------
+STUDYID 
+DOMAIN  : DS
+USUBJID  :
+DSSEQ   : Sequnece number
+
+DSTERM  -  A reported term for the disposition event
+DSDECOD   - standardized dispostion event
+
+DSCAT  - DS category
+DSSCAT - DS sub category
+
+DSSTDTC  - start date & time in char
+DSDTC  - DS collection date
+DSSTDY   - study start day
+
+EPOCH  - Epoch
+-------------------------------------------------------
+
+DSTERM  -  A reported term for the disposition event
+		- topic variables
+
+
+	eg : 
+- informed consent obtained
+- randamization
+- treatment
+- advese event
+- screen failure
+- stduy completed
+- blind status change
+
+DSDECOD   - standardized dispostion event
+
+eg:
+- INFORMED CONSET OBTAINED
+- RANDAMIZED
+- COMPLETED
+- DEATH
+- ADVERSE EVENT
+
+DSCAT  - DS category
+		eg : - Protocol milestones
+		    - Disposition event
+		    - other event
+
+
+Example:
+
+PT   TERM                 DSSTDTC      DSCAT
+
+101   INFORM CONSENT    2017-02-12   Protocol milestones
+101   RANDAMIZATION     2017-02-20    Protocol milestones
+101    TREATMENT         2017-02-21    Disposition event
+101    COMPLTED          2017-05-05     Disposition event
+
+DSSTDTC  - start date & time in char
+
+
+DSDTC  - DS collection date
+		-when DS details are collected		
+	
+DSSTDY   - study start day
+		derived based on DSSTDTC & RFSTDTC
+
+
+
+		DSSTDY   = DSSTDTC - RFSTDTC +1
+			(when DSSTDTC >= RFSTDTC)
+
+		
+		DSSTDY   = DSSTDTC - RFSTDTC
+			(when DSSTDTC < RFSTDTC)
+		
+
+EPOCH  :  group of element are called as an epoch   
+	
+		SCR- RUNIN - TRT - FL
+
+
+note:  we wont derived the epoch values for "Informed consent" and "Randamization"
+			
+		eg :  SCREENING EPOCH
+			TRETMENT EPOCH
+			FOLLOWUP EPOCH
+
+--------------------------------------------------------------------------------------
+Protocol Deviation(DV)
+
+- this domain is captured protocol violations and deviations during the course of study.
+
+str:  One record per protocol deviation per subject
+
+Topic variable: DVTERM
+
+
+variables  - variables labels
+-----------------------------
+STUDYID
+DOMAIN   : DV
+USUBJID  :
+DVSEQ  : sequ number
+
+
+DVTERM  : Protocol Deviation term
+
+		- topic variabels
+
+		eg :  took Drugx probhibted medis
+			visit2 15mg
+			
+		
+DVDECOD   : Protocol Deviation code term
+
+		eg : probhibted medicine
+			treatment deviation
+
+DVCAT   :  DV category
+
+DVSCAT   : DV sub category
+
+DVSTDTC  : DV start date & time in char
+
+DVENDTC   : DV end date & time in char
+
+EPOCH    : epoch
+		eg : treatment epoch 
+			followup epoch
+------------------------------------------------------------
+
+- Interventions
+	- Ex(Exposure)
+	- EC(Exposure as collected)
+	- CM (Concomitant medication)
+
+	- SU(substance use)
+
+--------------------------------------------------
+- CM (Concomitant medication) :
+
+
+* This domain captures the when subejct is taking any extra medications other than study drug
+
+
+-- due to previous diseases or illnes  ---> he will take CM
+-- Due to AE also   ----------------------> he will take CM
+
+
+str: one record per intervenation occurrrence per subject
+
+topic variables:  CMTRT
+
+variables  - labels
+----------------------------
+STUDYID:
+DOMAIN: CM
+USUBJID:
+CMSEQ  : seq NUMBER
+
+CMTRT  : Reported name of drug,med or therpy
+CMDECOD  : CM dictionary derived code
+
+CMDOSE  : Dose
+CMDOSU   : Dose units
+CMDOSFRQ  : Dose Frequnecy
+
+CMDOSTXT  :  Dose Description
+CMDOSREG  : Dose regimen
+CMDOSTOT  : total daily dose
+CMROUT  : route of adminisatration
+
+CMINDEC : Indication
+
+CMCAT  : CM category
+CMSTDTC  : CM start date & time in char
+CMENDTC   : CM end date & time in char
+
+CMSTDY   : CM stduy start day
+CMENDY   : CM study end day
+
+CMSTRTPT:
+CMSTTPT:
+CMENRTPT:
+CMENTPT:
+
+CMENRF  :
+---------------------------------------------------------------------------------------------
+CMTRT  : Reported name of drug,med or therpy
+
+		- topic variabel
+
+		eg : paracetomol
+			aspirin
+			drugx
+
+CMDECOD  : CM dictionary derived code
+
+		refer WHO (world health organztion dic)
+
+		
+
+CMDOSE  : Dose per administration
+		- amount of drug
+		eg : 20 10
+
+		20mg  10ml
+  	
+CMDOSU   : Dose units
+		eg : md ml
+
+
+CMDOSFRQ  : Dose Frequnecy per interval
+
+		eg : one per day/ twice per day
+
+
+CMDOSTXT  :  Dose Description
+	
+	
+			eg : 10-20 mg
+				<100 mg
+				
+				20-25 ml
+
+
+CMDOSREG  : Dose regimen
+
+		regimen or schedule
+		eg : two weeks on / two week off
+
+CMDOSTOT  : total daily dose
+		eg : 10+10  =  20mg 
+		
+CMROUT  : route of adminisatration
+			eg : ORAL
+			     INTRAVENOUS
+				NOSE
+
+ 
+CMINDEC : Indication
+		---> why medication was taken???
+
+			    eg : due to adverse vent
+				due to prior illeness
+
+CMCAT  : CM category
+		
+
+CMSTDTC  : CM start date & time in char
+
+CMENDTC   : CM end date & time in char
+
+CMSTDY   : CM stduy start day
+		derive based on CMSTDTC & RFSTDTC
+
+		CMSTDY  = CMSTDTC - RFSTDTC + 1
+			(when CMSTDTC >= RFSTDTC)
+
+		
+		CMSTDY  = CMSTDTC - RFSTDTC 
+			(when CMSTDTC < RFSTDTC)
+
+
+CMENDY   : CM study end day
+
+			derive based on CMENDTC & RFSTDTC
+
+		CMENDY  = CMENDTC - RFSTDTC + 1
+			(when CMENDTC >= RFSTDTC)
+
+		
+		CMENDY  = CMENDTC - RFSTDTC 
+			(when CMENDTC < RFSTDTC)
+
+
+
+CMSTRTPT: start relative to reference time point
+	- both before and after reference time point
+	
+CMSTTPT: start reference time point
+
+
+CMENRTPT : end realtive to a refrence time point
+		BEFORE
+		AFTER 
+		ONGOING
+		U
+		COINCIDENT
+
+BEFORE: CM BEFORE TRT
+		CMSTDTC < RFSTDTC
+	
+AFTER : CM AFTER TRT
+		CMSTDTC > RFSTDTC
+
+ONGOING: CMSTDTC , BUT WE DONT KNOW CMENDTC SHOULD BE MISSING
+
+		if CMSTDTC ^=" ." AND CMENDTC = " "
+
+
+COINCIDENT:  CM SAME TO TRT START DATE
+
+		CMSTDTC =  RFSTDTC
+
+	U: unknown
+			- if dont know CM values	
+
+CMENTPT  : End reference time point
+
+
+ eg:  PT      trt     dose       start end   prior ongoing
+		
+      101    drugx  10mg         null  null   yes   yes
+
+
+CMSTRTPT : "before"
+
+CMSTTPT:  SCR visit start date
+
+
+CMENRTPT: "ONGOING"
+
+CMENTPT: last visit date of subject
+
+		SV. SVENDTC  ---> last.USUBJID
+
+
+	eg :    SUBJID   VISIT   STDT   ENDT
+	-------------------------------------------
+		101  	1       2017-02-10
+		101	2
+		101	3
+		101	4
+		101	5		2017-10-20		
+
+------------------------------------------------------------------------------------
+
+eg :
+
+STUDYID CMSEQ	DOMAIN	  CMTRT    CMDOSE  CMDOSU  CMDOSFRQ    CMSTDTC      CMENDTC
+101      1  	 CM	  ASPIRAN   10     MG      ONCE       2014-01-15   2014-01-15
+101      2 	 CM 	 ASPIRAN    10      MG      ONCE       2014-01-16  2014-01-16
+------------------------------------------------------------------------------------------
+
+- SU(substance use):
+
+
+
+- This domain captures if subject is having any folllwing habits
+	- Smoking
+	- Alchol
+	- Coffee
+
+str: one record per substance type per subject
+
+Topic variable: SUTRT
+
+10ml of wine is taking per week
+
+SUTRT  :  wine 
+SUDOSE : 10
+SUDOSU  : ml
+SUDOSFRQ : once per week
+SUDOSFRM : Liquid
+SUROUT: ORAL
+
+
+2CUPS of tea is taking two times per day
+
+SUTRT: Tea
+SUDOSE : 2
+SUDOSU : cups
+SUDOSFRQ : two times per day
+SUDOSFRM  : Liquid
+SUROUT : ORAL
+---------------------------------------------------------------------------------
+Varibales  - Lables
+---------------------------------------------
+STUDYID:
+DOMAIN  : SU
+USUBJID :
+SUSEQ  : seq number
+
+SUTRT : 
+		- topic variables
+		eg: wine
+		    tea
+		   coffee
+
+SUDECOD  : standardized substance name
+
+SUCAT : substance category
+		
+		eg : TOBACCO, ALCOHOL, CAFFINE
+
+SUSCAT : substance sub category
+		eg : CIGARS. CIGRAETTES, BEER,WINE
+
+
+SUPRESP  : Pre specified
+		- exptectedness
+			Y/N
+
+SUOCCUR  : subtance occurance
+
+		Y/N
+		
+		subject trt  SUPRESP   SUOCCUR
+
+		101      tea  Y         Y
+
+
+SUSTAT  : completion status
+		eg : "Not done"
+
+SUREASND: Reason substance use not collected
+		eg : subject may refused to provide details
+
+
+SUDOSE : Substance dose
+
+		eg : 10  30
+
+SUDOSU  : Substance dose units
+			eg :  cups ml
+SUDOSFRQ : Frequncy /interval
+	
+		eg : twice per day
+
+			once per week
+SUDOSFRM : Dose forum
+		eg : Liquid
+
+SUROUT: route of administation
+		eg : ORAL
+
+SUDOSTXT  : substance use consumption txt
+
+		eg:  <20 ml
+
+			25-30 ml
+
+SUSTDTC  : subtance start date & time in char
+
+SUENDTC : substance end date & time in char
+
+
+SUSTDY  : study start day
+		derived based on SUSTDTC & RFSTDTC
+
+			SUSTDY  =  SUSTDTC - RFSTDTC +1
+					(when  SUSTDTC >= RFSTDTC)
+
+			SUSTDY  =  SUSTDTC - RFSTDTC
+					(when  SUSTDTC < RFSTDTC)
+SUENDY  : study end day
+		derived based on SUENDTC & RFSTDTC
+
+			SUENDY  =  SUENDTC - RFSTDTC +1
+					(when  SUENDTC >= RFSTDTC)
+
+			SUENDY  =  SUENDTC - RFSTDTC
+					(when  SUENDTC < RFSTDTC)
+
+
+
+SUSTRTPT: start relative to reference time point
+
+	- both before and after reference time point
+	
+SUSTTPT: start reference time point
+
+
+SUENRTPT : end realtive to a refrence time point
+
+		BEFORE
+		AFTER 
+		ONGOING
+		U
+		COINCIDENT
+
+BEFORE: SU BEFORE TRT
+		SUSTDTC < RFSTDTC
+	
+AFTER : SU AFTER TRT
+		SUSTDTC > RFSTDTC
+
+ONGOING: SUSTDTC , BUT WE DONT KNOW SUENDTC SHOULD BE MISSING
+
+		if SUSTDTC ^=" ." AND SUENDTC = " "
+
+
+COINCIDENT:  SU SAME TO TRT START DATE
+
+		SUSTDTC =  RFSTDTC
+
+	U: unknown
+			- if dont know SU values	
+
+SUENTPT  : End reference time point
+
+
+ eg:  PT      trt     dose       start end   prior ongoing
+		
+      101    wine    20ml        null  null   yes   yes
+
+
+SUSTRTPT : "before"
+
+SUSTTPT:  SCR visit start date
+
+
+SUENRTPT: "ONGOING"
+
+SUENTPT: last visit date of subject
+
+		SV. SVENDTC  ---> last.USUBJID
+
+
+	eg :    SUBJID   VISIT   STDT   ENDT
+	-------------------------------------------
+		101  	1       2017-02-10
+		101	2
+		101	3
+		101	4
+		101	5		2017-10-20		
+
+------------------------------------------------------------------------------------
+
+- Interventions
+	- Ex(Exposure)
+
+- this domain captures the deatils of subject exposure to protocol specified study trt/ study drug
+
+Topic variable:  EXTRT
+			
+variabels  - labels
+-----------------------
+STUDYID
+DOMAIN  : EX
+USUBJID:
+EXSEQ   : seq number
+
+EXTRT  : Name of trt
+		- topic variabels
+			eg : DRUGX
+				DRUGY
+
+
+EXCAT  : category of trt
+
+		eg : based on EXTRT
+
+
+EXSCAT  : sub category of trt
+
+
+EXDOSE  : Dose
+
+		eg : 10mg 25mg 10ml
+
+EXDOSU  : dose units
+		eg : mg ml
+
+EXDOSTXT  : Dose description
+
+		eg :  <10 mg
+
+			20- 25 mg
+
+
+EXDOSFRM  : Dose forum
+		eg : Tabelts, Lotion, Liquid
+
+
+EXDOSFRQ: Frequency of dose per interval
+
+		eg : once a day, per week
+
+
+EXDOSRGM : Intended to Regimen
+
+	Regimen  - Schedule
+	
+		eg : Two weeks on
+			two weekf off
+
+EXROUTE : Route of administration
+
+		eg : ORAL
+			intravenous
+EXLOT  : Lot number
+
+EXLOC  : Location of dose administration
+		eg : ARM , LEG, LIP
+
+EXDIR : Directionality
+
+		eg : LEFT, RIGHT, UPPER , LOWER, PROXIMAL , ANTERIOR
+
+
+EXADJ  : the reason for the adjustment
+		10mg  ------> 5mg
+
+
+
+EXSTDTC  : Exposure start date & time in char
+
+EXENDTC  : Exposure end date & time in char
+
+
+EXSTDY  : study start day
+			derive based on EXSTDTC & RFSTDTC
+
+
+EXENDY  : study end dat
+			derive based on EXENDTC & RFSTDTC
+
+
+EXDUR: Duration
+	note: capture from CRF
+
+-----------------------------------------------------------------------
+EC:   Exposure as collected
+
+
+this EC domain 	captures the protocol specified study trt administared, as collected
+
+
+str : one record per protocol specified study trt , collected dosing interval per subject
+
+topic variabels : EXTRT
+
+variabels - labels
+----------------------
+STUDYID
+DOMAIN  : EX
+USUBJID:
+ECSEQ   : seq number
+
+ECTRT  : Name of trt
+		- topic variabels
+			eg : BOTTELA
+				BOTTELB
+			
+
+
+ECCAT  : category of trt
+
+		eg : based on ECTRT
+
+
+ECSCAT  : sub category of trt
+
+
+ECDOSE  : Dose
+
+		eg : 10mg 25mg 10ml
+
+ECDOSU  : dose units
+		eg : mg ml
+
+ECDOSTXT  : Dose description
+
+		eg :  <10 mg
+
+			20- 25 mg
+
+
+ECDOSFRM  : Dose forum
+		eg : Tabelts, Lotion, Liquid
+
+
+ECDOSFRQ: Frequency of dose per interval
+
+		eg : once a day, per week
+
+
+ECDOSRGM : Intended to Regimen
+
+	Regimen  - Schedule
+	
+		eg : Two weeks on
+			two weekf off
+
+ECROUTE : Route of administration
+
+		eg : ORAL
+			intravenous
+ECLOT  : Lot number
+
+ECLOC  : Location of dose administration
+		eg : ARM , LEG, LIP
+
+ECDIR : Directionality
+
+		eg : LEFT, RIGHT, UPPER , LOWER, PROXIMAL , ANTERIOR
+
+
+ECADJ  : the reason for the adjustment
+		10mg  ------> 5mg
+
+
+
+ECSTDTC  : Exposure as collected start date & time in char
+
+ECENDTC  : Exposure as collected end date & time in char
+
+
+ECSTDY  : study start day
+			derive based on ECSTDTC & RFSTDTC
+
+
+ECENDY  : study end dat
+			derive based on ECENDTC & RFSTDTC
+
+
+ECDUR: Duration
+	note: capture from CRF
+
+
+ECPRESP  : pre specified
+		- expectedness		
+		Y/N
+	
+
+ECOCCUR  : Occurrence
+			Y/N
+
+
+
+ECFAST  : fasting status
+---------------------------------------------------------------------------
+eg :  
+
+101   DRUGX 20 MG TABELETS EVERY DAY     2011-01-14  TO 2011-01-28
+
+- MISSED DOSING ON 2011-01-24
+
+
+EX DOMAIN:
+
+STUDYID   DOMAIN  EXSEQ  EXTRT  EXDOSE  EXDOSU EXDOSFRQ   EXDOSFRM   EXROUT  EXSTDTC EXENDTC
+
+101        EX      1      DRUGX  20    MG  ONCE PER DAY  TABELETS  ORAL  2011-01-14  2011-01-23
+101        EX      2      DRUGX  20   MG  ONCE PER DAY  TABELETS  ORAL  2011-01-25  2011-01-28
+
+
+EC DOMAIN:
+  
+STUDYID   DOMAIN  ECSEQ  ECTRT ECPRESP ECOCCUR ECDOSE  ECDOSU ECDOSFRQ   ECDOSFRM   ECROUT  ECSTDTC ECENDTC
+
+101        EC      1      BOTTELA  Y      Y      20    MG  ONCE PER DAY  TABELETS  ORAL  2011-01-14  2011-01-23
+101        EC      2      BOTTELA  Y      N     20   MG    ONCE PER DAT  TABELETS  ORAL  2011-01-24  2011-01-24
+101        EC      3      BOTTELA  Y      Y     20   MG  ONCE PER DAY    TABELETS  ORAL  2011-01-25  2011-01-28
+
+--------------------------------------------------------------------------------------------------------
+- Findings
+
+	- LB: Laboratory domain
+
+- THis domain captures details about hematology, chemistry, urinanalysis data
+
+note:  Does not include microbiology or pharmacokinetic data
+
+
+str:  one record per lab test per time point per visit per subject
+
+Topic variabel:  LBTESTCD
+
+pt ------> sample ------> lab -----> test ---> results
+
+ hematology,
+ chemistry, 
+ urinanalysis
+
+Results  -----> ref rage
+
+65 units          60- 90
+<65
+>65
+
+
+original results  ----> Standard results in char  ---> std results in  num
+
+eg:
+101   5000g  ------------>  50kg 
+
+102     40kg ----------->  40kg
+
+---------------------------------------------------------------------------
+Variable - Labels
+-------------------------------
+STUDYID
+DOMAIN  : LB
+USUBJID:
+LBSEQ:   Sequnce number
+
+
+LBTEST  : Lab test name
+		-- 40char
+
+LBTESTCD : Lab test short name
+			-- 8char
+
+		---> topic variable
+
+LBCAT : catergory of Lab test
+
+	eg:
+
+	hematology, 
+	chemistry, 
+	urinanalysis
+
+
+LBSCAT  : sub cat lb test
+		eg : Elecrolytes, liver function
+
+
+LBORRES ---> original Test results
+LBORRESU --->  original Test results units
+
+LBORNRLO  ---> Lower Limit in a original results
+LBORNRHI  ---> Higher Limit in a original results
+
+LBSTRESC  ---< standard results in char
+LBSTRESN ---< standard results in Num
+
+LBSTRESU ---< standard results units
+
+LBSTNRLO  ---> Lower Limit in a std results
+LBSTNRHI  ---> Higher Limit in a std results
+
+
+LBNRIND  : Indicator
+	
+		eg : High Low Medium normal abnormal
+
+LBSTAT  : Complettion status
+			eg : "Not done"
+		
+LBREAND : reason test not done
+			eg : broken Eqipment
+				Subject refused
+
+LBNAME  : Vendor Name
+
+		---> Name of Lab
+
+			eg : SLR Labs
+				Quanitilies
+
+
+
+LBLOINC  : LOINC code
+
+		Dictionary derived code  ---> LBTEST
+
+
+
+3 dic:
+
+Meddra --> AE 
+WHO    ---> CM
+LOINC   --> LB
+
+
+LBSPEC : Specimen type
+
+		eg : SERUM , PLASMA , URINE
+
+LBSPCCND:  Speciment condition
+
+		eg :  ICTERIC, HEMOLYZED, LIPMIC
+
+
+LBMETHOD  --> Method of test or examination
+
+		eg : Dipstick, Electrophoresis
+
+LBBLFL  ---> base line flag
+			Y/N
+
+
+		eg:    pt     Test  Results  units      LBDTC       RFSTDTC     LBBLFL
+
+		       101     X     65      mmg       12/11/19      22/11/19     Y 
+
+			101    X      68     MMG        22/11/19     22/11/19	  N	
+			
+			101    x       70  mmg          20/12/19      20/12/19     N
+
+
+LBFAST   : fasting status
+			Y/N
+
+LBDRVFL  ---> Derived flag
+			Y/N
+
+		orig   std results  LBDRVFL  
+
+	101	--       65mmg      Y
+
+	101      6.5mgg    65mmg    
+
+		note: - when we have original results are missing
+
+
+VISIT  --: Visit name
+VISITNUM  : Visit number
+VISITDY  : Planned study day of visit
+
+
+LBDTC  : LB date of collection
+
+LBDY  :study day of collection
+			drived based LBDTC & RFSTDTC
+	
+		LBDY = LBDTC - RFSTDTC + 1
+				(when LBDTC >= RFSTDTC)
+
+		LBDY = LBDTC - RFSTDTC
+				(when LBDTC < RFSTDTC)
+
+LBTPT  : Planned time point 
+
+LBTPTNUM  : Planned time point number
+
+		LBTPT         LBTPTNUM
+
+		-------------------------------------
+		pre -dose         1
+		0-5hour           2
+		10  min            3
+		5 min               4
+		8 - 16 hours         5
+    
+LBTPREF   : Time point reference
+
+		eg: BEfore dose
+				dosing
+					After dosing
+
+--------------------------------------------------------------------------			
+
+VS - vital Sign
+
+this domain captures the following measurments
+
+- height
+- weight
+- BMI
+- Temp
+- Plus rate
+- SBP
+- DBP
+
+--------------------------------------------------------------
+
+str: one record per vital sign measurment per visit per subject
+
+topic variable : VSTESTCD
+
+variable - lables
+--------------------------
+
+STUDYID
+DOMAIN : VS
+USUBJID  :
+VSSEQ  : Sequncen number
+
+VSTEST  : Test name
+		eg : - height
+- weight
+- BMI
+- Temp
+- Plus rate
+- SBP
+- DBP
+	--> upto 40 char
+
+VSTESTCD: test short name
+		- upto 8 char
+		- topic variabel
+
+
+
+VSCAT  : 
+VSSCAT  :
+
+
+VSPOS  :  Vital sign position of subject
+			eg : sitting
+				standing
+
+VSORRES  : VS original results
+VSORRESU  : VS original rsults units
+
+VSSTRESC : VS std results in char
+VSSTRESN  : VS std results in num
+VSSTRESU  : vs std rsults units
+
+note: converstion factor
+			oiriginal    units    factor       
+			500	     gm	     origin*10    kg	
+
+VSSTAT   : completion status
+			eg : "Not done"
+
+VSREASND: Reason not done test
+		eg : Subject refused
+
+
+
+VSLOC  : Location
+		eg : ARM MOUTH
+
+
+VSLAT  : laterality
+
+		eg : LEFT RIGHT
+
+
+VSBLFL  : Base line flag
+			Y/N
+
+
+		eg:    pt     Test  Results  units      LBDTC       RFSTDTC     VSBLFL
+
+		       101     weight     65      kg   12/11/19      22/11/19     Y 
+
+			101    weight     68     kg     22/11/19     22/11/19	  N	
+			
+			101    weight     70     kg      20/12/19      20/12/19   N
+
+
+VSFAST   : fasting status
+			Y/N
+
+VSDRVFL  ---> Derived flag
+			Y/N
+
+		orig   std results  VSDRVFL  
+
+	101	--       65kg      Y
+
+	101      650g    65kg    
+
+		note: - when we have original results are missing
+
+
+VISIT  --: Visit name
+VISITNUM  : Visit number
+VISITDY  : Planned study day of visit
+
+
+VSDTC  : VS date of collection
+
+VSDY  :study day of collection
+			drived based VSDTC & RFSTDTC
+	
+		VSDY = VSDTC - RFSTDTC + 1
+				(when VSDTC >= RFSTDTC)
+
+		VSDY = VSDTC - RFSTDTC
+				(when VSDTC < RFSTDTC)
+
+VSTPT  : Planned time point 
+
+VSTPTNUM  : Planned time point number
+
+		VSTPT         VSTPTNUM
+
+		-------------------------------------
+		pre -dose         1
+		0-5hour           2
+		10  min            3
+		5 min               4
+		8 - 16 hours         5
+    
+VSTPREF   : Time point reference
+
+		eg: BEfore dose
+				dosing
+					After dosing
+
+--------------------------------------------------------------------------			
+PE(physical examination):
+
+- this domain captures the normalities and abnormalities of body system organ class 
+		and any rashes on skin
+
+
+test  results
+--------------------
+Heart   Normal/abnormal
+kidney  Normal/abnormal
+Liver   Normal/abnormal
+Skin    Normal/abnormal
+ENT     Normal/abnormal
+----------------------------------------
+
+str: One record per body system per visit per subject
+
+Topic variable:  PETESTCD
+
+variable  - lables
+---------------------------------------
+
+STUDYID:
+DOMAIN  : PE
+USUBJID:
+PESEQ  : Sequnence number
+
+PETEST  : PE test name
+			-- 40 char 
+
+		eg : ear/nose/thort
+			skin
+			heart
+			kidney
+
+PETESTCD  : PE test short name
+		eg : ENT 
+			skin
+			heart
+
+		--upto 8 char
+			- topic variable
+
+
+
+PECAT  : PE category
+		eg : general cat
+			respiratory
+
+PESCAT: PE sub category
+
+PEORRES : original results
+			eg :  Normal/abnormal
+			
+PEORRESU  : Original results units
+
+PESTRESC: std results in char 
+		eg :  Normal/abnormal
+
+PESTRESN:std results in num
+PESTRESU : std results units
+
+
+PESTAT  : completion status
+		eg : Not done
+
+PEREASND: Reason for rest not exmined
+
+PEMETHOD:   Method of test
+
+		eg : XRAY  MRI
+
+
+PEEVAL  : Evaluator
+
+PELOC   : Location
+
+		eg : Arm , leg
+
+PEBODSYS :Body system or organ class
+	
+
+		eg : Respiratory system
+			nervous system
+
+
+VISIT: Name of visit
+VISITNUM: visit number
+VISITDY:  planned study day of visit
+
+PEDTC: date of collection/examination
+PEDY : study day of examination
+
+--------------------------------------------------------------------------------------------
+
+IE(Inclusion/Exclusion criteria not met) :
+
+- This domain captures the subject who are not met by the Inclusion/Exclusion criteria
+
+note:
+
+INCLUSION  -  NO
+EXCLUSION  -  yes
+
+
+INCL01- Is the subject a healthy male aged between 18 and 60 years? - NO
+INCL02 - Has the subject willingly given written informed consent?   - NO
+INCL03
+
+EXCL01
+EXCL02
+EXCL03
+
+str: one record per IE criterion not met per subject
+
+topic variable: IETESTCD
+
+variable - labels
+----------------------------------
+STUDYID
+DOMAIN  : IE
+USUBJID
+IESEQ   : sequcene number
+
+
+IETEST : Inclusion/Exclusion criteria
+			- more than 200 char
+
+		eg :  Is the subject a healthy male aged between 18 and 60 years?
+
+
+IETESTCD  : Inclusion/Exclusion criteria short name
+				- 8 char
+				- topic variable
+		eg :INCL01
+
+IECAT  : IE category
+		eg : INCLUSION
+			EXCLUSION
+
+IESCAT  : IE sub category
+		eg : Major
+			Minor
+
+IEORRES: Original results
+			Y/N
+
+IESTRESC:  std results in char
+			Y/N
+
+
+visit : visit name
+Visitnum  : Visit number
+VISITDY  :
+
+
+IEDTC : date/ time of collection
+IEDY  : study day of collection
+			derived based on IEDTC & RFSTDTC
+
+--------------------------------------------------------------------------
+EG  : (ECG test result)
+
+str: one record per ECG observation per visit per subect
+
+Topic variable: EGTESTCD
+
+variable - labels
+---------------------------------
+STUDYID
+DOMAIN : EG
+USUBJID
+EGSEQ   : Seq number
+
+EGTEST : ECG TEST
+EGTESTCD  : ECG Test short name
+		- 8 char
+		- topic variable	
+
+
+EGCAT  :  EG category
+EGSCAT : EG category
+
+EGORRES  : EG original results
+EGORRESU : EG original results units
+
+EGSTRESC: EG std results in char
+EGSTRESN : EG std results in num
+EGSTRESU  : EG std results units
+
+EGSTAT : Completion status
+		eg : "Not done"
+
+EGRESND: Reason for EG test not done
+			eg : Equipment damaged
+				subject refused
+
+EGNAM  : Vendor name
+		
+EGPOS  : ECG positon of a subject
+		eg : standing sitting
+
+EGMETHOD : Method of examination
+
+EGBLFL  :EG base Line flag
+		Y/N
+
+
+		eg:    pt     Test  Results  units      EGDTC       RFSTDTC     EGBLFL
+
+		       101     ECG	65      kg   12/11/19      22/11/19       Y 
+
+			101    ECG	68     kg     22/11/19     22/11/19	  N	
+			
+			101    ECG 	70     kg      20/12/19      20/12/19     N
+
+
+EGFAST   : fasting status
+			Y/N
+
+EGDRVFL  ---> Derived flag
+			Y/N
+
+		orig   std results  EGDRVFL  
+
+	101	--       65kg      Y
+
+	101      650g    65kg    
+
+		note: - when we have original results are missing
+
+
+
+EGEVAL : Evaluator
+
+VISIT
+VISITNUM
+VISIDY
+
+EGDTC  : date & time of ECG
+EGDY  : Study day of ECG
+		based on EGDTC & RFSTDTC
+
+
+EGTPT: Planned time point
+EGTPTNUM  : Planned time point number
+
+EGFXN  - ECG External file path
+		eg: ECG WAVEFORM file
+
+----------------------------------------------------------------
+
+DD : (death Details)
+
+- this domain captures the information pertaining to the death of the subejct,
+	it cludes
+		- Primary cause of death
+		- Secondary cause of death
+		- Location of death
+
+
+- Primary cause of death
+		eg : sudden heat attack
+			- Due to adverse event
+
+
+- Location of death
+		eg : at home 
+			at hosipital
+
+---------------------------
+	AE  - AEOUT-"DEATH"  - AEENDTC
+
+	DM -  DTHDTC  -- death date
+		
+	DS  - DSTERM  -" death" -- DSSTDTC 
+-----------------------------------------------------
+
+str: one record per finding per subject
+
+Topic variable : DDTESTCD
+
+variable - lables
+---------------------------
+STUDYID
+DOMAIN: DD
+USUBJID
+DDSEQ  : Seq number
+
+DDTEST : DD test
+		eg :	
+		- Primary cause of death
+		- Secondary cause of death
+		- Location of death
+
+DDTESTCD : DD test short name char
+			- upto 8 char
+			- topic variable
+
+
+
+DDORRES : original results
+		eg : sudden heat attack
+			- Due to adverse event 
+
+DDSTRESC: std results
+		
+DDRESCAT  : result catgory
+
+		" Controlled Terminologies"
+
+		- TREATMENT REALTED
+		- NON TREATMENT REALTED
+		- ACCIDENTAL
+		- UNDETERMINED
+
+
+
+DDEVAL  : evalutor
+		
+
+DDDTC : date/time of collection
+
+			note: It is  May or may not be death date
+		
+DDDY : Study day of collection
+		derived based on DDDTC & RFSTDTC
+		
+-----------------------------------------------------------------------------------
+
+DA - (Drug accountability)
+		- this domain captures the data regading the accountability of study drug
+
+		such as information of dispense, return, receipt, and packaging
+
+
+str:  one record per drug accountability findings per subject
+
+topic variable:  DATESTCD
+
+variable - labale
+--------------
+STUDYID
+DOMAIN : DA
+USUBJID
+DASEQ
+
+DATEST  :
+DATESTCD:
+
+DACAT:
+DASCAT :
+
+DAORRES  : original results
+DAORRESU : original results units
+
+DASTRESC:  : std results in char
+DASTRESN:  : std results in num
+DASTRESU:  : std results units
+
+
+DASTAT : completion status
+DAREASND : reason for not collected
+
+VISIT
+VISITNUM
+VISITDY
+
+DADTC: collection date
+DADY  : study day
+------------------------------------
+
+- Trail design models(TDM)
+	- TA
+	- TE
+	- TV
+	- TI
+	- TS
+------------------------------------------------------
+
+--> source documents ---> protcol
+
+---> we dont any subject  details or date
+
+--> we wont derive any rawdatasets and CRF
+
+**********************************************************************************************
+- TA(Trail Arms)
+
+	- this domain captures the planned TRT and their elements
+		
+		SCR- RUNIN - TRT - FL
+
+parallel study
+
+sub:
+
+	101  ----> da  ----->> end of trt
+	102  ----> placebo -----> end of trt
+
+cross over study :
+
+	101 --> druga ---> washoutperiod/rest period ---> drugb ----> wp ----> placebo
+
+	102  ---> Placebo ---> wp -------> druga -----> wp ----> drugb
+
+
+epoch  : group of elements we called it as epoch
+-----------------------------------------------------------
+
+
+str: one record per planned element per arm
+
+topic variable: ARMCD
+
+variables - labels
+---------------------------------
+STUDYID
+DOMAIN  : TA
+
+ARMCD : planned arm code
+ARM  : Description of Planned arm
+
+ETCD: element code
+ELEMENT :  Descritpion of element
+
+TAETORD : planned order of element within arm
+TABRANCH  : branch
+
+EPOCH  :
+---------------------------------------------------------------
+ARMCD : planned arm code
+		- trt(study drug) short name
+				- 20char
+
+			- topic variable
+
+ARM  : Description of Planned arm
+
+		-- trt(study drug) name
+
+
+ETCD: element code
+	
+ELEMENT :  Descritpion of element
+		
+		SCR- RUNIN - TRT - FL
+		1     2       3     4	
+
+
+TAETORD : planned order of element within arm
+
+		SCR- RUNIN - TRT - FL
+		1     2       3     4	
+
+note: we will found this TAETORD in SE domain
+
+
+
+TABRANCH  : branch
+		-- only populated for runin values
+
+EPOCH  : 
+
+-----------------------------------------
+
+
+Parallel study:
+
+		DRUGA
+		PLACEBO
+
+		SCR- RUNIN - TRT - FL
+
+
+epoch :				DRUGA  - FOLLOWUP  
+		SCR - RUNIN
+				PLACEBO	- FOLLOWUP
+
+
+
+epoch1 :  SCR- RUNIN - DRUGA  - FOLLOWUP   --- 4
+
+Epoch2 : SCR - RUNIN - PLACEBO	- FOLLOWUP   -- 4
+					-------------------
+						8
+----------------------------------------------------------------------------------------------
+
+STUDYID DOMAIN   ARMCD ARM    ETCD ELEMENT    TAETORD    TABRANCH              EPOCH
+
+ABC      TA      DA   DRUGA  SCR  SCREENING        1                      Screening   epoch
+
+ABC       TA    DA      Druga    RI     RUNIN      2     Randomized to Druga     Runin
+
+ABC       TA     DA     Druga    DA    Druga       3                            Treatment
+
+ABC       TA     DA     Druga    FL     Followup    4                           Followup
+
+ABC     TA      PL     Placebo   SCR    Screnning  1                            Screening
+d
+ABC       TA    PL      Placebo   RI     RUNIN      2     Randomized to placebo     Runin
+
+ABC       TA     PL     Placebo   PL     Placebo      3                            Treatment
+
+ABC       TA     PL     Placebo    FL     Followup    4                           Followup
+
+-----------------------------------------------------------------
+
+crossover study
+
+		druga
+		drugb
+		placebo
+
+
+SCR -RUNIN - TRT -WP - TRT - WP - TRT - FL
+
+
+		DA - WP - DB - WP - PL -FL
+
+SCR  - RUNIN    DB  - WP - DA - WP - PL - FL
+	
+		PL - WP - DB  -  WP - DA - FL
+
+
+-------------------------------------------------------
+
+epoch1 :
+	SCR  - RUNIN - 	DA - WP - DB - WP - PL -FL   -- 8
+
+
+epoch2 : 
+	SCR- RUNIN  - DB  - WP - DA - WP - PL - FL   --- 8
+
+
+epoch3:
+	SCR - RUNIN - PL - WP - DB  -  WP - DA - FL  ---  8
+							----------------
+							24 observations
+---------------------------------------------------------------------------------------
+
+STUDYID DOMAIN  ARMCD            ARM              ETCD  ELEMENT  TAETORD TABRANCH   EPOCH
+
+ABC      TA      DA-DB-PL  Druga-Drugb-placebo    SCR    screening  1  	            Screening epoch
+
+ABC       TA    DA-DB-PL  Druga-Drugb-placebo     RI     Randamiztion 2   Randamized to DA-DB-PL  RUNIN
+
+ABC       TA    DA-DB-PL  Druga-Drugb-placebo      DA     Druga      3                 First trt epoch
+
+ABC       TA    DA-DB-PL  Druga-Drugb-placebo       WP    Washout     4                First wp epoch
+
+ABC       TA    DA-DB-PL  Druga-Drugb-placebo      DB    Dugab      5                  Second trt epoch
+
+ABC       TA    DA-DB-PL  Druga-Drugb-placebo      wp     Washout   6                  Second wp epoch
+
+ABC       TA    DA-DB-PL  Druga-Drugb-placebo      PL     Placebo    7                 third trt epoch
+
+ABC       TA    DA-DB-PL  Druga-Drugb-placebo      FL   Followup     8                  Followup epoch
+		
+		DB-DA-PL   
+		
+
+
+		PL-DB-DA	
+-----------------------------------------------------------------------------------------------------
+Trail Elements(TE)
+
+- This domain captures the start rules and end rules of element
+
+
+		SCR - RUNIN - TRT - FL
+
+
+str: One record per planned element
+
+Topic variable: ETCD
+---------------------------------------------
+variabel - lables
+-------------------------------
+
+STUDYID
+DOMAIN: TE
+
+
+ETCD  : element code
+		-- topic variable
+			
+ELEMENT : Name of element
+
+TESTRL :TE start rule
+TEENRL  : TE end rule
+
+TEDUR : Duration of element
+----------------------------------------------------------------------
+Trail Visit (TV) :
+
+str: one record per planned visit per arm
+
+TOpic varible: VISITNUM
+
+variables  - Labels
+----------------------------------
+STUDYID
+DOMAIN : TV
+
+VISITNUM  : visit  number
+			- topic variable
+VISIT  : visit name
+
+VISIDY : Planned study day of visit
+
+ARMCD  : Planned arm code
+ARM : Description of arm
+
+TVSTRL  : visit start rule
+
+TVENRL : visit end rule
+----------------------------------------------------------------------
+TI (Trail Inclusion/Exclusion criteria)
+
+- this domain capturs the planned inclusion& exclusion criteria
+
+str: one record I/E criteria
+
+
+topic variable: IETESTCD
+
+variable - lables
+-------------------------
+STUDYID
+DOMAIN
+IETESTCD - I/E criteria short name
+IETEST  -  I/E criteria test name
+
+		IETESTCD		IETEST
+
+		INCL01 - 
+		INCL02  - Between the ages of 30 to 80 years, inclusive, at screening
+		INCL03
+
+		
+		EXCL01 - Any indication of forms of Alzheimers, other than idiopathic Alzheimer's disease.
+		EXCL02 - If female, be pregnant or lactating.
+		EXCL03
+
+
+IECAT - I/E criteria category
+		eg : INCLUSION
+			EXCLUSION
+
+IESCAT - I/E criteria  sub category
+
+TIRL  : I/E criteria  rule
+
+TIVERS  - protocal criteria versions
+
+
+		eg : 1
+			1.1
+				1.2
+-----------------------------------------------------------------
+TS  - Trail Summary 
+
+- this domain captures the entire summary of protocal
+
+str : one record per taril summary parameter value
+
+
+topic var : TAPARMCD
+
+
+variable - lables
+-------------------
+
+STUDYID
+DOMAIN  : TS
+TSSEQ  :  sequnce number
+
+TAPARMCD : Parameter code
+
+TAPARM   : Paramter
+
+TSVAL   :
+-------------------------------------------------------
+
+- RELREC DOMAINS: Relational records
+
+- this domain is used to identify realtionship between the records in two domains
+
+str: one record per related record, group of elements
+---------------------------------------
+Variabels --- Lables
+------------------------
+
+STUDYID
+RDOMAIN : Related domain
+USUBJID  
+
+IDVAR  - Identifying variable
+IDVARVAL - Identifying variable values
+
+RELTYPE  : Relationship type
+RELID  : Relationship identifier
+-----------------------------------------
+AE  & CM
+
+AE
+
+		USUBJID AESEQ  AETERM
+		101      1      sever headace
+		103	  3       FEVER
+
+CM
+		USUBJID  CMSEQ   CMTRT
+		101      1       ASPIRIN
+		103      2   	 DRUGX
+
+
+
+RELREC  
+
+	USUBJID  RDOMAIN   IDVAR  IDVARVAL   RELTYPE   RELID
+-------------------------------------------------------------------------
+	101       AE      AESEQ       1        ONE       1
+	101       CM       CMSEQ      1        ONE       1
+	103       AE      AESEQ       3        ONE       2
+	103	  CM     CMSEQ        2        ONE       2
+----------------------------------------------------------------------------------
+ 
+SUPPXX  : Supplmental qualifiers
+
+
+SUPPDM
+
+SUPPAE
+
+SUPPCM
+
+----------------------------------------------------------------------
+
+variables  - variables  lables
+------------------------------------------
+STUDYID
+RDOMAIN:
+USUBJID
+
+IDVAR   - Identifying variables
+IDVARVAL  - Identifying variable values
+
+QNAM   - Qualifier variable name
+QLABEL - Qualifier variable Label
+QVAL  - qualifier Data vale
+
+QORIG  - ORIGIN
+QEVAL  - Evaluator
+-------------------------------------------------------------------------------------
+
+DM  :
+
+STUDYID    DOMAIN   USUBJID   RACE
+ABC        DM        101     OTHER
+ABC        DM        102    ASAIN
+ABC         DM       103    OTHER
+
+-------------------------------------------------  
+
+SUPPDM :
+
+STUDYID  RDOMAIN   USUBJID   IDVAR  IDVARVAL   QNAM      QLABEL      QVAL        QORIG  QEVAL
+------------------------------------------------------------------------------------------------------
+ABC        DM        101                       RACEOTH  Race,other    BRAZILAIN    CRF   INVESTIGATOR
+ABC        DM        103                       RACEOTH   race, other   CANADIAN    CRF    INVESTIGATOR
+
+-----------------------------------------------------------------------------------------------
+
+AE:
+
+		AESHOSP	AESDTH AESCAN  AESDISA AESLIFE
+
+
+SUPPAE:
+STUDYID  RDOMAIN   USUBJID   IDVAR  IDVARVAL   QNAM      QLABEL                       QVAL        QORIG  QEVAL
+------------------------------------------------------------------------------------------------------
+ABC       AE        101      AESEQ    1       AESOSP   OTHER MEDICALLY IMPORTANT SAE	Abortion    CRF    INVERSTIGATOR
+------------------------------------------------------------------------------------------------
+
+
+************************ XPT CONVERTION / PINNACLE 21(xml & validation notes) **************************
+
+
+ADaM : Analysis Data Model
+
+
+Rawdata ------> SDTM output  ------> ADaM output
+
+
+ADaM documents required:
+
+Protocol
+ADaM IG 1.1
+SDTM output
+Spcefication
+SOP
+SAS tool
+
+---------------------------------------------------------------------
+ADaM technique:
+---------------------------------------------------------------
+Rule1 :
+
+		SDTM                                           ADAM
+
+DM   - 28 variables                                       DM + EXTRA VARIABLES
+
+	SEX							SEX   M&F
+								SEXN   1&2
+
+	AGE                             			AGE	11 12 13 14 15	
+								AGEGRP  11-13  14-15
+
+	RACE							RACE     asain white black
+								RACEN	  1  2  3  4 5
+
+--------------------------------------------------------------------------------------------
+Rule2 :
+	CORE VAR						CORE VAR
+
+	REQ							REQ
+	EXP							CON
+	PER							PER
+--------------------------------------------------------------------------------------
+Rule3 :
+	AGE						AGE     AGEGRP   AGEGRPN
+		
+	11						11	11-15	1	
+	12						12	11-15	1	
+	14						14	11-15	1
+	16						16	15-20	2
+	20						20	15-20	2
+------------------------------------------------------------------------------------
+
+Rule4 :
+	
+	RFSTDTC					TRTSTDT      TRTSTTM		TRTSTDTM
+	
+	2012-10-12:12:09:08			2012-10-12     12:09:08		2012-10-12:12:09:08
+
+-------------------------------------------------------------------------------------------
+
+Rule5:
+	SDTM_DM						ADSL
+			
+Rawdata							SDTM_DM
+							SDTM_AE
+demo   x						SDTM_EX
+	y						SDTM_VS
+							SDTM_DS
+con    a b						SDTM_IE
+death    z N
+RANDOM   y 
+
+----------------------------------------------------------------------------------------
+ADSL ( subject level information)
+
+BDS(Basic data struture)  (events/intervention)    ADAE ADCM
+
+non-BDS(non basic data str)  (findings)  ADLB ADVS
+---------------------------------------------------------------------------
+ADAE :  ADSL + AE
+
+ADCM :  ADSL + CM
+
+ADLB :  ADSL + LB
+
+ADVS :  ADSL + VS
+
+-----------------------------------------
+ADSL ( subject level information)  :
+
+Name    Label		Type		Length		Origin		Derivation
+--------------------------------------------------------------------------------------
+STUDYID  study identifier  char  	15		DM.STUDYID
+
+USUBJID  Unquie subject id  char	25		DM.USUBJID
+
+SUBJID	Sub identifier		char	25		DM.SUBJID
+
+SITEID	 site identifier	char	25		DM.SITEID
+
+COUNTRY    country		char	3		https://url.uk.m.mimecastprotect.com/s/Oi9WC0VqKCgQ9ZgYhWs5S9Gw6R?domain=dm.country
+
+INVNAM	 Investigator Name 	char	200		DM.INVNAM
+
+BRTHDTC date of birth		char	19		DM.BRTHDTC
+
+BRTHDT data of birth(num)       num	8				datepart of BRTHDTC
+									convert to SAS numeric date BRTHDT
+	char
+	BRTHDTC					BRTHDT
+
+	2017-10-12:10:09:08			2017-10-12
+
+	
+			BRTHDT = input(datepart(BRTHDTC),IS8601DA.) ;
+
+
+SAER  SEX/AGE/EHTHNICITY/RACE       char  200			https://url.uk.m.mimecastprotect.com/s/kXa-CgLY0CwKjpw4TEtnS4cdvL?domain=dm.sex DM.AGE DM.ETHINIC DM.RACE
+
+
+		SAER = catx('/',SEX,AGE,ETHINIC,RACE) ;
+
+
+
+CONSDTC  date of informed consent	char 19    		DM.RFICDTC
+
+	
+		DM.RFICDTC
+
+		2018-10-12T10:30:12                  CONSDTC  = RFICDTC
+
+		2018-10-12			     CONSDTC   = RFICDTC||'T'||"00:00:00"
+
+
+   					
+CONSDT  date of informed consent(num)		num	8	
+
+
+
+		CONSDT  =INPUT(RFICDTC,IS8601DA.) ;
+
+
+ENRLFL  Enrolled Analysis set flag		char 1
+			Y/N
+			
+
+Note:  those subject who are enrolled to study for them ENROLLED FLAG y
+	- those who are signed ICF
+
+
+		if CONSDT ne " " then 	ENRLFL   ='Y' ;
+		else ENRLFL  = 'N' ;
+
+					or
+
+		if DM.USUBJID ne " " then ENRLFL   ='Y' ;
+		else ENRLFL  = 'N' ;
+
+
+
+USUBJID  ENRLFL
+101	Y	
+102	Y
+103	Y
+	N
+105	Y
+
+SAFFL Safety analysis set flag		char 		1
+
+Note: Subject has to take atleast one dose of drug
+
+	if RFSTDTC ne " "then SAFFL ="Y" ;
+	else SAFFL = "N"
+
+SAFEXC  Reason exlcuded from safety     char            25
+
+
+/* IF SUBJECT IS NOT TAKEN THE DOSE*/
+
+	if SAFFL = "N" then SAFEXC="Not dosed"
+		else SAFEXC=" " ;
+
+
+
+USUBJID  ENRLFL    RFSTDTC	SAFFL		SAFEXC  
+101	Y	2012-02-03	Y	
+102	Y	2012-02-05	Y
+103	Y			N		Not dosed
+	N	2012-02-10	Y
+105	Y			N		Not Dosed
+
+
+--------------------------------------------------------------------------------------
+TRTSTDT   TRT start date		num
+
+TRTSTM 	   TRT start time		num
+
+TRTSTDTM   TRT start date & time        num
+
+TRTSTDTC   TRT start date & time        char
+
+
+
+RFSTDTC (char)
+2019-09-08:10:10:09
+
+date 2019-09-08
+
+time 10:10:09
+datetime(num) 2019-09-08:10:10:09 
+
+
+derive RFSTDTC = TRTSTDT | TRTSTM |TRTSTDTM |TRTSTDTC
+
+
+RFSTDTC = 2019-09-08
+
+		DTM = RFSTDTC||'T'|| "00:00:00"  
+
+			DTM  = 2019-09-08T00:00:00
+
+		TRTSTDT = input(substr(DTM,1,10),IS8601DA.) ;
+
+		TRTSTM  = input(substr(DTM,12),TIME8.) ;
+
+		TRTSTDM = input(DTM,ANYDTDTM. ) ;
+
+		TRTSTDTC = DTM  ;
+-----------------------------------------------------------
+TRTENDT   TRT End date		num
+
+TRTENTM  TRT End time		num
+
+TRTENDTM   TRT End date & time        num
+
+TRTENDTC   TRT End date & time        char
+
+
+
+RFENDTC (char)
+2019-09-08:10:10:09
+
+date 2019-09-08
+
+time 10:10:09
+datetime(num) 2019-09-08:10:10:09 
+
+
+derive RFENDTC = TRTENDT   | TRTENTM  |TRTENDTM   |TRTENDTC   
+
+
+RFENDTC = 2019-12-30
+
+		ETM = RFENDTC||'T'|| "00:00:00"  
+
+			ETM  = 2019-12-30T00:00:00
+
+		TRTENDT   = input(substr(ETM,1,10),IS8601DA.) ;
+
+		TRTENTM  = input(substr(ETM,12),TIME8.) ;
+
+		TRTENDTM   = input(ETM,ANYDTDTM. ) ;
+
+		TRTENDTC   = ETM  ;
+
+------------------------------------------------------------------------------------
+
+TRT01P   Planned study treatment   char		40	DM.ARM
+
+TRT01PN     Planned study treatment number  num  8
+
+
+	ARM		TRT01P   TRT01PN     
+
+	DRUGA		DRUGA		1
+	DRUGB		DRUGB		2
+
+
+	
+		TRT01P   = ARM ;
+
+		if ARM =  "DRUGA" then TRT01PN    = 1 ;
+		if ARM =  "DRUGB" then TRT01PN    = 2;
+	
+
+				(or)
+			
+
+		proc format;
+		value param 'druga' = 1
+			    'drugb' = 2 ;
+		run;
+
+		TRT01PN    =input(ARM,param.) ;
+
+
+TRT01A   Actual study treatment		char	40	DM.ACTARM
+
+TRT01AN   Actual study treatment number	 num 8
+
+
+	
+	ACTARM		TRT01A   TRT01AN     
+
+	DRUGA		DRUGA		1
+	DRUGB		DRUGB		2
+
+
+	
+		TRT01A   = ACTARM ;
+
+		if ACTARM =  "DRUGA" then TRT01AN    = 1 ;
+		if ACTARM =  "DRUGB" then TRT01AN    = 2;
+	
+
+				(or)
+			
+
+		proc format;
+		value actarm'druga' = 1
+			    'drugb' = 2 ;
+		run;
+
+		TRT01AN    =input(ACTARM,actarm.) ;
+
+
+----------------------------------------------------------------
+SEX  SEX		 CHAR		1       https://url.uk.m.mimecastprotect.com/s/kXa-CgLY0CwKjpw4TEtnS4cdvL?domain=dm.sex
+SEXN   SEX CODE		NUM 		8
+		
+		if SEX ='M' then SEXN = 1;
+		ELSE SEXN=0 ;
+
+			(or)
+
+		proc format;
+		value gen 'M' =1
+			  'F' = 0;
+		run;
+
+		
+		SEXN = input(SEX,gen.) ;
+
+RACE  RACE			char		40	DM.RACE
+
+RACEN   Race(num)		num		40
+
+	
+	if race = "American Indian" then RACEN = 1;
+		else if RACE = "Black" then RACEN=2 ;
+				
+				or
+
+		
+		proc format;
+		value rac'American Indian' =1
+			  "Black"  = 2;
+		run;
+
+		
+		RACEN = input(RACE,rac.) ;
+	
+	
+RACEOTH  race other   char          200
+
+		SUPPDM
+
+			if SUPPDM.QNAM ="RACEOTH" then RACEOTH =SUPPDM.QVAL ;
+	
+
+
+ETHNIC   ethincity	char		40		DM.ETHINIC
+
+ETHNICN   ethinic num	num		8
+
+			
+		ETHNICN   = input(ETHNIC,eth.);
+
+
+AGE    AGE      NUM		8  DM.AGE
+
+AGEU   age units   char		6  DM.AGEU
+
+AAGE  age in years at informed consent(derive)   num 8
+
+
+
+		AAGE= INT(ADSL.CONSDT - ADSL.BRTHDT/365.25) ;
+
+				(OR)
+
+		AAGE = INTCK('YEARS',BRTHDT,CONSDT)  ;
+
+AAGEGRN age group numeric  num    1
+
+		if AAGE   < 57  then AAGEGRN = 0 ;
+		ELSE IF  AAGE   > = 57  then AAGEGRN = 1 ;
+
+		proc means data=dm;
+		var age;		
+		run;
+
+			N MEAN STD MIN MAX
+			-------------------
+			30  57
+--------------------------------------------------
+HEIGHTBL height at base line    num    8	
+
+		HEIGHTBL =VS.VSORRES when VS.VSTEST="height" and VS.VSBLFL="Y"							
+
+WEIGHTBL weight at base line    num    8
+
+		WEIGHTBL =VS.VSORRES when VS.VSTEST="weight" and VS.VSBLFL="Y"	
+
+BMIBL BMI at base line    num    8
+
+		BMIBL =VS.VSORRES when VS.VSTEST="BMI" and VS.VSBLFL="Y" ;
+			
+SYSBPBL systolic blood pressure at baseline  num 8
+
+DIABPBL Diastolic blood pressure at baseline  num 8
+
+TEMPBL Temp at baselines			num 8
+
+HRBL  Heart rate at base lines			num 8
+-----------------------------------------------
+
+COMPL did patient completed study?    char 	1
+		Y/N
+
+		DS.DSTERM ="COMPLETED" and DS.DSCAT="End Of treatment" or
+		DS.DSDECOD ="COMPLETED" then COMPL = "Y" ;
+		else COMPL="N" ;
+
+DISCYN was subject discontuined from study?? char 1
+	IF DS.DSTERM ="Dicontinued" and DS.DSCAT =" END OF TREATMENT"
+	or DS.DSDECOD in  "  " then DISCYN   = 'Y' ;
+	else DISCYN   ='N' ;
+
+
+DSREAS   discontinued from study reason  char     40
+
+DSREASN   discontinued from study reason(num)   char  1
+
+
+DISDTC   date of discontiunation 	char         19
+
+	DISDTC = DS.DSSTDTC  where DS.DSTERM ="Dicontinued" and DS.DSCAT =" END OF TREATMENT"
+	or DS.DSDECOD in  "  " ;
+
+
+
+DISDT  date of discontiunation   num   8             date part of DISDTC and convert numeric data
+
+	DISDT = input(DISDTC ,IS8601DA. );
+
+DISDY   study day of discontintuation         num 8
+		
+		DISDY = DISDT - TRTSTDT +1
+			(when DISDT >=TRTSTDT )
+
+			DISDT - TRTSTDT
+			(when DISDT <TRTSTDT );
+---------------------------------------------------------------
+
+DTHDTC      date of death			char    19  
+		
+			DM.DTHDTC
+
+			DS.TERM  =DEATH DSSTDTC   --> DEATH DATE
+			
+			AEOUT  = DEATH   AEENDTC  ---> DEATH DATE
+			
+			DDTESTCD = DEATH   DDDTC ----> death date
+
+
+
+DTHDT           date of death(num)          num        8	date part of DTHDTC and convert to numric date
+				
+DTHDAY       day of death         	   num      8
+		
+			DTHDAY  = DTHDT - TRTSTDT +1
+		
+					DTHDT - TRTSTDT
+
+
+DTHRES     cause of death		   char		200
+
+		
+		DDTEST  - primary cause of death   DTHRES = DDORRES   --> CAAUSE OF DEATH
+				                  	
+
+----------------------------------------------------------------------------------------
+ARM      planned arm code                      DM.ARM
+
+ARMCD    Planned arm code                     DM.ARMCD
+-------------------------------------------------------------
+
+INCFAIL     failed inclusion creitia    char       200
+
+		INCFAIL = where IE.IEORRES   'N'
+
+
+EXCFAIL       failed exclusion criteria    char     200
+		
+
+		EXCFAIL  =  WHERE IE.IEORRES 'Y'
+
+------------------------------------------------------------------------------------
+
+DOMAIN:
+
+SDTM domain :
+
+custom domain:		
+--------------------------------------------------------------------
+ADAE :
+
+ADAE :  ADSL + AE		
+
+Name    Label           Type          length    Origin                     Derivations
+--------------------------------------------------------------------------------
+STUDYID   study identifier    char   15          ADSL.STUDYID
+
+USUBJID    Unique subject id   char   15         ADSL.USUBJID
+
+SUBJID     SUBJECT ID           CHAR   15       ADSL.SUBJID
+
+SITEID     site identifier       char   15      ADSL.SITEID
+
+SAER       SEX/AGE/ETHINCITY/RACE   char   15     ADSL.SAER
+
+AGE         AGE                       num     ADSL.AGE
+
+AAGE       age in year ar informed consent   num    ADSL.AAGE
+
+RACE       race                       char     40      ADSL.RACE
+
+SEX     sex				char    1      https://url.uk.m.mimecastprotect.com/s/NgeTCjqQ1uGDwPGZunulSmZmbl?domain=adsl.sex
+
+ENRLFL  enrolled flag               char      1      ADSL.ENRLFL
+
+SAFFL    Safety flag              char      1      ADSL.SAFFL
+
+EFFFL   Efficacy analysis set flag               char      1      ADSL.EFFFL
+
+TRT01P   planned study trt  			char   40     ADSL.TRT01P
+
+TRT01PN  planned study trt  number           NUM     8        ADSL.TRT01PN
+
+TRT01A   Actual study trt  			char   40     ADSL.TRT01A
+
+TRT01AN  Actual study trt  number           NUM     8        ADSL.TRT01AN
+
+TRTSTDT    Trt start date		num			ADSL.TRTSTDT 
+
+TRTSTM	   Trt start time		num			ADSL.TRTSTM	
+
+TRTSTDTM    Trt start date and time   num 			ADSL.TRTSTDTM 
+
+TRTENDT    Trt end date		num			ADSL.TRTENDT 
+
+TRTENTM	   Trt end time		num			ADSL.TRTENTM	
+
+TRTENDTM    Trt end date and time   num 			ADSL.TRTENDTM 
+
+AESEQ   Sequnence number	num 	8 			AE.AESEQ
+
+AESTDTC start date/time of adverse event char 19		AE.AESTDTC
+
+AESTDT start date of adverese event	num 8            date part of AE.AESTDTC and convert into SAS numeric version
+
+AESTDY   Relative day of AE		num 8
+
+		AESTDY = AESTDT - TRTSTDT + 1
+			(when AESTDT >= TRTSTDT)   
+
+		AESTDY = AESTDT - TRTSTDT 
+			(when AESTDT < TRTSTDT)      
+
+
+AEENDTC  start date/time of adverse event char 19		AE.AEENDTC
+
+AEENDT End date of adverese event	num 8            date part of AE.AEENDTC and convert into SAS numeric version
+
+AEENDY   Relative day of AE		num 8
+
+		AEENDY = AEENDT - TRTSTDT + 1
+			(when AEENDT >= TRTSTDT)   
+
+		AEENDY = AEENDT - TRTSTDT 
+			(when AEENDT < TRTSTDT)    
+
+
+AEDUR	Duration of AE      				
+
+		AEDUR = AEENDT - AESTDT + 1 
+
+
+sub   event  		start 		end		dur
+101	fever		2021-09-05 
+				06
+				07
+				08
+				09
+		        2021-09-10
+				
+
+AETERM  Reported Term of Adverse event  char 	200  		AE.AETERM
+
+
+AEDECOD  Dictionary derived code	char 200		AE.AEDECOD
+AELLT - Lowest level term 
+AELLTCD -   Lowest level term code
+AEHLT -  High level term
+AEHLTCD - High level term code
+AESOCCD  - primary system organ class code
+AEPTCD   - Preffered term code
+
+AEBODSYS  - Body syatem organ class 	char		200	AE.AEBODSYS
+
+AESER  - serious event		char			1 AE.AESER
+		Y/N
+
+AESDTH - Results in death		char 	1     AE.AESDTH
+			Y/N
+
+AESHOSP  - Requires or prolonged hospitalization char 1 AE.AESHOSP
+			Y/N
+
+AESLIFE  - Is life threatening char 1 AE.AESLIFE
+			Y/N
+
+AESCAN  -  Involves cancer    Char	1 	AE.AESCAN
+		Y/N
+
+AESDISAB - Persist or signif disability Char	1 	AE.AESDISAB
+		Y/N
+
+AESCONG  - congential anomaly ot birth defect char 1 AE.AESCONG
+			Y/N
+
+
+AEACN     Action taken with study trt      char     40	AE.AEACN
+
+AEACNOTH    other action taken term       char	    40   AE.AEACNOTH
+
+AEREL    Relationship to study drug        char      40   AE.AEREL
+
+AEOUT     outcome of adverse event	   char     40     AE.AEOUT
+
+AEPHASE Analysis Phase 
+
+		Pre - treatment
+		treatment
+		Followup
+
+
+Pre - treatment :  if AESTDT < TRTSTDT then AEPHASE = "Pre - treatment"
+
+treatment   :      if TRTSTDT <= AESTDT <= TRTENDT   then AEPHASE ="Treatment"
+
+Followup  : if AESTDT > TRTSTDT then AEPHASE = "Followup"
+
+PREFL    Pre treatment flag		Y or missing
+	
+		if ADAE.AEPHASE ="Pre - treatment" then PREFL = "Y"
+
+FUPL      Followup flag  		Y or missing
+
+		if ADAE.AEPHASE ="Followup" then FUPL= "Y"
+
+TRTEMFL    Treatment emergent analysis flag   Y or missing
+
+		if ADAE.AEPHASE = ="Treatment" then TRTEMFL="Y"
+
+
+AETOXGR   standard toxicity grade     char    40    AE.AETOXGR
+
+
+AETOXGRN    standard toxicity grader(num)  num 8
+
+-------------------------------------------------------------------------------------------------------
+
+ADCM :  ADSL + CM
+
+STUDYID   study identifier    char   15          ADSL.STUDYID
+
+USUBJID    Unique subject id   char   15         ADSL.USUBJID
+
+SUBJID     SUBJECT ID           CHAR   15       ADSL.SUBJID
+
+SITEID     site identifier       char   15      ADSL.SITEID
+
+SAER       SEX/AGE/ETHINCITY/RACE   char   15     ADSL.SAER
+
+AGE         AGE                       num     ADSL.AGE
+
+AAGE       age in year ar informed consent   num    ADSL.AAGE
+
+RACE       race                       char     40      ADSL.RACE
+
+SEX     sex				char    1      https://url.uk.m.mimecastprotect.com/s/NgeTCjqQ1uGDwPGZunulSmZmbl?domain=adsl.sex
+
+ENRLFL  enrolled flag               char      1      ADSL.ENRLFL
+
+SAFFL    Safety flag              char      1      ADSL.SAFFL
+
+EFFFL   Efficacy analysis set flag               char      1      ADSL.EFFFL
+
+TRT01P   planned study trt  			char   40     ADSL.TRT01P
+
+TRT01PN  planned study trt  number           NUM     8        ADSL.TRT01PN
+
+TRT01A   Actual study trt  			char   40     ADSL.TRT01A
+
+TRT01AN  Actual study trt  number           NUM     8        ADSL.TRT01AN
+
+TRTSTDT    Trt start date		num			ADSL.TRTSTDT 
+
+TRTSTM	   Trt start time		num			ADSL.TRTSTM	
+
+TRTSTDTM    Trt start date and time   num 			ADSL.TRTSTDTM 
+
+TRTENDT    Trt end date		num			ADSL.TRTENDT 
+
+TRTENTM	   Trt end time		num			ADSL.TRTENTM	
+
+TRTENDTM    Trt end date and time   num 			ADSL.TRTENDTM 
+
+CMSEQ   Sequ number		num 	8 CM.CMSEQ
+
+CMCAT cat of medication 	char   40  CM.CMCAT
+
+CMTRT Reported Name if drug ,med or therpy   char 200 CM.CMTRT
+
+CMDECOD  standatized medication name   char   200 CM.CMDECOD
+
+CMDOSE    Dose				char 40 CM.CMDOSE
+
+CMDOSU    Dose Units			char 20 CM.CMDOSU
+
+CMDOSTXT  Dose Desription		char 40 CM.CMDOSTXT
+
+CMROUTE  Route of administration     char     40   CM.CMROUTE
+
+CMLOC Administration location		char	40  CM.CMLOC
+
+			CMLOC = SUPPCM.QVAL where SUPPCM.QNAM ="RADSITE" ;
+
+CMSTDTC    CM start date & time in char	char     CM.CMSTDTC
+
+CMSTDT	   CM start date		num      Date part of CMSTDTC and convert into SAS numeric version
+
+
+CMENDTC    CM End date & time in char	char     CM.CMENTDTC
+
+CMENDT	   CM end date		num      Date part of CMENDTC and convert into SAS numeric version
+
+CMTYPE     Medication type     char   200
+
+	"ongoing"
+	"Prior"
+
+	if CMENDT >= TRTSTDT then CMTYPE  = " Ongoing" ;
+
+	if CMENDT < TRTSTDT   then CMTYPE = "Prior"
+
+CMTYPEN   Medication type(num)     num   1
+
+		proc format;
+		value type   1 ="Ongoing" 
+			     2 = "prior"
+		;
+		run;
+
+
+		CMTYPEN = put(CMTYPE,type.) ;
+
+				(or)
+
+		if CMTYPE  = " Ongoing"  then 	CMTYPEN = 1;
+		else CMTYPEN = 2 ;
+
+
+CMINDC Indication          char    200       CM.CMINDC
+
+
+ATC1       dictionary  term  ATC1       char     200
+
+ATC1CD     dictionary  code ATC1       char       15
+
+ATC2     dictionary  term  ATC2       char     200
+
+ATC2CD     dictionary  code ATC2       char       15
+
+ATC3       dictionary  term  ATC3      char     200
+
+ATC3CD     dictionary  code ATC3       char       15
+
+ATC4      dictionary  term  ATC4       char     200
+
+ATC4CD     dictionary  code ATC4       char       15
+
+
+		ATC1=SUPPCM.QVAL where SUPPCM.QNAM ="ATCTXT1"        
+		
+		ATC1CD=SUPPCM.QVAL where SUPPCM.QNAM ="ATCCD1"
+
+
+----------------------------------------------------------------------------------------------
+ADLB: ADSL + LB
+---------------------------------------------------------------------
+STUDYID   study identifier    char   15          ADSL.STUDYID
+
+USUBJID    Unique subject id   char   15         ADSL.USUBJID
+
+SUBJID     SUBJECT ID           CHAR   15       ADSL.SUBJID
+
+SITEID     site identifier       char   15      ADSL.SITEID
+
+SAER       SEX/AGE/ETHINCITY/RACE   char   15     ADSL.SAER
+
+AGE         AGE                       num     ADSL.AGE
+
+AAGE       age in year ar informed consent   num    ADSL.AAGE
+
+RACE       race                       char     40      ADSL.RACE
+
+SEX     sex				char    1      https://url.uk.m.mimecastprotect.com/s/NgeTCjqQ1uGDwPGZunulSmZmbl?domain=adsl.sex
+
+ENRLFL  enrolled flag               char      1      ADSL.ENRLFL
+
+SAFFL    Safety flag              char      1      ADSL.SAFFL
+
+EFFFL   Efficacy analysis set flag               char      1      ADSL.EFFFL
+
+TRT01P   planned study trt  			char   40     ADSL.TRT01P
+
+TRT01PN  planned study trt  number           NUM     8        ADSL.TRT01PN
+
+TRT01A   Actual study trt  			char   40     ADSL.TRT01A
+
+TRT01AN  Actual study trt  number           NUM     8        ADSL.TRT01AN
+
+TRTSTDT    Trt start date		num			ADSL.TRTSTDT 
+
+TRTSTM	   Trt start time		num			ADSL.TRTSTM	
+
+TRTSTDTM    Trt start date and time   num 			ADSL.TRTSTDTM 
+
+TRTENDT    Trt end date		num			ADSL.TRTENDT 
+
+TRTENTM	   Trt end time		num			ADSL.TRTENTM	
+
+TRTENDTM    Trt end date and time   num 			ADSL.TRTENDTM 
+
+LBSEQ		seq number		- LB.LBSEQ
+
+LBREFID		 Ref Id			- LB.LBREFID
+
+PATCAT1 - Parameter category		- LB.LBCAT
+
+		eg : Hematology
+				chemistry
+					Urinalysis
+
+PARAMCD  - paramter code     - LB.LBTESTCD
+
+PARAM   - parameter description  - LB.LBTEST
+
+AVAL - Analysis value	         - LB.LBSTRESN
+
+AVALC  - Analysis value in char  - LB.LBSTRESC
+
+LBNRIND  - Referance range indication  - LB.LBNRIND
+
+AVISIT Anlayis visit       - LB.VISIT
+
+AVISITNUM Analysis visit num   - LB.VISITNUM
+
+LBDTC
+
+ADT  - Analysis date          -  datepart of LBDTC and then convert to SAS numeric version 
+
+ATM   - Analysis timE		- Timepart of LBDTC and then convert to SAS numeric version
+
+ADTM   - Analysis date & time in num  -- combine ADLB.ADT & ADLB.ATM
+
+ADY     - Analysis relative day
+
+		ADY = ADLB.ADT - ADSL.TRTSDT + 1
+				(when ADLB.ADT > = ADSL.TRTSDT )
+
+		
+		ADY = ADLB.ADT - ADSL.TRTSDT 
+				(when ADLB.ADT < ADSL.TRTSDT )
+
+ABLFL   base line flag				LB.BLFL
+		Y/N
+
+
+
+BASE    Baseline value
+
+		
+		subid   test  visit		AVAL	ABLFL  BASE   CHG
+		101      X     screening	75	 Y      75     0
+		101      x      week1		78		75     3
+		101      x     week4		72		75    -3
+
+		101      y     screening	96	 Y	96     0
+		101      y     week1		100		96     4
+		101	 y    week4		102		96     6
+			
+
+
+BASE= ADLB.AVAL where ABLFL ="Y"
+
+
+CHG    change from baseline
+	
+		CHG = ADLB.AVAL - ADLB.BASE
+
+
+
+ANRLO  Analysis normal range lower limit          LB.LBSTNRLO
+
+ANRHI  anlaysis normal range higer limit         LB.LBSTNTHI
+
+LBTEST    Lab test or examination name     LB.LBTEST
+
+LBTESTCD  Lab test or examination  short name     LB.LBTESTCD
+
+LBORRES     Results or findings in original       LB.LBORRES
+
+LBORRESU    original units				LB.LBORRESU
+
+LBSTRESN    Numeric Results or findings in std format   LB.LBSTRESN
+
+LBSTRESC    chracter  Results or findings in std format  LB.LBSTRESC
+
+LBSTRESU    standard results units  			LB.LBSTRESU
+
+LBTOX     toxicity    LB.LBTOX
+
+LBTOXGR    stanard toxicity  grade     LB.LBTOXGR
+
+VISIT     VISIT NAME   LB.VISIT
+
+VISITNUM  VIIST NUMBER   LB.VISITNUM
+
+LBDTC   date/time of specimen collection date    LB.LBDTC
+
+LBDY     study day of specimen collection        LB.LBDY
+
+LBNAM    vendor name                             LB.LBNAM
+
+ANL01FL   char  1      analysis record flag 01
+
+	
+				if ADLB.ADY <= 1 then ANL01FL = 'Y';
+
+
+
+ANL02FL   char  1      analysis record flag 02
+
+	
+				if ADLB.ADY > 1 then ANL02FL = 'Y';
+
+
+---------------------------------------------------------------------------------
+ADVS  : ADSL +VS
+----------------------------------------------------------------------------
+STUDYID   study identifier    char   15          ADSL.STUDYID
+
+USUBJID    Unique subject id   char   15         ADSL.USUBJID
+
+SUBJID     SUBJECT ID           CHAR   15       ADSL.SUBJID
+
+SITEID     site identifier       char   15      ADSL.SITEID
+
+SAER       SEX/AGE/ETHINCITY/RACE   char   15     ADSL.SAER
+
+AGE         AGE                       num     ADSL.AGE
+
+AAGE       age in year ar informed consent   num    ADSL.AAGE
+
+RACE       race                       char     40      ADSL.RACE
+
+SEX     sex				char    1      https://url.uk.m.mimecastprotect.com/s/NgeTCjqQ1uGDwPGZunulSmZmbl?domain=adsl.sex
+
+ENRLFL  enrolled flag               char      1      ADSL.ENRLFL
+
+SAFFL    Safety flag              char      1      ADSL.SAFFL
+
+EFFFL   Efficacy analysis set flag               char      1      ADSL.EFFFL
+
+TRT01P   planned study trt  			char   40     ADSL.TRT01P
+
+TRT01PN  planned study trt  number           NUM     8        ADSL.TRT01PN
+
+TRT01A   Actual study trt  			char   40     ADSL.TRT01A
+
+TRT01AN  Actual study trt  number           NUM     8        ADSL.TRT01AN
+
+TRTSTDT    Trt start date		num			ADSL.TRTSTDT 
+
+TRTSTM	   Trt start time		num			ADSL.TRTSTM	
+
+TRTSTDTM    Trt start date and time   num 			ADSL.TRTSTDTM 
+
+TRTENDT    Trt end date		num			ADSL.TRTENDT 
+
+TRTENTM	   Trt end time		num			ADSL.TRTENTM	
+
+TRTENDTM    Trt end date and time   num 			ADSL.TRTENDTM 
+
+VSSEQ		seq number		- VS.VSSEQ
+
+VSREFID		 Ref Id			- VS.VSREFID
+
+PATCAT1 - Parameter category		- VS.VSCAT
+
+PARAMCD  - paramter code     -VS.VSTESTCD
+
+PARAM   - parameter description  - VS.VSTEST
+
+		eg :    height
+			weight
+			BMI
+			TEMP
+			SBP
+			DBP
+
+AVAL - Analysis value	         - VS.VSSTRESN
+
+AVALC  - Analysis value in char  - VS.VSSTRESC
+
+AVISIT Anlayis visit       - VS.VISIT
+
+AVISITNUM Analysis visit num   - VS.VISITNUM
+
+VSDTC
+
+ADT  - Analysis date          -  datepart of VSDTC and then convert to SAS numeric version 
+
+ATM   - Analysis timE		- Timepart of VSDTC and then convert to SAS numeric version
+
+ADTM   - Analysis date & time in num  -- combine ADVS.ADT & ADVS.ATM
+
+ADY     - Analysis relative day
+
+		ADY = ADVS.ADT - ADSL.TRTSDT + 1
+				(when ADVS.ADT > = ADSL.TRTSDT )
+
+		
+		ADY = ADVS.ADT - ADSL.TRTSDT 
+				(when ADVS.ADT < ADSL.TRTSDT )
+
+ABLFL   base line flag				VS.BLFL
+		Y/N
+
+
+
+BASE    Baseline value
+
+		
+		subid   test  	   visit		AVAL	ABLFL  BASE   CHG
+		101      weight    screening	         75	 Y      75     0
+		101      weight    week1		78		75     3
+		101      weight    week4		72		75    -3
+
+		101      y     screening	96	 Y	96     0
+		101      y     week1		100		96     4
+		101	 y    week4		102		96     6
+			
+
+
+BASE= ADVS.AVAL where ABLFL ="Y"
+
+
+CHG    change from baseline
+	
+		CHG = ADVS.AVAL - ADVS.BASE
+
+
+
+ANRLO  Analysis normal range lower limit          VS.VSSTNRLO
+
+ANRHI  anlaysis normal range higer limit         VS.VSSTNTHI
+
+VSTEST    Lab test or examination name     VS.VSTEST
+
+VSTESTCD  Lab test or examination  short name     VS.VSTESTCD
+
+VSORRES     Results or findings in original       VS.VSORRES
+
+VSORRESU    original units				VS.VSORRESU
+
+VSSTRESN    Numeric Results or findings in std format   VS.VSSTRESN
+
+VSSTRESC    chracter  Results or findings in std format  VS.VSSTRESC
+
+VSSTRESU    standard results units  			VS.VSSTRESU
+
+
+VISIT     VISIT NAME   VS.VISIT
+
+VISITNUM  VIIST NUMBER   VS.VISITNUM
+
+VSDTC   date/time of specimen collection date    VS.VSDTC
+
+VSDY     study day of specimen collection        VS.VSDY
+
+VSNAM    vendor name                             VS.VSNAM
+
+ANL01FL   char  1      analysis record flag 01
+
+	
+				if ADLB.ADY <= 1 then ANL01FL = 'Y';
+
+
+
+ANL02FL   char  1      analysis record flag 02
+
+	
+				if ADLB.ADY > 1 then ANL02FL = 'Y';
+
+
+---------------------------------------------------------------------------------
+
+TLF:( Table Lisitings Figures)
+
+
+SDTM conversion
+	RAWDATASETS  -------------> SDTM DATASETS  - SAP  - (SAP Spec) - Reports
+
+ADAM conversion
+		SDTM INPUT --------> ADAM DATASETS - SAP  - (SAP Spec) - Reports
+
+
+Reports  --> ISS : Interated summary safety (not much stat, col pct, row pct/percetage)
+
+	    ISE   : Integrated summary efficacy (STATISTICS)
+
+
+	* to find the effectivness of drug
+	* To know the overall result drug
+	* to know over all information
+	* to know outcome of final report	
+		
+
+Listings
+
+Rawdata  ---> sdtm dataset/adam datasets ---> listings ---> summary tables
+
+		* for evry summary table their will be support lisitings
+
+
+		INPUT DATASET
+			|
+			|
+			|
+
+		TAKE REQUIRED VARIABLES
+			|
+			|
+			|
+
+		DERVIE REQUIRED VARIABLES
+			|
+			|
+		ODS system
+			|
+			|
+		proc report
+			|
+			|
+		GENRATE REPORT
+
+
+		
+lsitings -- direct variables/ standrd varibale will not be their in output
+
+--------------------------------------------------------------------------------------
+adam spec & adam ig 1.1
+
+class notes
+
+tlf task 
+
+sample resume
+
+interview questions
+
+for base and adv interviw questions
+clinical sas Interview questions
+
+test papers 1 -6
+
+--------------------------------------------------------------------------
+
+XPT files( convert SAS datasets to XPT files)
+
+SDTM OUTPUT ---> SAS --> XPT files  ----> Pinnacle 21/open cdisc  --> define.xml and validation notes
+
+
+libname out "C:\Users\SUDARSHAN\Desktop\project1\output" ;
+
+libname target xport "C:\Users\SUDARSHAN\Desktop\project1\xpt\dm.xpt" ;
+
+
+proc copy in=out out=target;
+select dm;
+run;
+
+
+libname out "C:\Users\SUDARSHAN\Desktop\project1" ;
+
+libname target xport "C:\Users\SUDARSHAN\Desktop\project1\xpt\cm.xpt" ;
+
+
+proc copy in=out out=target;
+select cm6;
+run;
+
+
+note: we have to convert all output domains to xpt files indivudually or else you can create macro
+
+
+-------------------------------------------------------------------------------
+
+
+for data issues --> maintain data issue log
+
+------------------------------------------------------------------------------------
+
+visit visitnum visitdy
+-----------------------------
+
+SV - domain
+		schduled visit and unsch visiti
+
+
+schduled visit  - TV 
+
+unsch visiti --->  
+
+--------------------------
+VISIT VISITNUM VISIDY
+
+LB VS EG 
+lb1 lb 2 lb3 
+ae  ae 1 ae2
+SV
+----------------------------
+sv ---> 
+---------------------------
+
+macros - visit
+		epoch
+			seq
+
+
+rawdata :
+
+macro:
+
+pgm :
+
+sdtm :
+adam :
+
+---------------------------------------------------------------------------
+%include "C:\Users\SUDARSHAN\Desktop\project_2\macros\seq.sas" ;
+
+%include "C:\Users\SUDARSHAN\Desktop\project_2\macros\epoch.sas" ;
+
+%include "C:\Users\SUDARSHAN\Desktop\project_2\macros\visit.sas" ;
+-------------------------------------------------------
+
+%seq (in=ds1 out=ds2 var1= usubjid var2=dsseq) ;
+----------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

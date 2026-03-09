@@ -1,0 +1,66 @@
+Ram24M
+Sara25K
+Prakash20M
+
+Data Test;
+set DM;
+Where AGE >18
+Where Country = "India";
+run;
+ 
+Data test1;
+set DM(where=(Age>18));
+where Country="US";
+run;
+
+calculate age :-
+Subject   birth_date
+1          1985-05-15
+2          1990-08-20
+3          1975-12-30
+4          2000-01-10
+
+
+how you populate 20 in log window 
+%let a=20;
+%let b=a;
+%let c=b;
+
+What is pdv
+ways of creating macro 
+how to round of 7.8 to 9 
+Function	Behavior	7.3 →	-2.3 →
+ceil()	Round up	8	-2
+floor()	Round down	7	-3
+
+There are multiple data sets and I want only two subject from each data sets 101 102 in tabular format how will you creat macro for this.
+how will you calculate diffrence between two dates.
+what is compbl function :-
+Compbl function stands for Compress blank and it is used to replace multiple consecutiv blanks with single blank in a charecter string.
+
+BARB
+BOB
+DAVID
+Boroba
+Bklb
+from above dataset how will extract only B from first name and last :-
+data names;
+    input name $;
+    datalines;
+BARB
+BOB
+DAVID
+Boroba
+Bklb
+;
+run;
+
+data b_names;
+    set names;
+    if upcase(substr(name, 1, 1)) = 'B' and upcase(substr(name, length(name), 1)) = 'B';
+run;
+
+proc print data=b_names;
+run;
+
+
