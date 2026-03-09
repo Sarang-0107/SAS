@@ -1,0 +1,804 @@
+How to count Each subject present in how many times in data set using Data step and proc sql;
+Using Data step:'
+Fist we have to sort the data.
+Proc sort data=SAShelp.class out=count_class;
+by AGE;run;
+Data New;
+set count_class;
+by age;
+if first.age then count=0;
+count+1;
+run;
+
+Using Proc sql;
+PRoc sql;
+create table Age_count as select Subjid,count(*) as Age_Count
+from sashelp.class
+group by age;
+run;
+
+what coalesce function do?
+
+Coalesce function used to return first non-missing value from given argument or dataset
+
+
+*****************************************************************************************************
+what is diffrence Find and Scan?
+
+Use FIND when you need to validate the existence and location of a pattern in text,
+
+SCAN when you need to parse out specific tokens from structured strings.
+
+FIND is like asking:
+“Does this word show up in the sentence? If yes, where?”
+
+For example:
+
+Sentence: “I love apples”
+
+Word you’re looking for: “love”
+
+FIND tells you yes, “love” is here and starts at position 3.
+
+👉 So FIND is for searching and locating.
+
+SCAN is like asking:
+“Give me the 1st / 2nd / 3rd word from the sentence.”
+
+For example:
+
+Sentence: “I love apples”
+
+SCAN(..., 2) gives you “love”.
+
+👉 So SCAN is for extracting a specific word.
+
+Use FIND = “Is this word there? Where is it?”
+
+Use SCAN = “Give me the N-th word from the sentence.”
+
+In SAS, FIND tells you if a piece of text exists in a string and where it starts, while SCAN extracts a specific word from a string. So use FIND when you 
+
+want to search and locate something inside text, and use SCAN when you want to pull out a particular word based on its position.
+
+FIND = search for something in text and say where it is.
+
+Example: “Is the word ‘SAS’ in this sentence? If yes, where does it start?”
+
+SCAN = pick out the N-th word from text.
+
+Example: “Give me the 2nd word in this sentence
+
+Both are diffrent function. 
+
+Scan extract the word using delimeter of string while find function used to find the starting position of string from larger string.
+
+FIND finds the position of a substring in text; SCAN extracts the Nth word from a string
+*******************************************************************************************************
+TableA
+ID	                 Name	City
+1234-ABC12	Shiv	Hyderabad
+43-CCD23	Rahul	Bangalore
+34567-WD2	Ram	Chennai
+111-QWE4	Vivek	Bangalore
+ 
+
+ 
+TableB
+ID	State
+1234	Telangana
+43	Karnataka
+34567	Tamil Nadu
+111	Karnataka
+ 
+ 
+TableC
+ID	Name	City	State
+ *******************************************************************************************************************************************************	 	 	 
+ 	 	 	 
+ 	 	 	 
+ 	 	 	 
+ 
+[3:02 PM] Dhadave, Shivashankar
+ 
+ID	Dosage Type	Date
+Patient1	DoseA	20-Oct-22
+Patient1	DoseB	30-Oct-22
+Patient1	DoseC	15-Nov-22
+Patient2	DoseA	21-Nov-22
+Patient2	DoseB	10-Oct-22
+Patient2	DoseC	15-Nov-22
+Patient2	DoseD	1-Nov-22
+Patient2	DoseE	19-Nov-22
+ 
+ 
+TableC
+ID	First Dose
+Date	Last Dose
+Date	Difference (days)
+Patient1	 	 	 
+Patient2	 	 	 
+ 
+***********************************************************************************************************
+
+two data set and we need total of salry ?
+    test
+
+    test1
+
+    total
+Ans:- We can be used sum 
+To get the total salary from two SAS datasets, we can first concatenate them using a SET statement and then run PROC MEANS to sum the salary. Or more simply, we can use PROC SQL with UNION ALL to combine the salary values from both tables and apply SUM() to get the total.
+***********************************************************************************************************
+Two data set below;
+A
+ID  Name Gender
+001 Ram Male
+002 Jay Male
+003 John Male
+004 Rima Female
+B
+ID Name Gender
+001 Ram Male
+002 Jay Male
+003 john Male
+
+I need output like
+
+ID  Name  Gender
+004 Rima Female
+Ans:- 
+Data c;
+merge a(in=a)b(in=b);
+by ID;
+if a and not b;
+run;
+
+
+​***********************************************************************************************************
+Below sting have dynamic values but I need only last four alpha variables.
+    var=234dfv657jh
+ans :-data want;
+    set have;
+    /* keep only alphabetic characters */
+	var="234dfv657jh";
+    alpha_only = compress(var, , "ka");
+
+    /* get length of that new alpha string */
+    len_alpha = length(alpha_only);
+
+    /* take last 4 alphabetic chars */
+    last4_alpha = substr(alpha_only, max(1, len_alpha-3), 4);
+run;
+
+We use substr(string, max(1, len−3), 4) so that we safely extract the last 4 characters of a cleaned string. The max(1, …) ensures we never start at an invalid position when the string has fewer than 4 letters.”
+
+***********************************************************************************************
+    input:
+Below is the input data set 
+id name
+1  AA
+2  BB
+3  CC
+and I need output like this how would you create 
+output;
+1 AA
+1 AA
+2 BB
+2 BB
+2 BB
+3 CC
+3 CC
+3 CC
+3 CC
+
+ANS:-
+Data b;
+set a;
+do i=1 ; output;
+do j=1 to id;
+output;
+end;
+end;
+run;
+*********************************************************************************************
+Below is one data set and I need cummulative sum of total 
+    month sal    total
+    Jan   1000   1000
+    Feb   1500   2500
+    march 1500   4000
+
+ANS:-
+data output;
+set input;
+retain total 0;
+total + sal;
+run;
+​
+*********************************************************************************************
+Below is the Input data set and I need output 
+
+SUBJID    TERM    Age
+100    Fever      18
+101    Fever      18
+102    Fever      18
+103    Cold       34
+104    Cold       34
+105    headache   45
+
+so we need result like this.
+result
+SUBJID        TERM        Age
+100,101,102    Fever       18
+103,104        Cold        34
+105        headache        45
+ 
+*************************************************************************************************
+Read the sceanrio and ans:-
+    we have drugs mentioned in study arm variable..like 2 dose of xyz, 4 dose of abc and 6 dose of pqr.
+
+xyz/abc
+xyz/pqr
+abc/pqr
+xyz/abc/pqr
+
+we want to find out the drug combination in the below format:
+    2 dose of xyz, 4 dose of abc and 6 dose of pqr
+
+
+********************************************************************************************************
+I have string 
+x = Happy New Year
+and I want to get populate like this. WHich function you used for?
+
+Y = Happy Happy Year
+
+ANS:-
+%let x = Happy New Year;
+
+/* Use TRANWRD and CATS functions to duplicate "New" in the output */
+%let y = %sysfunc(tranwrd(&x., New, New New));
+
+/* Display the result */
+%put &y.;
+
+What is the usedof %SYSFUNC macro:-
+In SAS, the %SYSFUNC macro function is used to execute a SAS function within a macro expression. It allows you to call SAS functions and evaluate their results within macro code.
+
+In the example provided, %SYSFUNC is used to call the TRANWRD function within a macro expression. The TRANWRD function is a character function in SAS that replaces occurrences of a specified word or phrase within a character string. However, since macro expressions require the use of %SYSFUNC to invoke SAS functions, it is necessary in this context.
+
+By using %SYSFUNC with TRANWRD, the function is applied to the macro variable x (which contains the string "Happy New Year") to replace the word "New" with "New New". The resulting string is then assigned to the macro variable y.
+
+It's important to note that %SYSFUNC is used specifically in macro expressions, whereas when working in regular data step or procedure code, you can directly use SAS functions without %SYSFUNC.
+********************************************************************************************************
+x
+Happy
+New
+Year
+I have data set above and I want second last variale of every observations. How would you solve ?
+Ans:-
+data want;
+  set have;
+  second_last = substr(x, length(x)-1, 1);
+run;
+“I’ll use SUBSTR with LENGTH(x)-1 to extract the second last character.”
+******************************************************************************************************
+I have date and I need 10 dates of every 24 hours. What function you used for this ?
+2023-04-25
+2023-04-25 T11:22:00
+
+ANs:-data _null_;
+    start_date = '25APR2023'd;
+format new_date datetime20.
+    /* Generate 10 dates at 24-hour intervals */
+    do i = 0 to 9;
+        new_date = intnx('hour', start_date, i*24);
+        put new_date date9.; /* Display the generated date */
+    end;
+run;
+
+********************************************************************************************************
+if two data sets and merged from which data sets value comes from ?
+
+merge ab bc;
+Ans:=In SAS, when you merge two datasets using a MERGE statement, the resulting dataset will contain values from both datasets
+ based on the key variables specified in the by statement
+******************************************************************************************************
+
+What is difrence between Substr function and Scan Function?
+Substr extracts specific substrings or replaces charecter values.
+Scan returns specified word from a character value.Syntax:'scan(string,n[,delimeter])'
+
+****************************************************************************************************
+What is difrence between set and merge?
+
+****************************************************************************************************
+
+101ABC01
+1002ABCD02
+10003ABDCE03
+I want create ID hveing obs like 101 1002 10003
+
+ANS:-
+/* Create sample dataset */
+data have;
+input values $;
+datalines;
+101ABC01
+1002ABCD02
+10003ABDCE03
+;
+run;
+
+/* Create output dataset */
+data want;
+set have;
+length ID $10; /* Adjust the length as per your requirement */
+
+ID = scan(values, 1, 'A');
+
+run;
+
+/* Display the result */
+proc print data=want;
+run;
+
+************************************************************************************************
+
+Write the sytext of proc sql;
+and what is diffrence between order by and group by;
+
+PROC SQL;
+    SELECT column1, column2, ...
+    FROM dataset;
+    WHERE condition;
+    GROUP BY column1, column2, ...
+    HAVING condition;
+    ORDER BY column1, column2, ...;
+QUIT;
+In this syntax:
+
+SELECT specifies the columns to be selected in the output.
+FROM specifies the dataset from which the data will be retrieved.
+WHERE specifies the condition to filter the rows.
+GROUP BY specifies the columns to group the data by.
+HAVING specifies the condition to filter the grouped data.
+ORDER BY specifies the columns to sort the output.
+The PROC SQL statement is used to initiate the SQL procedure in SAS. It is followed by various SQL clauses that define the desired operations on the data.
+
+Now, let's discuss the difference between ORDER BY and GROUP BY:
+
+ORDER BY is used to sort the output based on one or more columns in ascending or descending order. It is typically used in the final step of the SQL query to arrange the result set in a specific order.
+GROUP BY is used to group the rows based on one or more columns. It combines the rows with the same values in the specified columns into summary rows.
+It is typically used when performing aggregations, such as calculating sums or counts, on grouped data.
+In summary, ORDER BY is used for sorting the output, while GROUP BY is used for grouping the data and performing aggregate calculations
+
+***************************************************************************************************
+
+Write the sytax of proc transpose
+and If I hve  variable 
+ ID            
+1
+2
+3
+4
+5
+6
+so how to data gets populate in ID variables.
+
+************************************************************************************************
+
+diffence between proc sql and merge 
+if I have two data set an having 2 var and 10obs each and only usubjid will be the commn variable.
+which would you used join or merge ?
+In join you used how many records comes;
+***********************************************************************************************
+if the listing goes on production and there is error then how would you handle. 
+************************************************************************************************
+
+how many charecter function you used so far?
+what is diff betn substr and Scan ?
+what is diff betn index and indwxw ?
+Ans:-In SAS, both INDEX and INDEXW functions are used to find the position of a substring within a string. However, they differ in terms of how they handle
+ case sensitivity and word boundaries:
+
+INDEX Function:
+
+The INDEX function searches for the first occurrence of a substring within a string, without considering case sensitivity.
+Syntax: INDEX(string, substring)
+Example: INDEX('Hello world', 'world') returns 7, as 'world' starts at the 7th position in 'Hello world'.
+INDEXW Function:
+
+The INDEXW function is similar to INDEX, but it is case-insensitive and considers word boundaries when searching for the substring.
+Syntax: INDEXW(string, substring)
+Example: INDEXW('Hello world', 'WORLD') returns 7, despite 'WORLD' being in uppercase because INDEXW is case-INSENSITIVE.
+Here's an additional note on word boundaries:
+
+When using INDEXW, the substring must match a whole word in the string. For example, if the substring is 'world', INDEXW will match 'world' as a whole word,
+ but it won't match 'world' if it's part of another word like 'worldwide'.
+In summary, the main difference between INDEX and INDEXW is that INDEXW is case-insensitive and considers word boundaries, while INDEX is case-sensitive and 
+does not consider word boundaries.
+
+***********************************************************************************************
+
+WRP to retrive 3 Consecutive date
+ 
+101 25MAY2023
+101 26MAY2023
+101 27MAY2023
+100 25MAY2023
+100 26MAY2023
+100 28MAY2023
+101 24MAY2023
+101 26MAY2023
+101 27MAY2023
+how to do it ?
+************************************************************************************************
+write a program to make a ID column values to a fixed length of 8 charcter.
+ 
+ID
+ 
+11
+22222
+890
+9989090
+ 
+o/p
+ID
+00000011
+00022222
+00000890
+09989090
+
+Ans:-
+data want;
+   set have;
+   /* Use PUT statement with Z8. format to zero-fill ID values to 8 characters */
+   ID_fixed = put(ID, z8.);
+run;
+
+*********************************************************************************************
+write a program to write your name like below.
+ 
+RAM
+RA
+R
+Data New;
+Name="Ram";
+do i=1 to 3;
+substr(name,1)=substr(name,1,4-i);
+run;
+********************************************************************************************
+I will apend the two data set. How many records will be in final O/P? how many records if we used to cross join or cartesian products?
+data final;
+set a b;
+run;
+*****************************************************************************************
+
+I have big data. form this I want only output those email id is 
+pankaj_k@gmail.com
+praveen_b@gmail.com.
+
+Data a;
+pankaj_k@gmail.com
+praveen_b@gmail.com
+sarang_g@gmail.com
+likewise i have data in dataset.
+how can I program for this to achive pankaj_k@gmail.com
+praveen_b@gmail.com.
+?
+
+Ans:=data filtered_data;
+set a;
+where email in ('pankaj_k@gmail.com', 'praveen_b@gmail.com');
+run;
+**********************************************************************************
+
+data test;
+a='ABC.DEF(X=Y)';
+b='X=Y';
+x=index(a,b);
+put x;
+ 
+run;
+
+what will be value of X?
+********************************************************************************
+BARB
+BOB
+DAVID
+having above value so I want only thos having first and last latter is B?
+How can achive this ?
+Ans:-data names;
+    input name $;
+    datalines;
+BARB
+BOB
+DAVIB
+Borobb
+Bklb
+;
+run;
+
+data b_names;
+    set names;
+    if upcase(substr(name, 1, 1)) = 'B' and upcase(substr(name, length(name), 1)) = 'B';
+run;
+
+proc print data=b_names;
+run;
+********************************************************************************
+
+write a program to merge? and how many matching observatons will be pupulated if I used the condition ?
+Dataset_1:
+subjid  Country $
+1001 US
+1002 UK
+1005 FR
+ 
+Dataset_2:
+subjid age $
+1003 25
+1004 35;
+*********************************************************************************
+write a program where subjectstatus ="Screen failed" and populating count?
+Subject                  Subjectstatus
+     0001                  Screen failed
+     0002                  Screen Failed
+     0003                  Screening
+     0004                  Randamized
+     0005                  Discontinued
+
+ANS:-
+data subjects;
+    input Subject $ Subjectstatus $20.;
+    datalines;
+0001 Screen failed
+0002 Screen Failed
+0003 Screening
+0004 Randamized
+0005 Discontinued
+;
+run;
+
+proc sql;
+    create table screen_failed_count as
+    select 
+        count(*) as Failed_Count
+    from 
+        subjects
+    where 
+        upcase(Subjectstatus) = "SCREEN FAILED";
+quit;
+
+proc print data=screen_failed_count;
+run;
+
+**********************************************************************************
+NOTE: MERGE statement has more than one data set with repeats of BY values. What does this mean and how will you handle this?
+why this note comming and how to resolve it ?
+
+**********************************************************************************
+%Let A=xyz; how to populated A in log window?ANs= %put &A;
+
+*******************************************************************************
+write a code to import CSV file?
+also write code to import file having delimiter as pipeline(|);
+Ans:=proc import datafile='path_to_your_csv_file.csv'
+            out=csv_data
+            dbms=csv
+            replace;
+run;
+
+
+also write code to import file having delimiter as pipeline(|) and obs starting from 5;
+Ans=proc import datafile='path_to_your_pipeline_file.txt'
+            out=pipeline_data
+            dbms=dlm
+            replace;
+            delimiter='|';
+run;
+
+
+data pipeline_data_starting_from_5;
+   infile 'path_to_your_pipeline_file.txt' dlm='|' missover;
+   input var1 var2 var3; /* Adjust variables as needed */
+   /* Additional INPUT statements for other variables */
+   /* Use _n_ to read from the 5th row */
+   if _n_ >= 5;
+run;
+
+
+***********************************************************************************************;
+Suppose there is data and in that data every subject has 3 observations but I want only 1 obesrvation per subject. How you calculate using proc sql;
+***********************************************************************************************;
+Suppose there is variable called startdate I need to compare the diffrence between two dates 
+e.g
+Start_date
+01MAy2024
+10May2024
+20May2024
+like that the obervation is.
+
+***********************************************************************************************;
+THere is data entry done and I want the data be pulled from last month how you pull the data. 
+
+**********************************************************************************************;
+
+data employees;
+    input id $ salary department $;
+    datalines;
+    A1 45000 HR
+    A2 55000 IT
+    A3 60000 HR
+    A4 48000 IT
+    ;
+run;
+/*Write a program to create a new dataset that generates five salary increments (5%) for each employee, showing the salary after each increment.*/
+ 
+data increments;
+    set employees;
+    do increment = 1 to 5; /* Loop for 5 increments */
+        salary_after_increment = salary * (1 + 0.05 * increment); /* Calculate new salary */
+        output; /* Write the record for each increment */
+    end;
+run;
+ 
+/* Display the result */
+proc print data=increments;
+run;
+
+********************************************************************************************************************;
+Types of Macro debugging;
+
+********************************************************************************************************************;
+%let=10;
+%let=20;
+%let z=&x+&y;
+%put Z=&z;
+Ans is :-10+20
+
+********************************************************************************************************************;
+%let a=b;
+%let b=c;
+%put &&&a;
+
+ANs=C
+Reason 
+%let a=b asigns value b t the macro variable a.
+
+%let b=c assigns the value c to the macro variavle b.
+
+%put &&&a;
+&a resolves to b (since a=b)
+&&b -&b is resolved to c (since b=c)
+
+so final output is C.
+
+&&B is resovles into & first making it &b, which resolves to C.
+
+This technique is know as double indirection in SAS macros where a macro variables value is used to refrence another macro variable.
+
+
+Ram24M
+Sara25K
+Prakash20M
+
+Data Test;
+set DM;
+Where AGE >18
+Where Country = "India";
+run;
+ 
+Data test1;
+set DM(where=(Age>18));
+where Country="US";
+run;
+
+calculate age :-
+Subject   birth_date
+1          1985-05-15
+2          1990-08-20
+3          1975-12-30
+4          2000-01-10
+
+
+how you populate 20 in log window 
+%let a=20;
+%let b=a;
+%let c=b;
+
+What is pdv
+ways of creating macro 
+how to round of 7.8 to 9 
+There are multiple data sets and I want only two subject from each data sets 101 102 in tabular format how will you creat macro for this.
+how will you calculate diffrence between two dates.
+what is compbl function 
+
+what is first created Input buffer or PDV?
+what change happen when we used Mprint in sas macro?
+
+ID VISIT
+101 V1
+101 V2
+101 V3
+102 V1
+102 V3
+103 V2
+104 V1
+ this is data set I have and I want 
+103 V2
+104 V1 unique ID or ID which shows only 1nce -
+Ans:-data unique_id;
+    set a;
+    by ID;
+    if first.ID and last.ID;
+run;
+I have string below :-path="C:\Users\temp\Documents\helloworld.txt";  and I want output like helloworld.txt
+Ans-final = scan(path, -1, '\');
+********************************************************************************************************************************************
+data a;
+    input info $20.;
+    datalines;
+Robert23Vadi
+John26Dan
+Rahul33Kumar
+;
+run;
+above is the dataset and I want output like
+
+Fname  Lname Age
+Robert Vadi  23
+John   Dan   26
+Rahul  Kumar 33
+
+
+data want1;
+    set a;
+
+    /* Extract age (digits only) */
+    age = input(compress(info, , 'kd'), 8.);
+
+    /* Find first and last digit position */
+    first_digit = findc(info, , 'd');
+	last_digit  = findc(info, , 'db');
+
+    /* Extract first and last name */
+    fname = substr(info, 1, first_digit - 1);
+    lname = substr(info, last_digit + 1);
+
+    drop first_digit last_digit;
+run;
+
+**********************************************************************************************************************************************
+what is the Cat family and function :-
+Cat
+cats
+catx
+**********************************************************************************************************************************************
+What is the automatic variables in SAS and which is created first ?
+**********************************************************************************************************************************************
+id category
+123-abc c1
+234-efd c2
+456-asd c3
+ above is the data set and i want the output like below 
+ 
+ 
+ID VISIT category
+123 v1 c1
+234 v2 c2
+456 v3 c3
+
+data we;
+    set b;
+    ID = scan(id,1,"-");
+    VISIT = cats('v', _N_);
+    keep ID VISIT category;
+run;
+
+
+
+
+
+
