@@ -1,0 +1,136 @@
+catx(",","Sarang","Gujarathi")=Sarang, gujarathi
+Cat("Sarang           Gujarathi" )= Sarang Gujarathi 
+cats
+
+ 
+ID	VISIT
+123	v1
+234	v2
+456	v3
+ 
+ 
+ 
+id	category
+123-abc	c1
+234-efd	c2
+456-asd	c3
+ 
+ 
+ 
+ID	VISIT	category
+123	v1	c1
+234	v2	c2
+456	v3	c3
+ 
+ scan(id,1,"-")
+
+Data final;
+merge a(in=a) b;
+       if a;
+by ID ;
+run;
+
+ID	VISIT
+101	V1
+101	V2
+101	V3
+102	V1
+102	V3
+103	V2
+104	V1
+
+proc sort data=a nodupkey=ID;
+by ID;
+run;
+
+proc sort data=a nodupkey=ID dupout=new;
+by ID;
+run;
+
+data a;
+set b;
+by Id;
+if first.Id then do ;
+if last.id then do ;
+end;
+run;
+
+proc sort data =a;
+by ID visit;
+run;
+
+proc transpose data=a out=prefinal;
+by ID Vist;
+ID Visit;
+run;
+
+Data Final;
+set prefinal;
+visit=catx(",",col1,col2,col3);
+keep ID Visit;
+run;
+
+path="C:\Users\temp\Documents\helloworld.txt";
+
+final=scan(path,-2,"\");
+
+final=
+
+ 
+INFO
+Robert23Vadi
+John26Dan
+Rahul33Kumar
+ 
+ 
+ 
+Fname	Lname	Age
+Robert	Vadi	23
+John	Dan	26
+Rahul	Kumar	33
+ 
+ 
+Data Prefinal;
+info=compress(info,"k");
+
+Data a;
+if salary 
+
+
+
+
+ 
+Fname	Lname	Age
+Robert	Vadi	23
+John	Dan	26
+Rahul	Kumar	33
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
