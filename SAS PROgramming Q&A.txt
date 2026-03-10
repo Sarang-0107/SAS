@@ -909,4 +909,18 @@ RUN;
 | TITLE     | Add report title         |
 
 
+How to genrate PDF file :-
+To generate a PDF file in SAS, we use the ODS (Output Delivery System) with the ODS PDF statement
 
+ODS PDF FILE="file-path/filename.pdf";
+PROC PRINT DATA=dataset;
+RUN;
+
+ODS PDF CLOSE;
+
+
+ODS PDF → Starts writing output to PDF
+
+ODS PDF CLOSE → Must be used to finish the file
+
+Any PROC output between these statements goes to the PDF
