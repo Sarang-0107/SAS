@@ -1,0 +1,33 @@
+🔍 Edit Check Programming (ECP) in Clinical Data Management (CDM)
+
+Edit Check Programming is a core activity in CDM that ensures the accuracy, consistency, and completeness of clinical trial data.
+
+💡 What is Edit Check Programming?
+It involves writing and implementing logical rules (edit checks) in an EDC system to automatically detect data issues such as missing, incorrect, inconsistent, or out-of-range values in CRFs.
+
+🎯 Purpose of Edit Checks
+✔️ Identify data discrepancies early
+✔️ Improve overall data quality
+✔️ Reduce manual data review
+✔️ Support regulatory compliance
+🧩 Types of Edit Checks
+📌 Range Checks – Age must be between 18–65
+📌 Consistency Checks – If Gender = Male → Pregnancy = No
+📌 Missing Data Checks – Visit Date cannot be blank
+📌 Date Checks – Visit Date ≥ Informed Consent Date
+📌 Cross-Form Checks – AE Start Date ≥ First Dose Date
+📌 Protocol Deviation Checks – Lab values outside protocol limits
+🔄 Edit Check Programming Process
+1️⃣ Review Protocol & CRFs
+2️⃣ Prepare Edit Check Specifications (ECS)
+3️⃣ Program edit checks in EDC
+4️⃣ Unit Testing
+5️⃣ UAT (User Acceptance Testing)
+6️⃣ Go-Live & Maintenance
+
+🛠️ Common EDC Tools
+🔹 Medidata Rave
+🔹 Oracle InForm
+🔹 Veeva Vault EDC
+🔹 REDCap
+✨ Strong edit check programming plays a key role in delivering high-quality, reliable clinical trial data.
