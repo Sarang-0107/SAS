@@ -1,0 +1,134 @@
+1️⃣ Example: What a Patient Profile Looks Like (Real-life)
+
+Think of a patient profile as a multi-section report for ONE subject.
+
+🧑‍⚕️ Patient Profile – Example Structure
+
+Header
+
+Study ID
+
+Subject ID
+
+Treatment Arm
+
+Randomization Date
+
+📌 Section 1: Demographics
+
+Age
+
+Sex
+
+Race
+
+Country / Site
+
+👉 Who is the patient?
+
+📌 Section 2: Medical History
+
+Chronic conditions
+
+Start/End dates
+
+Ongoing conditions
+
+👉 What conditions did the patient have before the study?
+
+📌 Section 3: Treatment & Dosing
+
+Study drug start/stop dates
+
+Dose changes
+
+Interruptions
+
+👉 What treatment did they receive?
+
+📌 Section 4: Adverse Events
+
+AE term
+
+Start/End date
+
+Severity
+
+Serious or not
+
+Relationship to drug
+
+👉 Any safety issues?
+
+📌 Section 5: Concomitant Medications
+
+Medication name
+
+Start/End date
+
+Indication
+
+👉 Any other medicines taken?
+
+📌 Section 6: Labs / Vitals / ECG
+
+Normal vs abnormal values
+
+Flags for out-of-range results
+
+👉 Any clinical abnormalities?
+
+📌 Section 7: Efficacy (e.g., Pain – NPRS)
+
+Baseline score
+
+Visit-wise scores
+
+Trend over time
+
+👉 Did the patient improve or worsen?
+
+📌 All sections are shown in date/time order, so the reviewer sees the full story clearly.
+
+3️⃣ Difference: Patient Profile vs Subject Listing (VERY important)
+
+Interviewers LOVE this question.
+
+🆚 Patient Profile vs Subject Listing
+
+| Patient Profile          | Subject Listing        |
+| ------------------------ | ---------------------- |
+| One subject              | Many subjects          |
+| Complete story           | Tabular data           |
+| Multiple sections        | Usually one domain     |
+| Used by medical reviewer | Used by DM / reviewers |
+| Chronological            | Row-based              |
+
+🍋 Lemon version
+
+Patient profile = full movie of one patient 🎬
+
+Subject listing = Excel sheet of many patients 📊
+
+4️⃣ One-line interview answers (memorize)
+🔹 Patient Profile
+
+“A patient profile is a subject-level, chronological summary combining data across domains to support medical review.”
+
+🔹 Subject Listing
+
+“A subject listing is a tabular display of clinical data across multiple subjects used for data review and quality checks.”
+
+5️⃣ Bonus line (sounds senior 👌)
+
+“Patient profiles are designed to help reviewers quickly identify safety concerns, trends, and inconsistencies at the subject level.”
+
+“In patient profiles, I create a subject-level summary by combining data from multiple domains into a chronological, reviewer-friendly format. I ensure data consistency, correct sequencing of events, and highlight important safety and protocol-related information to support medical review.”
+
+“I pull data from domains like demographics, medical history, adverse events, concomitant medications, labs, vitals, and efficacy assessments. I align dates and times, sort events chronologically, and format the output so reviewers can easily understand the subject’s study journey.”
+
+I check for missing data, date inconsistencies, overlap between adverse events and medications, abnormal lab values, protocol deviations, and overall safety trends at the subject level.”
+
+In patient profiles, I show the complete story of one patient in one report and make sure everything makes sense and follows the protocol
+
+Patient profiles help medical reviewers quickly assess subject safety, data quality, and compliance without going through multiple datasets.

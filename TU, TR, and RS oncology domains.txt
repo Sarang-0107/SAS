@@ -1,0 +1,399 @@
+                Perfect! Here’s a clear, interview-ready diagram showing how TU, TR, and RS oncology domains flow in a metadata-driven Python pipeline.
+
+
+                ┌───────────────────────┐
+                │  Raw Oncology Data    │
+                │ (Lab, Imaging, EMR)  │
+                └─────────┬────────────┘
+                          │
+           ┌──────────────┴──────────────┐
+           │   Data Preprocessing       │
+           │ - Clean missing values     │
+           │ - Standardize units        │
+           │ - Correct data types       │
+           └──────────────┬────────────┘
+                          │
+           ┌──────────────┴──────────────┐
+           │ Metadata-Driven Mapping     │
+           │ - Read Metadata Template    │
+           │ - Apply transformations:   │
+           │   - upper()                │
+           │   - to_iso8601()           │
+           │   - controlled terminology │
+           └──────────────┬────────────┘
+                          │
+        ┌─────────────────┼─────────────────┐
+        │                 │                 │
+┌───────▼───────┐ ┌───────▼───────┐ ┌───────▼───────┐
+│ TU Domain     │ │ TR Domain      │ │ RS Domain      │
+│ Tumor Info    │ │ Treatment Info │ │ Response Info  │
+│ - TUMORID     │ │ - TRTID        │ │ - RESPID       │
+│ - TUMORLOC    │ │ - TRTNAME      │ │ - RESPVAL      │
+│ - TUMORSIZE   │ │ - TRTDOS       │ │ - RESPDT       │
+│ - TUMORDT     │ │ - TRTSTDTC     │ │ - RESPMETH     │
+└───────┬───────┘ └───────┬───────┘ └───────┬───────┘
+        │                 │                 │
+        └───────┬─────────┴─────────┬───────┘
+                │ Validation & QC    │
+                │ - Required checks  │
+                │ - Controlled terms │
+                │ - Missing values   │
+                └─────────┬──────────┘
+                          │
+                ┌─────────▼──────────┐
+                │ SDTM Oncology Output │
+                │ TU, TR, RS Domains   │
+                └─────────────────────┘
+
+
+🌟 Step 1: Metadata Templates (CSV Example)
+TU Metadata
+
+| raw_column  | sdtm_variable | transform  | required |
+| ----------- | ------------- | ---------- | -------- |
+| Tumor_ID    | TUMORID       | None       | yes      |
+| Location    | TUMORLOC      | upper      | yes      |
+| Size_mm     | TUMORSIZE     | None       | yes      |
+| Date_Assess | TUMORDT       | to_iso8601 | yes      |
+
+TR Metadata
+
+| raw_column   | sdtm_variable | transform  | required |
+| ------------ | ------------- | ---------- | -------- |
+| Treatment_ID | TRTID         | None       | yes      |
+| Drug_Name    | TRTNAME       | upper      | yes      |
+| Dose_mg      | TRTDOS        | None       | yes      |
+| Start_Date   | TRTSTDTC      | to_iso8601 | yes      |
+| End_Date     | TRTENDTC      | to_iso8601 | no       |
+
+
+RS Metadata
+ 	| raw_column        | sdtm_variable | transform    | required |
+| ----------------- | ------------- | ------------ | -------- |
+| Response_ID       | RESPID        | None         | yes      |
+| Assessment_Result | RESPVAL       | map_response | yes      |
+| Assessment_Date   | RESPDT        | to_iso8601   | yes      |
+| Method            | RESPMETH      | upper        | yes      |
+
+step 2 Python code :-
+import pandas as pd
+
+# --------------------------
+# Transformation functions
+# --------------------------
+def upper(x):
+    return str(x).upper() if pd.notnull(x) else None
+
+def to_iso8601(x):
+    try:
+        return pd.to_datetime(x).strftime("%Y-%m-%d")
+    except:
+        return None
+
+def map_response(x):
+    mapping = {
+        "Complete Response": "CR",
+        "Partial Response": "PR",
+        "Stable Disease": "SD",
+        "Progressive Disease": "PD"
+    }
+    return mapping.get(x, None)
+
+# --------------------------
+# Generic Mapping Function
+# --------------------------
+def map_domain(raw_df, metadata_df):
+    TRANSFORM_FUNCTIONS = {
+        "upper": upper,
+        "to_iso8601": to_iso8601,
+        "map_response": map_response,
+        "None": lambda x: x
+    }
+    
+    sdtm_df = pd.DataFrame()
+    
+    for _, row in metadata_df.iterrows():
+        raw_col = row["raw_column"]
+        sdtm_var = row["sdtm_variable"]
+        transform = row["transform"]
+        func = TRANSFORM_FUNCTIONS[transform]
+        sdtm_df[sdtm_var] = raw_df[raw_col].apply(func)
+    
+    # Validation
+    issues = {}
+    for _, row in metadata_df.iterrows():
+        sdtm_var = row["sdtm_variable"]
+        if row["required"] == "yes":
+            missing = sdtm_df[sdtm_var].isna().sum()
+            if missing > 0:
+                issues[sdtm_var] = f"{missing} missing required values"
+    
+    return sdtm_df, issues
+
+
+             ┌────────────────────────────┐
+             │      Raw Oncology Data      │
+             │ (Labs, Imaging, EMR Logs)  │
+             └─────────────┬──────────────┘
+                           │
+             ┌─────────────┴──────────────┐
+             │     Preprocessing Layer     │
+             │ - Clean missing values      │
+             │ - Standardize units         │
+             │ - Correct data types        │
+             └─────────────┬──────────────┘
+                           │
+             ┌─────────────┴──────────────┐
+             │  Metadata-Driven Engine     │
+             │ - Read metadata template    │
+             │ - Apply transformations:   │
+             │   * upper()                 │
+             │   * to_iso8601()            │
+             │   * controlled term mapping │
+             └─────────────┬──────────────┘
+                           │
+           ┌───────────────┼───────────────┐
+           │               │               │
+┌──────────▼─────────┐ ┌───▼────────────┐ ┌───▼─────────────┐
+│ TU Domain           │ │ TR Domain       │ │ RS Domain        │
+│ Tumor Information   │ │ Treatment Info  │ │ Response Info    │
+│ - TUMORID           │ │ - TRTID         │ │ - RESPID         │
+│ - TUMORLOC          │ │ - TRTNAME       │ │ - RESPVAL        │
+│ - TUMORSIZE         │ │ - TRTDOS        │ │ - RESPDT         │
+│ - TUMORDT           │ │ - TRTSTDTC      │ │ - RESPMETH       │
+└──────────┬─────────┘ └───┬────────────┘ └───┬─────────────┘
+           │                 │                  │
+           └─────────┬───────┴───────┬──────────┘
+                     │ Validation & QC │
+                     │ - Required fields │
+                     │ - Missing values  │
+                     │ - Controlled terms│
+                     └─────────┬────────┘
+                               │
+                     ┌─────────▼─────────┐
+                     │ SDTM Oncology Output │
+                     │ TU, TR, RS Domains   │
+                     └─────────────────────┘
+
+
+“Raw oncology data enters a preprocessing layer where we clean, standardize, and correct formats. The metadata-driven engine then reads domain-specific metadata templates for TU, TR, and RS, applying transformations like uppercasing, ISO date conversion, and controlled terminology mapping dynamically. After automated validation for required variables, missing values, and term compliance, the engine outputs SDTM-compliant TU, TR, and RS domains. This approach is modular, reusable across studies, and significantly reduces manual coding time.”
+
+
+
+🎤 TU/TR/RS Oncology SDTM Mapping – Interview Pitch
+
+"In one of my oncology projects, I built a metadata-driven Python mapping engine to automate the creation of SDTM domains for TU (Tumor), TR (Treatment), and RS (Response).
+
+Raw clinical data—including lab values, imaging assessments, and treatment logs—first goes through a preprocessing layer where missing values are cleaned, units are standardized, and data types corrected. Then, the metadata-driven engine reads domain-specific metadata templates. Each template defines source columns, SDTM variable names, required fields, and transformation rules such as uppercasing, ISO date formatting, and controlled terminology mapping.
+
+The engine applies transformations dynamically using a dictionary of functions, so no hard-coded logic is needed. After mapping, an automated validation step checks required variables, missing values, and controlled term compliance, ensuring SDTM compliance and consistency.
+
+For example, in the RS domain, raw response assessments like 'Complete Response' or 'Partial Response' are automatically mapped to SDTM standardized codes like 'CR' and 'PR'. TU domain captures tumor IDs, locations, sizes, and assessment dates, while TR captures treatment details like drug name, dose, and start/end dates.
+
+This approach reduced weeks of manual coding to hours, improved consistency across studies, and freed data engineers to focus on higher-value tasks like analysis-ready dataset generation. Because the engine is fully metadata-driven, it is reusable across multiple studies and therapeutic areas, making it highly scalable and maintainable."
+
+
+
+"""
+SDTM Mapping Examples - Metadata-driven mapping engine (Python)
+
+This single-file example includes:
+- In-memory sample `raw_lab_data` and `mapping_metadata` (so you can run without CSVs)
+- A small reusable mapping engine `map_raw_to_sdtm()`
+- Transformation functions (upper, to_iso8601, none)
+- SDTM LB derivations: LBSEQ, LBDY, VISIT (simple heuristics)
+- Example run that produces `sdtm_lb_df` and prints a validation report
+
+Run: paste into a Python environment with pandas installed and run the file.
+"""
+
+import pandas as pd
+from datetime import datetime
+
+# ---------------------------
+# Transformation functions
+# ---------------------------
+
+def upper(x):
+    """Return uppercase string for non-missing values, else None."""
+    return str(x).upper() if pd.notnull(x) else None
+
+
+def to_iso8601(x):
+    """Convert dates to ISO YYYY-MM-DD or return None for invalid/partial dates."""
+    try:
+        # Use pandas to be flexible with input formats
+        dt = pd.to_datetime(x, errors="coerce")
+        if pd.isna(dt):
+            return None
+        return dt.strftime("%Y-%m-%d")
+    except Exception:
+        return None
+
+
+TRANSFORM_FUNCTIONS = {
+    "upper": upper,
+    "to_iso8601": to_iso8601,
+    "None": lambda x: x
+}
+
+# ---------------------------
+# Sample input data (in-memory)
+# ---------------------------
+
+# raw_lab_data: mimic an EDC-exported CSV (string columns, mixed formats)
+raw_lab_data = pd.DataFrame({
+    "SUBJID": ["SUBJ001", "SUBJ001", "SUBJ002", "SUBJ003"],
+    "LABTEST": ["hemoglobin", "WBC", "Platelets", "hemoglobin"],
+    "LABVAL": [13.5, 7.8, 250, None],
+    "LABUNIT": ["g/dL", "10^9/L", "10^9/L", "g/dL"],
+    "LABDT": ["2024-01-05", "05/02/2024", "2024-02-20", "2024-03-01"],
+    "VISIT": ["Screening", "Week 1", "Week 2", "Baseline"]
+})
+
+# mapping_metadata: how raw columns map to SDTM variables and which transform to apply
+mapping_metadata = pd.DataFrame({
+    "raw_column": ["SUBJID", "LABTEST", "LABVAL", "LABUNIT", "LABDT", "VISIT"],
+    "sdtm_variable": ["USUBJID", "LBTEST", "LBORRES", "LBORRESU", "LBDTC", "VISIT"],
+    "transformation": ["None", "upper", "None", "None", "to_iso8601", "upper"],
+    "required": ["yes", "yes", "yes", "no", "yes", "no"]
+})
+
+# ---------------------------
+# Reusable mapping engine
+# ---------------------------
+
+def map_raw_to_sdtm(raw_df: pd.DataFrame, metadata_df: pd.DataFrame, transforms: dict) -> pd.DataFrame:
+    """Map raw DataFrame to SDTM using metadata-driven rules.
+
+    Args:
+        raw_df: input raw data (wide form)
+        metadata_df: mapping metadata with columns [raw_column, sdtm_variable, transformation, required]
+        transforms: dict mapping transformation name -> callable
+
+    Returns:
+        sdtm_df: mapped SDTM DataFrame (columns defined by sdtm_variable in metadata_df order)
+    """
+    sdtm_df = pd.DataFrame()
+
+    for _, mrow in metadata_df.iterrows():
+        raw_col = mrow["raw_column"]
+        sdtm_var = mrow["sdtm_variable"]
+        transform_name = mrow["transformation"]
+
+        if raw_col not in raw_df.columns:
+            # If raw column missing, create sdtm column full of None
+            sdtm_df[sdtm_var] = [None] * len(raw_df)
+            continue
+
+        func = transforms.get(transform_name, lambda x: x)
+        # Apply function elementwise (preserve index/order)
+        sdtm_df[sdtm_var] = raw_df[raw_col].apply(func)
+
+    return sdtm_df
+
+
+# ---------------------------
+# Simple SDTM derivations for LB domain
+# ---------------------------
+
+def derive_lbseq(sdtm_lb_df: pd.DataFrame) -> pd.DataFrame:
+    """Create LBSEQ as per-subject sequential integer (1..n) order of records as found in table."""
+    sdtm = sdtm_lb_df.copy()
+    sdtm["LBSEQ"] = sdtm.groupby("USUBJID").cumcount() + 1
+    return sdtm
+
+
+def derive_lbdy(sdtm_lb_df: pd.DataFrame, dm_df: pd.DataFrame) -> pd.DataFrame:
+    """Derive LBDY = days from subject RFSTDTC (reference start), if RFSTDTC exists in dm_df as BRFSTDTC/RFSTDTC.
+
+    This function expects dm_df to contain columns USUBJID and RFSTDTC (ISO dates).
+    If RFSTDTC is missing or LBDTC is missing, LBDY will be None.
+    """
+    sdtm = sdtm_lb_df.copy()
+
+    # If dm_df doesn't have RFSTDTC, try BRFSTDTC or create placeholder
+    if "RFSTDTC" not in dm_df.columns:
+        # For demo, create RFSTDTC from first subject record or assume study day 1 = 2024-01-01
+        dm = dm_df.copy()
+        dm["RFSTDTC"] = dm.get("RFSTDTC", pd.Series(["2024-01-01"] * len(dm)))
+    else:
+        dm = dm_df.copy()
+
+    # Merge RFSTDTC into LB
+    merged = sdtm.merge(dm[["USUBJID", "RFSTDTC"]], on="USUBJID", how="left")
+
+    # Convert to datetime
+    merged["LBDTC_dt"] = pd.to_datetime(merged["LBDTC"], errors="coerce")
+    merged["RFSTDTC_dt"] = pd.to_datetime(merged["RFSTDTC"], errors="coerce")
+
+    # Compute day difference + 1
+    merged["LBDY"] = (merged["LBDTC_dt"] - merged["RFSTDTC_dt"]).dt.days + 1
+
+    # Where either date is missing, set LBDY to None
+    merged.loc[merged["LBDTC_dt"].isna() | merged["RFSTDTC_dt"].isna(), "LBDY"] = None
+
+    # Drop helper cols and return
+    merged = merged.drop(columns=["LBDTC_dt", "RFSTDTC_dt"])
+    return merged
+
+
+def derive_visit_standardized(sdtm_lb_df: pd.DataFrame) -> pd.DataFrame:
+    """Simple heuristic to standardize visit names (e.g., make uppercase and common labels).
+    Real projects use a controlled terminology map. Here we just uppercase and strip whitespace."""
+    s = sdtm_lb_df.copy()
+    s["VISIT"] = s["VISIT"].apply(lambda x: str(x).strip().upper() if pd.notnull(x) else None)
+    # Example mapping: WEEK 1, WEEK 2, BASELINE, SCREENING
+    s["VISITNUM"] = s["VISIT"].map({
+        "SCREENING": 0,
+        "BASELINE": 1,
+        "WEEK 1": 2,
+        "WEEK 2": 3
+    })
+    return s
+
+
+# ---------------------------
+# Example run: map -> derive -> validate -> save
+# ---------------------------
+
+if __name__ == "__main__":
+    # Create a small DM example to provide RFSTDTC for day calculations
+    dm = pd.DataFrame({
+        "USUBJID": ["SUBJ001", "SUBJ002", "SUBJ003"],
+        "RFSTDTC": ["2024-01-01", "2024-02-01", "2024-03-01"]
+    })
+
+    # Map raw -> SDTM using the engine
+    sdtm_lb = map_raw_to_sdtm(raw_lab_data, mapping_metadata, TRANSFORM_FUNCTIONS)
+
+    # Derivations
+    sdtm_lb = derive_lbseq(sdtm_lb)
+    sdtm_lb = derive_visit_standardized(sdtm_lb)
+    sdtm_lb = derive_lbdy(sdtm_lb, dm)
+
+    # Validation - required columns
+    issues = {}
+    for _, r in mapping_metadata.iterrows():
+        var = r["sdtm_variable"]
+        if r["required"] == "yes":
+            miss = sdtm_lb[var].isna().sum()
+            if miss > 0:
+                issues[var] = f"{miss} missing required values"
+
+    if issues:
+        print("VALIDATION ISSUES:")
+        for k, v in issues.items():
+            print(" -", k, v)
+    else:
+        print("All validation checks passed.")
+
+    # Show the resulting SDTM LB dataframe
+    print("\nSDTM LB sample output:\n")
+    print(sdtm_lb)
+
+    # Save to CSV (uncomment to persist)
+    # sdtm_lb.to_csv("sdtm_lb_output.csv", index=False)
+
+# End of file
+

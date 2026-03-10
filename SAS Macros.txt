@@ -1,0 +1,184 @@
+Yes, I have developed and used SAS macros in my studies to automate repetitive programming tasks. These macros were validated as per study requirements by testing with multiple datasets and reviewing outputs against specifications.
+
+1️⃣ Missing Value Check Macro (VERY COMMON)
+🔹 What it does
+
+Checks missing values for any dataset & variable.
+
+🔹 Macro
+%macro chk_missing(ds=, var=);
+
+proc sql noprint;
+  select count(*) into :miss_cnt
+  from &ds
+  where &var is missing;
+quit;
+
+%put NOTE: Missing count for &ds..&var = &miss_cnt;
+
+%mend;
+
+🔹 How you explain
+
+“I created a macro to dynamically check missing values across datasets, which helped during data cleaning and UAT.”
+
+
+2️⃣ Study Day Calculation Macro ⭐ (VERY STRONG)
+🔹 What it does
+
+Calculates study day for any date variable.
+
+🔹 Macro
+%macro calc_studyday(eventdt=, refdt=, outvar=);
+
+if &eventdt >= &refdt then
+  &outvar = &eventdt - &refdt + 1;
+else if &eventdt < &refdt then
+  &outvar = &eventdt - &refdt;
+
+%mend;
+
+🔹 Explanation
+
+“This macro ensures consistent study day calculation across domains like AE, VS, and CM.”
+
+
+3️⃣ Dataset Comparison Macro (UAT FAVORITE)
+🔹 What it does
+
+Compares two datasets during UAT.
+
+🔹 Macro
+%macro compare_ds(base=, comp=, byvar=);
+
+proc compare base=&base compare=&comp;
+  id &byvar;
+run;
+
+%mend;
+
+🔹 Explanation
+
+“Used during UAT to validate Elluminate outputs against specifications.”
+
+
+4️⃣ SDTM Domain Creation Template Macro
+🔹 What it does
+
+Standardizes SDTM domain structure.
+
+🔹 Macro
+%macro sdtm_template(domain=);
+
+data &domain;
+  length STUDYID $20 DOMAIN $2 USUBJID $40;
+  DOMAIN="&domain";
+run;
+
+%mend;
+
+🔹 Explanation
+
+“Ensures CDISC compliance and consistency.”
+
+5️⃣ Macro for Listing Generation
+🔹 What it does
+
+Creates consistent listings.
+
+%macro gen_listing(ds=, title=);
+
+title "&title";
+
+proc print data=&ds noobs;
+run;
+
+%mend;
+
+
+🧪 VALIDATION — THIS IS CRITICAL 🔥
+When interviewer asks:
+
+“How did you validate your macros?”
+
+Say this 👇
+
+“I validated macros by testing them with multiple datasets, edge cases like missing values, and reviewing outputs against specifications. I also used macro debugging options like MPRINT, MLOGIC, and SYMBOLGEN.”
+
+Yes, I have developed reusable SAS macros for tasks like study day calculation, missing value checks, dataset comparison, and SDTM standardization. These macros were validated using multiple test scenarios and reviewed against specifications before being used in production
+
+🎤 How to say this in interview (EXACT WORDING)
+
+Use this answer 👇
+
+“Yes, in my current role I work on patient profile listings, and for that I use small, reusable SAS macros to standardize tasks such as sorting datasets, handling missing dates, and applying consistent derivation logic. These macros help ensure consistency and reduce manual errors across subjects and domains
+
+1️⃣ PROC SORT Macro (VERY REALISTIC)
+
+You don’t hard-code proc sort every time — you wrap it.
+
+%macro sort_ds(ds=, by=);
+
+proc sort data=&ds;
+  by &by;
+run;
+
+%mend;
+
+How to explain:
+
+“I use a simple macro to standardize sorting across patient profile datasets, especially before merges.”
+
+
+2️⃣ Missing Date Handling Macro (VERY STRONG)
+
+This is exactly patient profile work.
+
+%macro chk_missing_date(dt=, flag=);
+
+if missing(&dt) then &flag = 'Y';
+else &flag = 'N';
+
+%mend;
+
+How to explain:
+
+“This macro flags missing dates so that patient profiles clearly highlight incomplete clinical events.”
+
+3️⃣ Study Day Macro Used in Patient Profile
+%macro studyday(eventdt=, refdt=, outdy=);
+
+if not missing(&eventdt) and not missing(&refdt) then do;
+  if &eventdt >= &refdt then &outdy = &eventdt - &refdt + 1;
+  else &outdy = &eventdt - &refdt;
+end;
+
+%mend;
+
+Explanation:
+
+“Used across AE, CM, VS sections in patient profile.”
+
+
+🧪 Validation — HOW YOU VALIDATED THESE MACROS
+
+Say this 👇
+
+“I validated these macros by testing them with sample subjects having complete data, missing data, and edge cases, and verified the outputs against specifications and expected behavior.
+
+Yes, these are utility macros. In clinical reporting, small validated macros are preferred because they are easier to maintain, review, and audit.
+
+Do you work on Macros :-
+Yes, I work with SAS macros regularly in my role. In patient profile development, I use small reusable macros for tasks like sorting datasets, handling missing dates, calculating study days, and standardizing derivations. These macros help save time, reduce manual errors, and maintain consistency across subjects and domains. All macros are validated with test data and checked against specifications before being used in production.
+
+“Can you walk me through how you validated these SAS macros?”
+
+Yes. I validate my macros in multiple ways:
+
+I first test the macro on sample datasets covering typical and edge-case scenarios, like missing dates or boundary study days.
+
+I compare the macro output against specifications or expected results to ensure it’s performing correctly.
+
+I use SAS debugging options like MPRINT, MLOGIC, and SYMBOLGEN to trace macro execution and parameter resolution.
+
+Finally, the macros are reviewed by peers or during UAT, and once they pas;s all checks, they are used in production datasets.
