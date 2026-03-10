@@ -798,7 +798,115 @@ data we;
 run;
 
 
+Q.what is string function in proc sql ?
+Simple Definition
 
+String functions in PROC SQL are used to manipulate or process character strings such as:
+finding length
+converting case
+extracting part of text
+removing spaces
+joining text
+
+| Function           | Purpose                              | Example            |
+| ------------------ | ------------------------------------ | ------------------ |
+| `UPCASE()`         | Convert text to uppercase            | `UPCASE(name)`     |
+| `LOWCASE()`        | Convert text to lowercase            | `LOWCASE(city)`    |
+| `LENGTH()`         | Find number of characters            | `LENGTH(name)`     |
+| `SUBSTR()`         | Extract part of a string             | `SUBSTR(name,1,3)` |
+| `TRIM()`           | Remove trailing spaces               | `TRIM(name)`       |
+| `COMPRESS()`       | Remove specific characters or spaces | `COMPRESS(phone)`  |
+| `CAT()` / `CATS()` | Join strings together                | `CATS(first,last)` |
+
+
+Q.what COALESCE function in SAS PROC SQL:-
+COALESCE returns the first non-missing value from multiple columns.
+For numeric variables → COALESCE()
+
+For character variables → COALESCEC()
+
+PROC SQL;
+SELECT COALESCE(A,B,C) AS VALUE
+FROM table1;
+QUIT;
+
+Q.what are all procedure we used in patient profile
+In patient profile analysis using SAS, several SAS procedures (PROCs) are commonly used to analyze patient data such as demographics, lab results, treatments, and medical history.
+
+Common Procedures Used in Patient Profile
+| Procedure          | Purpose                                                         |
+| ------------------ | --------------------------------------------------------------- |
+| **PROC PRINT**     | Displays patient dataset records                                |
+| **PROC FREQ**      | Shows frequency/count of variables (e.g., gender, disease type) |
+| **PROC MEANS**     | Calculates statistics like mean, min, max, and average age      |
+| **PROC SORT**      | Sorts patient data by variables (e.g., patient ID, visit date)  |
+| **PROC SQL**       | Queries and joins patient datasets                              |
+| **PROC FORMAT**    | Creates readable labels (e.g., 1 = Male, 2 = Female)            |
+| **PROC REPORT**    | Creates formatted patient reports                               |
+| **PROC TRANSPOSE** | Converts rows to columns or vice versa                          |
+| **PROC CONTENTS**  | Shows structure of the dataset (variables, types, lengths)      |
+
+
+String functions in PROC SQL are used to modify, extract, or analyze text data.
+
+Example Workflow in Patient Profile
+
+PROC CONTENTS → check dataset structure
+
+PROC SORT → sort patients by ID
+
+PROC FREQ → analyze gender or disease distribution
+
+PROC MEANS → calculate average age or lab values
+
+PROC SQL → combine patient tables
+
+PROC REPORT / PROC PRINT → generate final patient report
+
+#PROC REPORT is used to display data in a well-organized table format with summaries and calculations.
+
+It is commonly used to:
+
+Display data in columns
+
+Group data
+
+Calculate totals and statistics
+
+Create professional reports
+
+PROC REPORT DATA=dataset;
+COLUMN variable1 variable2 variable3;
+DEFINE variable1 / option;
+DEFINE variable2 / option;
+RUN;
+column statemnt specififes the variables to display in the report 
+define statement : defines how each variaables apper in the report 
+
+Common DEFINE options:
+| Option   | Meaning                       |
+| -------- | ----------------------------- |
+| DISPLAY  | Shows values as they are      |
+| GROUP    | Groups similar values         |
+| ORDER    | Orders/sorts values           |
+| ANALYSIS | Performs calculations         |
+| ACROSS   | Creates columns across values |
+
+PROC REPORT DATA=patients;
+COLUMN id gender age;
+DEFINE id / DISPLAY;
+DEFINE gender / GROUP;
+DEFINE age / ANALYSIS MEAN;
+RUN;
+
+| Statement | Use                      |
+| --------- | ------------------------ |
+| COLUMN    | Select variables         |
+| DEFINE    | Define column properties |
+| BREAK     | Group summary            |
+| RBREAK    | Overall summary          |
+| COMPUTE   | Calculations             |
+| TITLE     | Add report title         |
 
 
 
