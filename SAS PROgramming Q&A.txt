@@ -829,7 +829,7 @@ PROC SQL;
 SELECT COALESCE(A,B,C) AS VALUE
 FROM table1;
 QUIT;
-
+COALESCE = first non-missing value
 Q.what are all procedure we used in patient profile
 In patient profile analysis using SAS, several SAS procedures (PROCs) are commonly used to analyze patient data such as demographics, lab results, treatments, and medical history.
 
@@ -924,3 +924,4 @@ ODS PDF → Starts writing output to PDF
 ODS PDF CLOSE → Must be used to finish the file
 
 Any PROC output between these statements goes to the PDF
+
