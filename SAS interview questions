@@ -1,0 +1,443 @@
+*** SAS
+SAS Numeric function
+Functions	Syntax	Description
+MIN	var1 = min(x, y, z);	minimum value
+MAX	var1 = max(x, y, z);	maximum value
+SUM	var1 = sum(x, y, z);	sum
+INT	var1 = int(x);	integer portion of a numeric value
+ABS	var1 = abs(x);	absolute value
+SQRT	var1 = sqrt(x);	square root
+MEAN	var1 = mean(x, y, z);	mean
+MEDIAN	var1 = median(x, y, z);	median or middle value
+ROUND	var1 = round(x, 1);	round the argument to the specified unit
+CEIL	var1 = ceil(x);	Smallest integer that is greater than or equal to the argument
+FLOOR	var1 = floor(x);	largest integer that is less than or equal to the argument
+LOG	var1 = log(x);	log of base e
+LOG10	var1 = log10(x);	log of base 10
+EXP	var1 = exp(x);	value of the exponential function
+LAG	var1 = lag(x);	value in the previous observation
+DIF	var1 = dif(x);	difference between the values in the current and previous observations
+N	var1 = n(x);	number of non-missing values
+NMISS	var1 = nmiss(x);	number of missing values
+Coalesce
+
+	var1 = coalesce(of x1-x3);	It returns the first non-missing value.
+
+SAS Character Function
+COMPBL 	The COMPBL function compresses multiple blanks to a single blank	compbl(Var);
+STRIP 	The STRIP function removes leading and trailing spaces	strip(Name)
+COMPRESS 	The COMPRESS function removes leading, between and trailing spaces	compress(Name)
+ 	Remove specific characters	x='ABCDEF-!1.234';
+string=compress(x,'!4');
+TRIM 	The TRIM function removes trailing spaces	trim(Name);
+TRIM(LEFT(string))	It is equivalent to STRIP function. It first removes leading spaces and then trailing spaces.	 
+ 	 	 
+SCAN 	The SCAN Function extracts words within a value that is marked by delimiters.
+SCAN( text, nth word, <delimiters>)
+SUBSTR 	The SUBSTR function extracts strings based on character position and length	 
+ 	 	 
+SUBSTR(Left of =) Function	It replaces a portion of string with new string	substr(string,1,8) = "new_data";
+INDEX 	The INDEX function finds characters or words in a character variable
+ 
+FIND 	The FIND function locates a substring within a string	 
+TRANWRD 	The TRANWRD function replaces all occurrences of a word in a character string.	 
+
+How SUBSTR function works?
+The SUBSTR function is used to extract substring from a character variable.
+
+SUBSTR ( character variable, starting point to begin reading the variable, number of characters to read from the starting point)
+
+RIGHT SIDE APPLICATION
+data _null_;
+phone='(312) 555-1212';
+area_cd=substr(phone, 2, 3);
+put area_cd=;
+run;
+
+Result : In the log window, it writes area_cd=312 .
+
+LEFT SIDE APPLICATION
+It is used to change just a few characters of a variable.
+
+data _null_ ;
+phone='(312) 555-1212' ;
+substr(phone, 2, 3)='773' ;
+put phone=;
+run ;
+
+Result : The variable PHONE has been changed from(312) 555-1212 to (773) 555-1212.
+
+How to print observations 5 through 10 from a data set?
+The FIRSTOBS= and OBS=data set options
+proc print data = readin (firstobs=5 obs=10);
+run;
+
+
+data one;
+x = 3;
+y = 2;
+z = x ** y;
+run;
+
+** = exponentiation
+X**Y raise X to the power of Y
+So 3 to the power of 2 = 9
+
+Reverse the String
+
+Input	Output
+Hello	olleH
+
+data _null_;
+   s = "Hello";
+   r = reverse(s);
+   put r=;
+run;
+
+
+Reverse the sentence.
+
+Input	Output
+Virat Kohli	Kohli Virat
+Tom and Jerry	Jerry and Tom
+The Tom and Jerry 	Jerry and Tom The
+
+data ip;
+input Fname $50.;
+datalines;
+Virat Kohli
+Tom and Jerry
+The Tom and Jerry 
+;
+Data op;
+   set ip;
+   length FnameNew $ 50;
+   do _N_ = countw(Fname) to 1 by -1;
+      FnameNew = catx(' ', FnameNew, scan(Fname, _N_));
+   end;
+run;
+Input Data 
+Subjid	Term 	Age
+100	Fever	18
+101	Fever	18
+102	Fever	18
+103	Cold	20
+104	Cold	20
+105	Headache	22
+
+Output 
+
+Subjid	Term 	Age
+100,101,102	Fever	18
+103,104	Code	20
+105	Headache	22
+DATA Have;
+    INPUT SUBJID $ TERM $ age;
+DATALINES;
+100 Fever 18
+101 Fever 18
+102 Fever 18 
+103 Cold 20
+104 Cold 20
+105 Headache 22
+;
+run;
+proc sort data=have;
+	by term age;
+run;
+ 
+Proc transpose data=have out=have1;
+by term age;
+var subjid;
+run;
+ 
+data want;
+set have1;
+subjid=catx(",",col1,col2,col3);
+keep subjid term age;
+run;
+
+Difference between Missover and Truncover
+Missover -When the MISSOVER option is used on the INFILE statement, the INPUT statement does not jump to the next line when reading a short line. Instead, MISSOVER sets variables to missing.
+Truncover - It assigns the raw data value to the variable even if the value is shorter than the length that is expected by the INPUT statement.
+
+Explain the purpose of the LAG function in SAS.
+The LAG function in SAS is used to retrieve the value of a variable from the previous observation. It is often used in time series analysis or when comparing consecutive observations.
+
+ODS 
+ODS outputtype
+PATH path name
+FILE = Filename and Path
+STYLE = StyleName
+;
+PROC some proc
+;
+ODS outputtype CLOSE;
+
+proc transpose 
+proc transpose data = transp out= outdata;
+by var1
+id var1;
+var var1;
+run;
+
+
+
+
+
+
+Proc Report (Basic Syntax)
+
+PROC REPORT DATA= datasetname ; 
+COLUMN variable list and column specifications; 
+DEFINE column / column usage and attributes; 
+COMPUTE column; compute block statements; 
+ENDCOMP; 
+RUN; 
+
+Deleting duplicate observations in SAS?
+Through Nodups in the Procedure
+Proc sort data=SAS-Dataset nodups;
+by var;
+run;
+
+Through SQL Query in a Procedure
+Proc sql;
+Create SAS-Dataset as select * from Old-SAS-Dataset where var=distinct(var);
+quit;
+
+Through Data Cleaning
+Set temp;
+By group;
+If first.group and last.group then
+Run;
+
+******
+
+PROC SQL
+
+PROC SQL;
+SELECT column-1<,…column-n>
+FROM table-1|view-1<,…table-n|view-n>
+<WHERE expression>
+<GROUP BY column-1<,…column-n>>
+<HAVING expression >
+<ORDER BY column-1<,…column-n >>;
+QUIT;
+
+WHERE : Filters the data based on a condition.
+GROUP BY : Classifies data into groups based on the specified columns.
+HAVING : Filters data with the GROUP BY clause.
+ORDER BY : Sorts the rows (observations) by the specified columns.
+
+
+Find the common records that exist in tables. 
+
+In PROC SQL, the INTERSECT operator is used to. 
+
+PROC SQL;
+SELECT * FROM dataset1
+INTERSECT
+SELECT * FROM dataset2;
+QUIT;
+
+How to limit the number of rows
+proc sql outobs=50; 
+ select weight,married 
+ from outdata;
+Quit;
+
+Find employee IDs whose age is in the average age +/- 10 years.
+Proc SQL;
+Select id from inputDS
+where age between (select Avg(age) from file1) - 10 and
+(select avg(age) from inputDS )+10;
+Quit;
+
+
+
+Select the Second Highest Score with PROC SQL
+
+data data1;
+input Name $ Score;
+cards;
+sam 75
+dave 84
+sachin 92
+ram 91;
+run;
+
+Name 	Marks
+Sam	75
+David	84
+Sachin	92
+Ram	91
+
+proc sql;
+create table t1 as
+select * from data1
+where score in (select max(score) from data1 where score not in (select max(score) from data1));
+quit;
+
+*** SAS Macro
+What are the different ways of creating micro variables in SAS programming?
+•	%Global
+•	Macro Parameters
+•	%Let
+•	Call Symput
+•	Proc SQL into clause
+
+What are some of the SAS system options used for debugging SAS micros?
+•	MEMRPT - Shows memory usage statistics.
+•	MLOGIC - Detects and shows micro logic.
+•	MERROR - A warning is issued whenever a user attempts to invoke a macro that cannot be identified by SAS. The warning message is displayed in case of a misspelling or an undefined macro.
+•	SYMBOLGEN - Prints a message in the LOG file whenever a macro variable is resolved, stating the resolving process of the macro variable.
+•	MPRINT - Displays all the SAS statements of the resolved macro code.
+
+
+Two ways to create a macro variable that counts the number of observations in a dataset
+
+data _NULL_;
+if 0 then set sashelp.class nobs=n;
+call symputx('totalrows',n);
+stop;
+run;
+%put nobs=&totalrows.;
+
+proc sql;
+select count(*) into: nrows from sashelp.class;
+quit;
+%put nobs=%left(&nrows.);
+What do you know about SYMPUT and SYMGET?
+SYMPUT is used for storing the value of a data set into the macro variable whereas SYMGET is used for retrieving the value from the macro variable to the data set.
+*** SDTM
+
+SDTM variables
+Each of the SDTM domains has a collection of variables associated with it.
+There are five roles that a variable can have:
+Identifier,
+Topic,
+Timing,
+Qualifier,
+Required, Expected, and Permitted4
+
+REQUIRED – These variables are necessary for the proper functioning of standard software tools used by reviewers. They must be included in the data set structure and should not have a missing value for any observation.
+EXPECTED – These variables must be included in the data set structure; however it is permissible to have missing values.
+PERMISSIBLE – These variables are not a required part of the domain and they should not be included in the data set structure if the information they were designed to contain was not collected.
+
+SDTM Domains
+Special Purpose Class – Pertains to unique domains concerning detailed information about the subjects in a study.
+Demography (DM), Comments (CM)
+
+• Findings Class – Collected information resulting from a planned evaluation to address specific questions about the subject, such as whether a subject is suitable to participate or continue in a study.
+Electrocardiogram (EG)
+Inclusion / Exclusion (IE)
+Lab Results (LB)
+Physical Examination (PE)
+Questionnaire (QS)
+Subject Characteristics (SC)
+Vital Signs (VS)
+
+• Events Class – Incidents independent of the study that happen to the subject during the lifetime of the study.
+Adverse Events (AE)
+Patient Disposition (DS)
+Medical History (MH)
+
+• Interventions Class – Treatments and procedures that are intentionally administered to the subject, such as treatment coincident with the study period, per protocol, or self-administered (e.g., alcohol and tobacco use).
+Concomitant Medications (CM)
+Exposure to Treatment Drug (EX)
+Substance Usage (SU)
+
+• Trial Design Class – Information about the design of the clinical trial (e.g., crossover trial, treatment arms) including information about the subjects with respect to treatment and visits.
+Subject Elements (SE)
+Subject Visits (SV)
+Trial Arms (TA)
+Trial Elements (TE)
+Trial Inclusion / Exclusion Criteria (TI)
+Trial Visits (TV)
+
+The Process of SDTM Mapping?
+
+DIRECT: a CDM variable is copied directly to a domain variable without any changes other than assigning the CDISC standard label.
+RENAME: only the variable name and label may change but the contents remain the same.
+STANDARDIZE: mapping reported values to standard units or standard terminology
+REFORMAT: the actual value being represented does not change, only the format in which is stored changes, such as converting a SAS date to an ISO8601 format character string.
+COMBINING: directly combining two or more CDM variables to form a single SDTM variable.
+SPLITTING: a CDM variable is divided into two or more SDTM variables.
+DERIVATION: creating a domain variable based on a computation, algorithm, series of logic rules or decoding using one or more CDM variables
+
+DM (One record per subject)
+What is Arm variable in DM – 
+Description of Planned Arm   ---- Name of the Arm to which the subject was assigned.
+
+What is date format in SDTM --- ISO8601
+
+AE (One record per adverse event per subject, Tabulation)
+
+Which are the topic variable in AE dataset ---  AETERM
+
+LB (One record per lab test per time point per visit per subject)
+
+Topic variable: LBTESTCD 
+
+PROCESS FLOW OF DEFINE.XML CODE GENERATION 
+
+XPT Files 
+SDTM Specifications Code of Define.XML Annotated CRF 
+
+STEP 1. XPT FILE GENERATION 
+Before generating the code for Define.xml, first transform the SDTM datasets into .xpt files. 
+
+SAS to XPT
+libname sasfile "E:\users\tiany"; 
+libname xptfile XPORT "E:\users\tiany\ts.xpt"; 
+data xptfile.ts; 
+set sasfile.ts2; 
+run;
+/*another way to xport*/ 
+proc copy in=sasfile 
+out=xptfile memtype=data; 
+select ts2; 
+run;
+
+XPT to SAS
+libname sasfile 'C:\SAS Datasets';
+libname xptfile xport 'C:\XPT Datasets\ca125cec.xpt' access=readonly;
+proc copy inlib=xptfile outlib=sasfile;
+run;
+
+STEP 2. ANNOTATED CRF GENERATION 
+STEP 3. USE SDTM SPECIFICATIONS TO GENERATE CODE OF DEFINE.XML 
+
+
+Define.xml has four sections in general: 
+1. Table of Contents (TOC, or Data Metadata) 
+2. Collection of Data Definition Tables (Variable Level Metadata), 
+3. Controlled Terminology, 
+4. ODM XML
+
+
+Annotate CRF for below data points
+
+Informed consent date, Gender, Race , Medication Name,  Height and Weight 
+
+Informed consent date --- DS - DSSTDC
+Gender -- DM -- Sex
+Race   -- DM -- Race
+Medication Name -- CM -- CMTRT
+Height and Weight -- VSORRES when VSTESTCD="height'
+
+
+In Race … 3 option
+White
+Black
+Other.
+	Native
+
+Diffrence between subjid and unique subjid?
+
+If we have informed consent date and birth year.. how do you calculate Age?
+
+What relrec and supplimentary domains?
+
+
