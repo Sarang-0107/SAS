@@ -181,4 +181,5 @@ I compare the macro output against specifications or expected results to ensure 
 
 I use SAS debugging options like MPRINT, MLOGIC, and SYMBOLGEN to trace macro execution and parameter resolution.
 
-Finally, the macros are reviewed by peers or during UAT, and once they pas;s all checks, they are used in production datasets.
+
+Finally, the macros are reviewed by peers or during UAT, and once they pass all checks, they are used in production datasets.
