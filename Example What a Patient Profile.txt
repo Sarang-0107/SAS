@@ -1,3 +1,42 @@
+A Patient Profile is a subject-level report that presents all relevant clinical trial data for an individual patient in a structured format.
+It usually includes demographic information, medical history, adverse events, concomitant medications, laboratory results, vital signs,
+and other key study data. Patient profiles are mainly used for medical review and safety evaluation."
+
+Key points you can mention
+
+One report per subject
+
+Used by medical monitors and clinicians
+
+Combines data from multiple domains (DM, AE, CM, LB, VS, etc.)
+
+Usually created using PROC REPORT or PROC TEMPLATE
+
+
+2️⃣ Subject Listing
+
+Interview answer:
+
+"Subject listing is a tabular report that displays clinical data for multiple subjects in a structured listing format.
+Each row represents an observation and each column represents a variable. Subject listings help reviewers examine study data such as adverse events,
+lab results, or demographics across subjects."
+
+Example domains
+
+AE listing
+
+Lab listing
+
+Demographic listing
+
+Concomitant medication listing
+
+Tools used
+
+PROC REPORT
+
+PROC PRINT
+
 1️⃣ Example: What a Patient Profile Looks Like (Real-life)
 
 Think of a patient profile as a multi-section report for ONE subject.
@@ -132,3 +171,30 @@ I check for missing data, date inconsistencies, overlap between adverse events a
 In patient profiles, I show the complete story of one patient in one report and make sure everything makes sense and follows the protocol
 
 Patient profiles help medical reviewers quickly assess subject safety, data quality, and compliance without going through multiple datasets.
+
+
+3️⃣ e-Narratives
+
+Interview answer:
+
+"e-Narratives are electronic narratives that summarize important clinical events for a patient, usually serious adverse events or deaths. They combine clinical data from multiple datasets to provide a detailed medical story for regulatory review."
+
+Typical contents
+
+Patient demographics
+
+Medical history
+
+Adverse event details
+
+Concomitant medications
+
+Lab results
+
+Outcome
+
+Used for
+
+Safety review
+
+Regulatory submissions (FDA / regulatory authorities)
