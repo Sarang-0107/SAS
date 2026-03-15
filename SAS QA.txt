@@ -29,11 +29,24 @@ how you populate 20 in log window
 What is pdv
 ways of creating macro 
 how to round of 7.8 to 9 
+ceil(7.8) + 1
 Function	Behavior	7.3 →	-2.3 →
 ceil()	Round up	8	-2
 floor()	Round down	7	-3
 
 There are multiple data sets and I want only two subject from each data sets 101 102 in tabular format how will you creat macro for this.
+-> %macro get_subjects(ds);
+
+data &ds._sub;
+    set &ds;
+    where subject in (101,102);
+run;
+
+proc print data=&ds._sub;
+    title "Subjects 101 and 102 from &ds dataset";
+run;
+
+%mend;
 how will you calculate diffrence between two dates.
 what is compbl function :-
 Compbl function stands for Compress blank and it is used to replace multiple consecutiv blanks with single blank in a charecter string.
