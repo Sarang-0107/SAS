@@ -11,7 +11,7 @@ count+1;
 run;
 
 Using Proc sql;
-PRoc sql;
+Proc sql;
 create table Age_count as select Subjid,count(*) as Age_Count
 from sashelp.class
 group by age;
@@ -23,7 +23,7 @@ Coalesce function used to return first non-missing value from given argument or 
 
 
 *****************************************************************************************************
-what is diffrence Find and Scan?
+what is diffrence between Find and Scan?
 
 Use FIND when you need to validate the existence and location of a pattern in text,
 
@@ -76,20 +76,20 @@ Scan extract the word using delimeter of string while find function used to find
 FIND finds the position of a substring in text; SCAN extracts the Nth word from a string
 *******************************************************************************************************
 TableA
-ID	                 Name	City
+ID	        Name	City
 1234-ABC12	Shiv	Hyderabad
 43-CCD23	Rahul	Bangalore
-34567-WD2	Ram	Chennai
+34567-WD2	Ram	    Chennai
 111-QWE4	Vivek	Bangalore
  
 
  
 TableB
-ID	State
+ID	    State
 1234	Telangana
-43	Karnataka
+43	    Karnataka
 34567	Tamil Nadu
-111	Karnataka
+111	    Karnataka
  
  
 TableC
@@ -156,7 +156,7 @@ run;
 
 
 ​***********************************************************************************************************
-Below sting have dynamic values but I need only last four alpha variables.
+Below string have dynamic values but I need only last four alpha variables.
     var=234dfv657jh
 ans :-data want;
     set have;
@@ -730,6 +730,28 @@ Optional short version:
 ways of creating macro 
 how to round of 7.8 to 9 
 There are multiple data sets and I want only two subject from each data sets 101 102 in tabular format how will you creat macro for this.
+->%macro get_subjects;
+
+%let datasets = dm ae lb vs;
+
+%do i=1 %to 4;
+
+%let ds=%scan(&datasets,&i);
+
+data &ds._sub;
+set &ds;
+where subject in (101,102);
+run;
+
+proc print data=&ds._sub;
+title "Subjects 101 and 102 from &ds dataset";
+run;
+
+%end;
+
+%mend;
+
+%get_subjects;
 how will you calculate diffrence between two dates.
 what is compbl function 
 
