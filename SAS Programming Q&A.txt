@@ -101,7 +101,7 @@ ID	Name	City	State
  
 [3:02 PM] Dhadave, Shivashankar
  
-ID	Dosage Type	Date
+ID	     Dosage_Type	Date
 Patient1	DoseA	20-Oct-22
 Patient1	DoseB	30-Oct-22
 Patient1	DoseC	15-Nov-22
@@ -118,7 +118,21 @@ Date	Last Dose
 Date	Difference (days)
 Patient1	 	 	 
 Patient2	 	 	 
- 
+
+Ans ->data tableC;
+set tableA;
+by id date;    
+
+if first.id then first_dose = date;
+if last.id then do;
+last_dose = date;
+difference = last_dose - first_dose;
+output;
+end;
+retain first_dose;
+keep id first_dose last_dose difference;
+format first_dose last_dose date9.;
+run; 
 ***********************************************************************************************************
 
 two data set and we need total of salry ?
