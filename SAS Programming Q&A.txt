@@ -1,5 +1,5 @@
 How to count Each subject present in how many times in data set using Data step and proc sql;
-Using Data step:'
+Using Data step:
 Fist we have to sort the data.
 Proc sort data=SAShelp.class out=count_class;
 by AGE;run;
@@ -743,6 +743,12 @@ Optional short version:
 
 ways of creating macro 
 how to round of 7.8 to 9 
+
+ceil(7.8) + 1
+Function	Behavior	7.3 →	-2.3 →
+ceil()	Round up	8	-2
+floor()	Round down	7	-3
+
 There are multiple data sets and I want only two subject from each data sets 101 102 in tabular format how will you creat macro for this.
 ->%macro get_subjects;
 
@@ -766,8 +772,24 @@ run;
 %mend;
 
 %get_subjects;
+
+
 how will you calculate diffrence between two dates.
+We can subtract two dates to get the difference in days. For intervals like years or months,
+we use the INTCK function. For accurate age calculation, we use YRDIF.
+age = floor(yrdif(birth_date, today(), 'AGE'));
+
 what is compbl function 
+It replaces multiple consecutive blanks (spaces) with a single blank.
+COMPBL only reduces multiple spaces → it does NOT remove spaces completely
+COMPBL is a SAS function used to replace multiple consecutive spaces in a string with a single space. It is commonly used for cleaning text data
+| Function   | Purpose                               |
+| ---------- | ------------------------------------- |
+| `COMPBL`   | Reduce multiple spaces → single space |
+| `COMPRESS` | Remove characters completely          |
+| `TRIM`     | Remove trailing spaces                |
+| `STRIP`    | Remove leading + trailing spaces      |
+
 
 what is first created Input buffer or PDV?
 The Input Buffer is created first, then the PDV.
@@ -811,7 +833,7 @@ Ans:-data unique_id;
     by ID;
     if first.ID and last.ID;
 run;
-I have string below :-path="C:\Users\temp\Documents\helloworld.txt";  and I want output like helloworld.txt
+I have string below :- path="C:\Users\temp\Documents\helloworld.txt";  and I want output like helloworld.txt
 Ans-final = scan(path, -1, '\');
 ********************************************************************************************************************************************
 data a;
@@ -849,9 +871,10 @@ run;
 
 **********************************************************************************************************************************************
 what is the Cat family and function :-
-Cat
-cats
-catx
+Cat :- Concatenates strings without trimming spaces
+cats :- Removes trailing spaces
+catt :- Removes leading and trailing spaces
+catx :- Concatenates with a delimiter
 **********************************************************************************************************************************************
 What is the automatic variables in SAS and which is created first ?
 Automatic variables in SAS are variables automatically created by SAS in the Program Data Vector during DATA step execution. The two main automatic variables are _N_, which counts the number of DATA step iterations, and _ERROR_, which indicates whether an error occurred during processing. _N_ is created first, followed by _ERROR_, and these variables are not written to the output dataset
@@ -1004,4 +1027,6 @@ ODS PDF CLOSE → Must be used to finish the file
 Any PROC output between these statements goes to the PDF
 
 #What are character functions in SAS?
-Character functions in SAS are functions used to manipulate or process character variables. They help perform operations like extracting text, combining strings, finding positions of characters, trimming spaces, and converting case. These functions are commonly used in data steps for data cleaning and transformation.
+Character functions in SAS are functions used to manipulate or process character variables.
+They help perform operations like extracting text, combining strings, finding positions of characters, 
+trimming spaces, and converting case. These functions are commonly used in data steps for data cleaning and transformation.
