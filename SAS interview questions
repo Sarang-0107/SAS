@@ -302,9 +302,15 @@ What are some of the SAS system options used for debugging SAS micros?
 •	MERROR - A warning is issued whenever a user attempts to invoke a macro that cannot be identified by SAS. The warning message is displayed in case of a misspelling or an undefined macro.
 •	SYMBOLGEN - Prints a message in the LOG file whenever a macro variable is resolved, stating the resolving process of the macro variable.
 •	MPRINT - Displays all the SAS statements of the resolved macro code.
+*There are mainly five ways to create macro variables in SAS: %LET, macro parameters, %GLOBAL/%LOCAL, CALL SYMPUTX, and PROC SQL INTO.
+The choice depends on whether the value is coming from user input, a data step, or a SQL query.”
 
-
+*CALL SYMPUTX is preferred over SYMPUT because it automatically trims spaces
 Two ways to create a macro variable that counts the number of observations in a dataset
+
+# %LET is used for simple assignments
+PROC SQL INTO is widely used for extracting values from datasets
+CALL SYMPUTX is preferred over CALL SYMPUT because it removes extra spaces
 
 data _NULL_;
 if 0 then set sashelp.class nobs=n;
@@ -328,7 +334,7 @@ Identifier,
 Topic,
 Timing,
 Qualifier,
-Required, Expected, and Permitted4
+Required, Expected, and Permitted
 
 REQUIRED – These variables are necessary for the proper functioning of standard software tools used by reviewers. They must be included in the data set structure and should not have a missing value for any observation.
 EXPECTED – These variables must be included in the data set structure; however it is permissible to have missing values.
