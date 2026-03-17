@@ -181,11 +181,6 @@ id var1;
 var var1;
 run;
 
-
-
-
-
-
 Proc Report (Basic Syntax)
 
 PROC REPORT DATA= datasetname ; 
