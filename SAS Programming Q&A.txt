@@ -24,7 +24,8 @@ Coalesce function used to return first non-missing value from given argument or 
 
 *****************************************************************************************************
 what is diffrence between Find and Scan?
-
+scan(string, word_number, delimiter)
+find(string, substring)
 Use FIND when you need to validate the existence and location of a pattern in text,
 
 SCAN when you need to parse out specific tokens from structured strings.
