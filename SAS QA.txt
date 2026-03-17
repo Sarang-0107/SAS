@@ -76,4 +76,18 @@ run;
 proc print data=b_names;
 run;
 
+in R :-
+library(dplyr)
+library(stringr)
 
+names <- data.frame(
+  name = c("BARB", "BOB", "DAVID", "Boroba", "Bklb")
+)
+
+result <- names %>%
+  mutate(
+    first_B = ifelse(str_to_upper(str_sub(name, 1, 1)) == "B", "B", ""),
+    last_B  = ifelse(str_to_upper(str_sub(name, -1, -1)) == "B", "B", "")
+  )
+
+result
