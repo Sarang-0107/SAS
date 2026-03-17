@@ -278,6 +278,15 @@ create table t1 as
 select * from data1
 where score in (select max(score) from data1 where score not in (select max(score) from data1));
 quit;
+******************************************************************
+proc sort data=data1 out=sorted nodupkey;
+    by descending score;
+run;
+
+data second_highest;
+    set sorted;
+    if _N_ = 2;
+run;
 
 *** SAS Macro
 What are the different ways of creating micro variables in SAS programming?
