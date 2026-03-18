@@ -144,6 +144,47 @@ two data set and we need total of salry ?
     total
 Ans:- We can be used sum 
 To get the total salary from two SAS datasets, we can first concatenate them using a SET statement and then run PROC MEANS to sum the salary. Or more simply, we can use PROC SQL with UNION ALL to combine the salary values from both tables and apply SUM() to get the total.
+If both datasets have the same variable (say value):
+proc sql;
+    select sum(value) as total_sum
+    from (
+        select value from dataset1
+        union all
+        select value from dataset2
+    );
+quit;
+
+🔹 2. Combine datasets, then sum
+data combined;
+    set dataset1 dataset2;
+run;
+
+proc means data=combined sum;
+    var value;
+run;
+
+3. Row-wise (element-wise) sum (same structure)
+
+If both datasets have matching rows and same variables:
+data result;
+    merge dataset1(rename=(value=a))
+          dataset2(rename=(value=b));
+    sum_value = a + b;
+run;
+
+🔹 4. Sum by group (e.g., ID)
+
+If both datasets have an id:
+
+data combined;
+    set dataset1 dataset2;
+run;
+
+proc sql;
+    select id, sum(value) as total
+    from combined
+    group by id;
+quit;
 ***********************************************************************************************************
 Two data set below;
 A
