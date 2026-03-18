@@ -1108,3 +1108,36 @@ Next, I sort the dataset in descending order of the modification timestamp and s
 Finally, I store that file path into a macro variable using CALL SYMPUTX and use it in downstream steps like PROC IMPORT or data processing.
 
 This approach makes the process fully dynamic, so whenever a new file arrives weekly, the job automatically picks the latest file without manual intervention.”
+
+
+there two datasets and outof that subjid visit and date how would I merge and what happend and which data will be come?
+I would merge the two datasets using SUBJID, VISIT, and DATE as key variables.
+First, I would sort both datasets by these variables.
+Then I would use a DATA step merge with BY statement.
+Depending on the requirement, I would control which records to keep using dataset options like IN=.
+For example, if I want only matching records, I would keep observations present in both datasets.
+If I want all records from one dataset, I would use a left join logic.”
+
+Case 1: Keep only matching records (Inner Join)
+data merged;
+    merge dataset1 (in=a) dataset2 (in=b);
+    by subjid visit date;
+    if a and b;
+run;
+
+Case 2: Keep all records from dataset1 (Left Join):-
+data merged;
+    merge dataset1 (in=a) dataset2 (in=b);
+    by subjid visit date;
+    if a;
+run;
+
+Case 3: Keep all records (Full Join)
+data merged;
+    merge dataset1 (in=a) dataset2 (in=b);
+    by subjid visit date;
+run;
+
+I will sort both datasets by SUBJID, VISIT, and DATE, then merge them using a DATA step with a BY statement.
+I will use IN= dataset options to control whether I need an inner join, left join, or full join. 
+I will also check for duplicate keys to avoid incorrect merging.”
