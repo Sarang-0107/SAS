@@ -390,15 +390,35 @@ run;
 data want;
 set have;
 length ID $10; /* Adjust the length as per your requirement */
-
 ID = scan(values, 1, 'A');
+run;
+#This splits using only 'A' as delimiter
+It works here because all strings happen to contain A
+But if data changes (e.g., starts with B or C), it breaks ❌
 
+✔️ Method 1: Use COMPRESS (Best for this case)
+data want;
+set have;
+ID = compress(values, , 'kd'); /* keep digits only */
 run;
 
-/* Display the result */
-proc print data=want;
+Correct logic: Extract only leading digits:
+✔️ Method 2: Use PRXCHANGE (Best & precise)
+data want;
+set have;
+ID = prxchange('s/^(\d+).*/\1/', 1, values);
 run;
 
+#How this works
+^(\d+) → match digits at the start
+.* → ignore the rest
+\1 → return only the captured digits
+
+🟢 Simple alternative (no regex):-
+data want;
+set have;
+ID = input(values, ?? best.);
+run;
 ************************************************************************************************
 
 Write the sytext of proc sql;
