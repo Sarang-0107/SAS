@@ -1141,3 +1141,9 @@ run;
 I will sort both datasets by SUBJID, VISIT, and DATE, then merge them using a DATA step with a BY statement.
 I will use IN= dataset options to control whether I need an inner join, left join, or full join. 
 I will also check for duplicate keys to avoid incorrect merging.”
+
+## WHat is vendor reconcialiation :-
+what is compress and compbl function 
+what is scan and index 
+what is scan and find 
+what is find and index 
