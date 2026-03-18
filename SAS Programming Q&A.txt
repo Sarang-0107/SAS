@@ -1092,3 +1092,19 @@ Any PROC output between these statements goes to the PDF
 Character functions in SAS are functions used to manipulate or process character variables.
 They help perform operations like extracting text, combining strings, finding positions of characters, 
 trimming spaces, and converting case. These functions are commonly used in data steps for data cleaning and transformation.
+
+
+******************************************************************************************************************************************************************
+In vendor reconciliation, if new files are received periodically (for example, weekly) in a folder,
+how can we dynamically identify and process the latest file using SAS?
+In SAS, when I need to pick the latest file from a folder for processes like vendor reconciliation, I dynamically read the directory instead of hardcoding file names.
+
+First, I assign a fileref to the folder using the FILENAME statement. Then I use directory functions like DOPEN and DREAD to loop through all files in that folder.
+
+For each file, I use FOPEN and FINFO to extract metadata such as the Last Modified DateTime. I store all file names along with their timestamps in a dataset.
+
+Next, I sort the dataset in descending order of the modification timestamp and select the first record, which gives me the latest file.
+
+Finally, I store that file path into a macro variable using CALL SYMPUTX and use it in downstream steps like PROC IMPORT or data processing.
+
+This approach makes the process fully dynamic, so whenever a new file arrives weekly, the job automatically picks the latest file without manual intervention.”
