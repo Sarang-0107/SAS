@@ -390,10 +390,39 @@ run;
 data want;
 set have;
 length ID $10; /* Adjust the length as per your requirement */
-
 ID = scan(values, 1, 'A');
-
 run;
+It works here because all strings happen to contain A
+Method 1: use compress with "kd" delimeter 
+data want;
+set have;
+ID = compress(values, , 'kd'); /* keep digits only */
+run;
+
+Method 2:-
+✔️ Method 2: Use PRXCHANGE (Best & precise):-
+data want;
+set have;
+ID = prxchange('s/^(\d+).*/\1/', 1, values);
+run;
+
+💡 How this works
+^(\d+) → match digits at the start
+.* → ignore the rest
+\1 → return only the captured digits
+
+Simple alternative (no regex):-
+data want;
+set have;
+ID = input(values, ?? best.);
+run;
+
+Recommendation
+
+Use input(values, ?? best.) → simplest & fastest
+
+Use prxchange → if you want strict control
+
 
 /* Display the result */
 proc print data=want;
